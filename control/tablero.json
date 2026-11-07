@@ -1,0 +1,631 @@
+{
+  "proyecto": "Planificador de viajes del Eje Cafetero",
+  "revision": 1,
+  "actualizado": "2026-11-07T17:43:44",
+  "responsables": [
+    "usuario",
+    "claude",
+    "externo"
+  ],
+  "frentes": [
+    {
+      "id": "F-0",
+      "nombre": "Fase 0: Preparación",
+      "aceptacion": [
+        "La app arranca",
+        "Se puede iniciar y cerrar sesión con Google",
+        "CI corre lint y tests",
+        "Los textos de la pantalla inicial salen de src/i18n/es-CO.ts",
+        ".env.example no contiene la clave secreta"
+      ]
+    },
+    {
+      "id": "F-a",
+      "nombre": "Fase (a): Catálogo + mapa",
+      "aceptacion": [
+        "Los 53 municipios aparecen en el mapa",
+        "Salamina y Aguadas aparecen como pueblos patrimonio",
+        "Los filtros funcionan en móvil",
+        "El seed pasa la validación Zod",
+        "Un INSERT con la clave pública sobre atracciones falla",
+        "El grafo de buses conecta todos los municipios con cabecera alcanzable por carretera, y los que no, quedan listados"
+      ]
+    },
+    {
+      "id": "F-b",
+      "nombre": "Fase (b): Planificador de itinerarios",
+      "aceptacion": [
+        "Misma entrada y mismo clima producen el mismo itinerario",
+        "El día 1 parte del origen elegido",
+        "Ningún día supera el límite de jornada salvo los días de solo traslado marcados",
+        "0 violaciones de restricciones en las instancias de prueba",
+        "Generación en < 500 ms en un móvil de gama media",
+        "Cobertura >= 80 % en domain/itinerario",
+        "Los cambios persisten tras recargar"
+      ]
+    },
+    {
+      "id": "F-c",
+      "nombre": "Fase (c): Presupuesto",
+      "aceptacion": [
+        "Cuando existe un itinerario factible, el ajustado nunca supera el monto fijo",
+        "Cuando no existe, se muestra el mínimo y no se guarda como ajustado",
+        "Las atracciones obligatorias nunca se quitan",
+        "La cuota se recalcula al registrar aportes y no es negativa ni divide por cero",
+        "Pruebas unitarias de los cálculos, incluidos 0 noches, meta vencida y meta cumplida"
+      ]
+    },
+    {
+      "id": "F-d",
+      "nombre": "Fase (d): Clima",
+      "aceptacion": [
+        "Con la red cortada la app muestra la estimación con aviso",
+        "Fechas a más de 16 días nunca se etiquetan como pronóstico",
+        "Un viaje que cruza dos meses usa el promedio de cada mes",
+        "La reorganización no mueve actividades fuera de su municipio base ni mueve ítems fijados",
+        "La atribución de Open-Meteo es visible",
+        "Pruebas unitarias de domain/clima"
+      ]
+    },
+    {
+      "id": "F-e",
+      "nombre": "Fase (e): Insignias y perfil",
+      "aceptacion": [
+        "Un check-in fuera del radio no se verifica",
+        "Un INSERT directo en checkins o insignias_usuario con la clave pública falla",
+        "Reenviar el mismo check-in no crea duplicados",
+        "Completar los municipios de un departamento otorga su insignia",
+        "Insignia especial con >= 80 % de componentes verificados se marca verificada y con menos no (pruebas con 79 % y 80 %)",
+        "Las insignias manuales se distinguen visualmente",
+        "Eliminar la cuenta borra viajes, check-ins e insignias",
+        "Pruebas unitarias de domain/geo con casos límite de radio y precisión"
+      ]
+    },
+    {
+      "id": "F-final",
+      "nombre": "Fase final: Pulido",
+      "aceptacion": [
+        "Accesibilidad revisada (contraste, foco, etiquetas)",
+        "Prueba end-to-end en Playwright del flujo principal",
+        "Despliegue con Referrer-Policy correcta y Supabase activo antes de la sustentación"
+      ]
+    }
+  ],
+  "tareas": [
+    {
+      "id": "T-01",
+      "titulo": "Crear proyecto Vite + React + TS con Tailwind, ESLint/Prettier y Vitest",
+      "frente": "F-0",
+      "grupo": "ruta_critica",
+      "orden": 1,
+      "responsable": "claude",
+      "prioridad": "P1",
+      "dependencias": [],
+      "estado": "pendiente",
+      "notas": "plan.md sección 9, fase 0",
+      "creada": "2026-11-07"
+    },
+    {
+      "id": "T-02",
+      "titulo": "Crear el proyecto en Supabase y .env.example sin secretos",
+      "frente": "F-0",
+      "grupo": "ruta_critica",
+      "orden": 2,
+      "responsable": "usuario",
+      "prioridad": "P1",
+      "dependencias": [],
+      "estado": "pendiente",
+      "notas": "Requiere la cuenta del usuario en Supabase",
+      "creada": "2026-11-07"
+    },
+    {
+      "id": "T-03",
+      "titulo": "Configurar OAuth de Google (Google Cloud Console + proveedor y Redirect URLs en Supabase; usuarios de prueba)",
+      "frente": "F-0",
+      "grupo": "ruta_critica",
+      "orden": 3,
+      "responsable": "usuario",
+      "prioridad": "P1",
+      "dependencias": [
+        "T-02"
+      ],
+      "estado": "pendiente",
+      "notas": "En modo Testing solo entran los usuarios de prueba",
+      "creada": "2026-11-07"
+    },
+    {
+      "id": "T-04",
+      "titulo": "Crear src/i18n/es-CO.ts y la función t(clave)",
+      "frente": "F-0",
+      "grupo": "ruta_critica",
+      "orden": 4,
+      "responsable": "claude",
+      "prioridad": "P2",
+      "dependencias": [
+        "T-01"
+      ],
+      "estado": "pendiente",
+      "notas": "",
+      "creada": "2026-11-07"
+    },
+    {
+      "id": "T-05",
+      "titulo": "Inicio y cierre de sesión con Google en la app",
+      "frente": "F-0",
+      "grupo": "ruta_critica",
+      "orden": 5,
+      "responsable": "claude",
+      "prioridad": "P2",
+      "dependencias": [
+        "T-01",
+        "T-03"
+      ],
+      "estado": "pendiente",
+      "notas": "",
+      "creada": "2026-11-07"
+    },
+    {
+      "id": "T-06",
+      "titulo": "Verificar el conteo de municipios con la DIVIPOLA del DANE y verificar rutas temáticas con fuentes oficiales",
+      "frente": "F-a",
+      "grupo": "ruta_critica",
+      "orden": 6,
+      "responsable": "claude",
+      "prioridad": "P1",
+      "dependencias": [],
+      "estado": "pendiente",
+      "notas": "Referencia esperada: Caldas 27, Quindío 12, Risaralda 14",
+      "creada": "2026-11-07"
+    },
+    {
+      "id": "T-07",
+      "titulo": "Migraciones SQL del catálogo con RLS de solo lectura",
+      "frente": "F-a",
+      "grupo": "ruta_critica",
+      "orden": 7,
+      "responsable": "claude",
+      "prioridad": "P1",
+      "dependencias": [
+        "T-02"
+      ],
+      "estado": "pendiente",
+      "notas": "plan.md secciones 5.1 y 5.3",
+      "creada": "2026-11-07"
+    },
+    {
+      "id": "T-08",
+      "titulo": "Seed del catálogo (municipios, 40-60 atracciones, casco urbano, rutas de bus, tarifas, rutas temáticas) con validación Zod y scripts/cargar-seed.ts",
+      "frente": "F-a",
+      "grupo": "ruta_critica",
+      "orden": 8,
+      "responsable": "claude",
+      "prioridad": "P1",
+      "dependencias": [
+        "T-06",
+        "T-07"
+      ],
+      "estado": "pendiente",
+      "notas": "plan.md sección 7. Cada costo con fecha_actualizacion y fuente",
+      "creada": "2026-11-07"
+    },
+    {
+      "id": "T-09",
+      "titulo": "Lista filtrable de municipios y atracciones y ficha de atracción",
+      "frente": "F-a",
+      "grupo": "ruta_critica",
+      "orden": 9,
+      "responsable": "claude",
+      "prioridad": "P2",
+      "dependencias": [
+        "T-04",
+        "T-08"
+      ],
+      "estado": "pendiente",
+      "notas": "",
+      "creada": "2026-11-07"
+    },
+    {
+      "id": "T-10",
+      "titulo": "Mapa Leaflet con marcadores agrupados, atribución OSM y caché de teselas (6.5)",
+      "frente": "F-a",
+      "grupo": "ruta_critica",
+      "orden": 10,
+      "responsable": "claude",
+      "prioridad": "P2",
+      "dependencias": [
+        "T-08"
+      ],
+      "estado": "pendiente",
+      "notas": "",
+      "creada": "2026-11-07"
+    },
+    {
+      "id": "T-11",
+      "titulo": "Generador de itinerario (6.1 pasos 1-7) con pruebas unitarias de los casos límite",
+      "frente": "F-b",
+      "grupo": "ruta_critica",
+      "orden": 11,
+      "responsable": "claude",
+      "prioridad": "P1",
+      "dependencias": [
+        "T-08"
+      ],
+      "estado": "pendiente",
+      "notas": "Casos: 1 día, origen igual a destino, municipio inalcanzable, traslado largo desde Bogotá",
+      "creada": "2026-11-07"
+    },
+    {
+      "id": "T-12",
+      "titulo": "Migraciones de datos de usuario (perfiles, viajes, viaje_dias, viaje_items, metas, aportes) con RLS",
+      "frente": "F-b",
+      "grupo": "ruta_critica",
+      "orden": 12,
+      "responsable": "claude",
+      "prioridad": "P2",
+      "dependencias": [
+        "T-07"
+      ],
+      "estado": "pendiente",
+      "notas": "plan.md secciones 5.2 y 5.3",
+      "creada": "2026-11-07"
+    },
+    {
+      "id": "T-13",
+      "titulo": "Formulario del viaje y vista día por día con edición, subir/bajar e ítems fijados",
+      "frente": "F-b",
+      "grupo": "ruta_critica",
+      "orden": 13,
+      "responsable": "claude",
+      "prioridad": "P2",
+      "dependencias": [
+        "T-11",
+        "T-09"
+      ],
+      "estado": "pendiente",
+      "notas": "",
+      "creada": "2026-11-07"
+    },
+    {
+      "id": "T-14",
+      "titulo": "Guardar y listar viajes, lectura offline (PWA) e itinerarios sin cuenta en IndexedDB",
+      "frente": "F-b",
+      "grupo": "ruta_critica",
+      "orden": 14,
+      "responsable": "claude",
+      "prioridad": "P2",
+      "dependencias": [
+        "T-13",
+        "T-12",
+        "T-05"
+      ],
+      "estado": "pendiente",
+      "notas": "",
+      "creada": "2026-11-07"
+    },
+    {
+      "id": "T-15",
+      "titulo": "Presupuesto: desglose (6.2) y modo fijo con ajuste automático (paso 8)",
+      "frente": "F-c",
+      "grupo": "ruta_critica",
+      "orden": 15,
+      "responsable": "claude",
+      "prioridad": "P2",
+      "dependencias": [
+        "T-11"
+      ],
+      "estado": "pendiente",
+      "notas": "",
+      "creada": "2026-11-07"
+    },
+    {
+      "id": "T-16",
+      "titulo": "Modo viaje soñado: meta de ahorro, aportes y barra de progreso",
+      "frente": "F-c",
+      "grupo": "ruta_critica",
+      "orden": 16,
+      "responsable": "claude",
+      "prioridad": "P3",
+      "dependencias": [
+        "T-15",
+        "T-14"
+      ],
+      "estado": "pendiente",
+      "notas": "",
+      "creada": "2026-11-07"
+    },
+    {
+      "id": "T-17",
+      "titulo": "Servicio Open-Meteo con Zod, caché de 3 h y respaldo a promedios",
+      "frente": "F-d",
+      "grupo": "ruta_critica",
+      "orden": 17,
+      "responsable": "claude",
+      "prioridad": "P2",
+      "dependencias": [
+        "T-01"
+      ],
+      "estado": "pendiente",
+      "notas": "",
+      "creada": "2026-11-07"
+    },
+    {
+      "id": "T-18",
+      "titulo": "Indicador de clima por día y botón \"Reorganizar por clima\" con vista previa (paso 9)",
+      "frente": "F-d",
+      "grupo": "ruta_critica",
+      "orden": 18,
+      "responsable": "claude",
+      "prioridad": "P2",
+      "dependencias": [
+        "T-17",
+        "T-15",
+        "T-13",
+        "T-25"
+      ],
+      "estado": "pendiente",
+      "notas": "",
+      "creada": "2026-11-07"
+    },
+    {
+      "id": "T-19",
+      "titulo": "Migraciones de checkins e insignias, RPC registrar_checkin y trigger de insignias, con pruebas RLS",
+      "frente": "F-e",
+      "grupo": "ruta_critica",
+      "orden": 19,
+      "responsable": "claude",
+      "prioridad": "P2",
+      "dependencias": [
+        "T-12",
+        "T-08"
+      ],
+      "estado": "pendiente",
+      "notas": "plan.md sección 6.4",
+      "creada": "2026-11-07"
+    },
+    {
+      "id": "T-20",
+      "titulo": "Consentimiento de datos, check-in por geolocalización o manual y botón desactivado sin conexión",
+      "frente": "F-e",
+      "grupo": "ruta_critica",
+      "orden": 20,
+      "responsable": "claude",
+      "prioridad": "P2",
+      "dependencias": [
+        "T-19",
+        "T-26"
+      ],
+      "estado": "pendiente",
+      "notas": "",
+      "creada": "2026-11-07"
+    },
+    {
+      "id": "T-21",
+      "titulo": "Perfil: mapa de municipios desbloqueados, progreso por departamento y ruta, eliminar cuenta y datos",
+      "frente": "F-e",
+      "grupo": "ruta_critica",
+      "orden": 21,
+      "responsable": "claude",
+      "prioridad": "P3",
+      "dependencias": [
+        "T-20",
+        "T-10"
+      ],
+      "estado": "pendiente",
+      "notas": "",
+      "creada": "2026-11-07"
+    },
+    {
+      "id": "T-22",
+      "titulo": "Prueba end-to-end en Playwright del flujo principal",
+      "frente": "F-final",
+      "grupo": "ruta_critica",
+      "orden": 22,
+      "responsable": "claude",
+      "prioridad": "P3",
+      "dependencias": [
+        "T-21",
+        "T-18",
+        "T-16"
+      ],
+      "estado": "pendiente",
+      "notas": "crear viaje -> ajustar presupuesto -> ver clima -> check-in",
+      "creada": "2026-11-07"
+    },
+    {
+      "id": "T-23",
+      "titulo": "Despliegue con Referrer-Policy y verificación de que Supabase no está pausado antes de la sustentación",
+      "frente": "F-final",
+      "grupo": "ruta_critica",
+      "orden": 23,
+      "responsable": "usuario",
+      "prioridad": "P3",
+      "dependencias": [
+        "T-22"
+      ],
+      "estado": "pendiente",
+      "notas": "",
+      "creada": "2026-11-07"
+    },
+    {
+      "id": "T-24",
+      "titulo": "CI (lint y tests) y workflow semanal que consulta Supabase para evitar la pausa",
+      "frente": "F-0",
+      "grupo": "paralelo",
+      "orden": 1,
+      "responsable": "claude",
+      "prioridad": "P2",
+      "dependencias": [
+        "T-01",
+        "T-02"
+      ],
+      "estado": "pendiente",
+      "notas": "",
+      "creada": "2026-11-07"
+    },
+    {
+      "id": "T-25",
+      "titulo": "Script reanudable generar-clima-mensual.ts y seed clima_mensual",
+      "frente": "F-d",
+      "grupo": "paralelo",
+      "orden": 2,
+      "responsable": "claude",
+      "prioridad": "P3",
+      "dependencias": [
+        "T-06"
+      ],
+      "estado": "pendiente",
+      "notas": "Respetar la cuota de Open-Meteo (10.000 llamadas al día)",
+      "creada": "2026-11-07"
+    },
+    {
+      "id": "T-26",
+      "titulo": "Redactar la política de tratamiento de datos (Ley 1581 de 2012)",
+      "frente": "F-0",
+      "grupo": "paralelo",
+      "orden": 3,
+      "responsable": "claude",
+      "prioridad": "P3",
+      "dependencias": [],
+      "estado": "pendiente",
+      "notas": "Borrador de Claude; la aprueba el usuario",
+      "creada": "2026-11-07"
+    },
+    {
+      "id": "T-27",
+      "titulo": "Instancias de evaluación (20-30) e informe: voraz vs. voraz + búsqueda local vs. fuerza bruta",
+      "frente": "F-b",
+      "grupo": "paralelo",
+      "orden": 4,
+      "responsable": "claude",
+      "prioridad": "P2",
+      "dependencias": [
+        "T-11"
+      ],
+      "estado": "pendiente",
+      "notas": "Entregable académico, plan.md sección 6.0",
+      "creada": "2026-11-07"
+    },
+    {
+      "id": "T-28",
+      "titulo": "Accesibilidad, rendimiento en móvil y revisión de textos en español",
+      "frente": "F-final",
+      "grupo": "paralelo",
+      "orden": 5,
+      "responsable": "claude",
+      "prioridad": "P3",
+      "dependencias": [
+        "T-21"
+      ],
+      "estado": "pendiente",
+      "notas": "",
+      "creada": "2026-11-07"
+    },
+    {
+      "id": "T-29",
+      "titulo": "Verificar en una sesión de Claude Code que CLAUDE.md y las skills cargan (/context all y /orquestador-proyecto retomar)",
+      "frente": "F-0",
+      "grupo": "paralelo",
+      "responsable": "usuario",
+      "prioridad": "P2",
+      "notas": "No se pudo verificar en la sesión del 2026-11-07 (se trabajó desde Kiro)",
+      "estado": "pendiente",
+      "dependencias": [],
+      "orden": 6,
+      "creada": "2026-11-07"
+    }
+  ],
+  "riesgos": [
+    {
+      "id": "R-01",
+      "descripcion": "El plan gratuito de Supabase pausa el proyecto tras 7 días de inactividad",
+      "impacto": "alto",
+      "probabilidad": "media",
+      "mitigacion": "Workflow semanal con una consulta real (T-24) y verificación antes de la sustentación (T-23)",
+      "responsable": "claude",
+      "estado": "activo",
+      "creado": "2026-11-07"
+    },
+    {
+      "id": "R-02",
+      "descripcion": "Generar clima_mensual puede superar la cuota gratuita de Open-Meteo",
+      "impacto": "medio",
+      "probabilidad": "media",
+      "mitigacion": "5 años, solo variables necesarias, pausas, resultados parciales y ejecución reanudable (T-25)",
+      "responsable": "claude",
+      "estado": "activo",
+      "creado": "2026-11-07"
+    },
+    {
+      "id": "R-03",
+      "descripcion": "El acceso al PNN Los Nevados y al Nevado del Ruiz cambia con el nivel de alerta del SGC",
+      "impacto": "medio",
+      "probabilidad": "alta",
+      "mitigacion": "Campos requiere_guia y estado_acceso; revisar antes de cada entrega",
+      "responsable": "usuario",
+      "estado": "activo",
+      "creado": "2026-11-07"
+    },
+    {
+      "id": "R-04",
+      "descripcion": "Tarifas y rutas de bus sin fuente verificable o desactualizadas",
+      "impacto": "medio",
+      "probabilidad": "alta",
+      "mitigacion": "Solo tramos directos reales con fecha_actualizacion y fuente; costo_aproximado = true",
+      "responsable": "claude",
+      "estado": "activo",
+      "creado": "2026-11-07"
+    },
+    {
+      "id": "R-05",
+      "descripcion": "Con la pantalla de consentimiento de Google en modo Testing, los evaluadores no pueden iniciar sesión",
+      "impacto": "alto",
+      "probabilidad": "media",
+      "mitigacion": "Publicar la pantalla o agregar a los evaluadores como usuarios de prueba (T-03)",
+      "responsable": "usuario",
+      "estado": "activo",
+      "creado": "2026-11-07"
+    },
+    {
+      "id": "R-06",
+      "descripcion": "El GPS se puede falsear y una PWA no lo detecta",
+      "impacto": "bajo",
+      "probabilidad": "media",
+      "mitigacion": "Limitación aceptada y documentada (plan.md 2.2 y 6.4)",
+      "responsable": "usuario",
+      "estado": "activo",
+      "creado": "2026-11-07"
+    }
+  ],
+  "ideas": [
+    {
+      "id": "I-01",
+      "descripcion": "Versión posterior: municipios del Valle del Cauca con área en el PCC",
+      "origen": "plan.md sección 2.3",
+      "estado": "nueva",
+      "creada": "2026-11-07"
+    },
+    {
+      "id": "I-02",
+      "descripcion": "Itinerarios compartidos o colaborativos",
+      "origen": "plan.md sección 2.2",
+      "estado": "nueva",
+      "creada": "2026-11-07"
+    }
+  ],
+  "historial": [
+    {
+      "fecha": "2026-11-07T00:00:00",
+      "por": "claude",
+      "op": "crear",
+      "id": "",
+      "detalle": "Tablero inicial a partir de plan.md (secciones 2.3, 9 y riesgos de las secciones 6 y 7)"
+    },
+    {
+      "fecha": "2026-11-07T17:43:44",
+      "por": "claude",
+      "op": "tarea_agregar",
+      "id": "T-29",
+      "detalle": "Verificar en una sesión de Claude Code que CLAUDE.md y las skills cargan (/context all y /orquestador-proyecto retomar)"
+    }
+  ]
+}
