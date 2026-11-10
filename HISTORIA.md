@@ -293,3 +293,33 @@
   la fase a). Revisión 16/17. La próxima tarea de la ruta crítica es T-11
   (generador de itinerario, P1).
 - Origen: sesión de Kiro con el usuario
+
+#### Cierre de sesión 2026-11-10
+- Estado al cerrar: fase 0 cerrada; fase (a) con sus 5 tareas hechas y 5/6
+  criterios verificados (falta el criterio RLS, tarea T-30). Tablero rev 17,
+  12/30 tareas. 6 commits locales en `dev` sin publicar (desde el cierre de
+  fase 0): `0ee6a35`, `4aca043` (T-08), `2ecc20f`, `08a7ec3` (T-09 y T-10), más
+  los dos previos de fase 0. Árbol de trabajo limpio.
+- Sin decisiones externas que registrar (confirmado por el usuario).
+- Próxima tarea: **T-11, generador de itinerario** (ruta crítica, P1). Plan
+  acordado con el usuario para la próxima sesión, en `src/domain/itinerario/`:
+  1. `tipos.ts` (entrada `EntradaItinerario`, `ClimaDia`; salida `Itinerario`,
+     `DiaItinerario`, `ItemItinerario`; resultado ok/no-ok).
+  2. `grafo-buses.ts` (Dijkstra con penalización de 30 min por trasbordo;
+     municipios inalcanzables).
+  3. `puntuacion.ts` (puntuación por estilos y comparador de desempate
+     determinista: puntuación desc, costo asc, id asc).
+  4. `generador.ts` (construcción voraz, pasos 1-6 de plan.md 6.1).
+  5. `busqueda-local.ts` (ascenso de colina con intercambio y 2-opt por día,
+     paso 7, determinista).
+  6. `index.ts` (`generarItinerario(entrada)`).
+  - Alcance de T-11: pasos 1-7 más pruebas de casos límite (1 día, origen igual
+    a destino, municipio inalcanzable, traslado largo desde Bogotá, infactible
+    por 1 día + origen externo + regreso). El clima entra como parámetro
+    (`ClimaDia[]`); el servicio real es T-17. NO incluye: paso 8 presupuesto
+    (T-15), paso 9 clima (T-18) ni las 20-30 instancias de evaluación (T-27).
+- Pendientes del usuario (sin bloquear): crear `SUPABASE_URL` y
+  `SUPABASE_ANON_KEY` en GitHub (consulta diaria anti-pausa); revisar antes de
+  la sustentación los costos/tarifas aproximados (R-04) y el acceso al Nevado
+  del Ruiz (R-03). Opcional: publicar los 6 commits con `git push`.
+- Origen: sesión de Kiro con el usuario
