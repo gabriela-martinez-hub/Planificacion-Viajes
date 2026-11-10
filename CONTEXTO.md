@@ -53,6 +53,23 @@ Entorno y herramientas (2026-11-09, ver `HISTORIA.md`):
   (`model: claude-sonnet-5-5` en su frontmatter), sin importar el modelo de la
   sesión (2026-11-09, pedido del usuario).
 
+Datos, textos e infraestructura (2026-11-09, ver `HISTORIA.md`):
+- Variables de entorno: `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` para el
+  cliente; `SUPABASE_SERVICE_ROLE_KEY` y `SUPABASE_PROJECT_REF` sin prefijo
+  `VITE_`, solo para scripts. Valores en `.env` (ignorado por git); plantilla en
+  `.env.example`.
+- Municipios: `supabase/seed/divipola.csv` (DIVIPOLA del DANE, 53 municipios) es
+  la base del seed. Fuentes en `supabase/seed/FUENTES.md`.
+- Ruta del café y ruta de termales: se arman con atracciones del seed, cada una
+  con su fuente, porque no hay lista oficial. "Pueblos patrimonio" sigue con
+  Salamina y Aguadas (`plan.md` sección 7).
+- Textos: `t(clave, parametros)` desde `@/i18n`, con marcadores `{nombre}` y
+  claves verificadas por TypeScript. Los textos nuevos se agregan en
+  `src/i18n/es-CO.ts`.
+- CI en GitHub Actions (lint, formato, pruebas y build) en cada push o pull
+  request a `dev` y `main`. Consulta diaria a Supabase en lugar de semanal
+  (`plan.md` fase 0).
+
 ## Decisiones reemplazadas
 - Internacionalización con react-i18next: reemplazada por el archivo tipado
   `src/i18n/es-CO.ts` (2026-11-07, segunda ronda).
@@ -62,38 +79,55 @@ Entorno y herramientas (2026-11-09, ver `HISTORIA.md`):
   (2026-11-07, cuarta ronda).
 - Cola offline de check-ins: eliminada; el check-in requiere conexión
   (2026-11-07, cuarta ronda).
+- Workflow semanal contra la pausa de Supabase: reemplazado por uno diario
+  (2026-11-09).
+- Rutas del café y de termales "verificadas con fuentes oficiales": se arman con
+  atracciones del seed porque no existe lista oficial (2026-11-09).
 
 ## Estado actual
-- Fase 0 en curso: 1/8 tareas. Tablero: 1/29 tareas hechas (T-01), 6 riesgos
+- Fase 0 en curso: 3/8 tareas hechas (T-01, T-02, T-04) y 2 en curso (T-24,
+  T-26). Tablero: 4/29 tareas hechas (también T-06 de la fase a), 6 riesgos
   activos y 2 ideas.
-- Proyecto base listo en la raíz (T-01): `npm run build`, `npm run lint` y
-  `npm test` pasan, y `npm run dev` arranca. La pantalla inicial toma sus textos
-  de `src/i18n/es-CO.ts` (versión mínima). Carpetas de `plan.md` sección 8 creadas
-  y vacías (`.gitkeep`).
-- Configuración de Claude Code (`CLAUDE.md` y las dos skills) integrada en `dev`
-  con el commit `68dff1d` (PR #1). Falta verificar que carga en una sesión de
-  Claude Code (T-29).
-- Trabajo en la rama `dev`.
+- Criterios de la fase 0 cumplidos: la app arranca, los textos de la pantalla
+  inicial salen de `src/i18n/es-CO.ts`, `.env.example` no tiene la clave
+  secreta y la CI corre lint y tests (en verde en GitHub Actions). Falta: sesión
+  con Google (T-03, T-05).
+- Supabase creado (T-02). Claves en `.env` local. `supabase/migrations/` sigue
+  vacío.
+- CI y consulta diaria a Supabase en `.github/workflows/` (T-24). Push de `dev`
+  hecho el 2026-11-09 y CI en verde. La consulta
+  diaria se salta hasta que existan la variable `SUPABASE_URL` y el secreto
+  `SUPABASE_ANON_KEY` en GitHub.
+- Borrador de la política de datos en `docs/politica-tratamiento-datos.md`
+  (T-26), con campos entre corchetes por completar.
+- Trabajo en la rama `dev`, al día con `origin/dev`.
+- Configuración de Claude Code integrada en `dev` (`68dff1d`); falta verificar
+  que carga en una sesión de Claude Code (T-29).
 - Entorno local: el Node global es v14. Hay que activar Node 22 con
   `nvm use 22` en una terminal con permisos de administrador, o anteponer
-  `C:\Users\User\AppData\Roaming\nvm\v22.16.0` al PATH. Python 3.12 instalado en
-  `%LOCALAPPDATA%\Programs\Python\Python312` (en terminales nuevas queda en el
-  PATH como `python`; el comando `python3` de la skill no existe en Windows).
+  `C:\Users\User\AppData\Roaming\nvm\v22.16.0` al PATH. Python 3.12 en
+  `%LOCALAPPDATA%\Programs\Python\Python312`. En PowerShell 5.1,
+  `tablero.py cambio` recibe cortado un JSON con espacios: pasarlo por una
+  variable de entorno.
 
 ## Próximos pasos
-1. T-02 (usuario): crear el proyecto en Supabase y anotar la URL, la clave
-   pública (anon) y la clave secreta (service_role).
-2. T-03 (usuario): cliente OAuth en Google Cloud Console, proveedor Google y
-   Redirect URLs en Supabase, usuarios de prueba.
-3. T-04: archivo `es-CO.ts` completo y función `t(clave)`.
-4. T-06: verificar el conteo de municipios con la DIVIPOLA (puede ir en paralelo).
-5. T-05: inicio y cierre de sesión con Google, con `.env.example` sin secretos
-   (cuando T-03 esté lista).
-6. T-24: CI con lint y tests (necesita T-02 para el workflow semanal).
+1. Usuario: revocar el token de GitHub que estuvo en la URL del remoto.
+2. T-03 (usuario): cliente OAuth en Google Cloud Console con la URI
+   `https://<reference-id>.supabase.co/auth/v1/callback`, proveedor Google y
+   Redirect URLs en Supabase, usuarios de prueba (incluidos los evaluadores).
+3. T-05: inicio y cierre de sesión con Google (cuando T-03 esté lista).
+4. T-07: migraciones del catálogo con RLS de solo lectura. Después, el usuario
+   crea `SUPABASE_URL` y `SUPABASE_ANON_KEY` en GitHub para activar la consulta
+   diaria.
+5. T-26 (usuario): completar los campos de la política y aprobarla.
+6. T-08: seed del catálogo a partir de `divipola.csv`.
 7. T-29 (usuario): abrir Claude Code y ejecutar `/context all` y
    `/orquestador-proyecto retomar`.
 
 ## Pendientes de decisión del usuario
-- Si se cambia `python3` por `python` en la skill para Windows, o se deja como
-  está y se invoca a mano.
+- Datos para la política de tratamiento de datos: responsables, universidad y
+  programa, correo de contacto, región del proyecto en Supabase, proveedor de
+  despliegue, qué pasa con los datos al terminar el curso y fecha de vigencia.
+- Si se cambia `python3` por `python` en la skill para Windows y se arregla el
+  paso del JSON en PowerShell, o se sigue invocando a mano.
 - Sobre el diseño del producto no hay preguntas abiertas (`plan.md`, sección 10).

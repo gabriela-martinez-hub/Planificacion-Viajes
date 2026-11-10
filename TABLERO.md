@@ -2,14 +2,14 @@
 
 > Vista generada desde `control/tablero.json` con `python3 .claude/skills/orquestador-proyecto/scripts/tablero.py render`. No se edita a mano.
 
-Revisión 2, actualizado 2026-11-09T19:28:01. Avance: 1/29 tareas (3 %).
+Revisión 8, actualizado 2026-11-09T20:27:06. Avance: 4/29 tareas (14 %).
 
 ## Avance por frente
 
 | Frente | Hechas | Total |
 |---|---|---|
-| Fase 0: Preparación | 1 | 8 |
-| Fase (a): Catálogo + mapa | 0 | 5 |
+| Fase 0: Preparación | 3 | 8 |
+| Fase (a): Catálogo + mapa | 1 | 5 |
 | Fase (b): Planificador de itinerarios | 0 | 5 |
 | Fase (c): Presupuesto | 0 | 2 |
 | Fase (d): Clima | 0 | 3 |
@@ -18,18 +18,18 @@ Revisión 2, actualizado 2026-11-09T19:28:01. Avance: 1/29 tareas (3 %).
 
 ## Próxima tarea
 
-**T-02** Crear el proyecto en Supabase y .env.example sin secretos (usuario)
+**T-03** Configurar OAuth de Google (Google Cloud Console + proveedor y Redirect URLs en Supabase; usuarios de prueba) (usuario)
 
 ## Ruta crítica
 
 | # | Id | Tarea | Frente | Resp. | Prio. | Estado | Depende de |
 |---|---|---|---|---|---|---|---|
 | 1 | T-01 | ~~Crear proyecto Vite + React + TS con Tailwind, ESLint/Prettier y Vitest~~ | F-0 | claude | P1 | hecha | - |
-| 2 | T-02 | Crear el proyecto en Supabase y .env.example sin secretos | F-0 | usuario | P1 | pendiente | - |
+| 2 | T-02 | ~~Crear el proyecto en Supabase y .env.example sin secretos~~ | F-0 | usuario | P1 | hecha | - |
 | 3 | T-03 | Configurar OAuth de Google (Google Cloud Console + proveedor y Redirect URLs en Supabase; usuarios de prueba) | F-0 | usuario | P1 | pendiente | T-02 |
-| 4 | T-04 | Crear src/i18n/es-CO.ts y la función t(clave) | F-0 | claude | P2 | pendiente | T-01 |
+| 4 | T-04 | ~~Crear src/i18n/es-CO.ts y la función t(clave)~~ | F-0 | claude | P2 | hecha | T-01 |
 | 5 | T-05 | Inicio y cierre de sesión con Google en la app | F-0 | claude | P2 | pendiente | T-01, T-03 |
-| 6 | T-06 | Verificar el conteo de municipios con la DIVIPOLA del DANE y verificar rutas temáticas con fuentes oficiales | F-a | claude | P1 | pendiente | - |
+| 6 | T-06 | ~~Verificar el conteo de municipios con la DIVIPOLA del DANE y verificar rutas temáticas con fuentes oficiales~~ | F-a | claude | P1 | hecha | - |
 | 7 | T-07 | Migraciones SQL del catálogo con RLS de solo lectura | F-a | claude | P1 | pendiente | T-02 |
 | 8 | T-08 | Seed del catálogo (municipios, 40-60 atracciones, casco urbano, rutas de bus, tarifas, rutas temáticas) con validación Zod y scripts/cargar-seed.ts | F-a | claude | P1 | pendiente | T-06, T-07 |
 | 9 | T-09 | Lista filtrable de municipios y atracciones y ficha de atracción | F-a | claude | P2 | pendiente | T-04, T-08 |
@@ -52,9 +52,9 @@ Revisión 2, actualizado 2026-11-09T19:28:01. Avance: 1/29 tareas (3 %).
 
 | # | Id | Tarea | Frente | Resp. | Prio. | Estado | Depende de |
 |---|---|---|---|---|---|---|---|
-| 1 | T-24 | CI (lint y tests) y workflow semanal que consulta Supabase para evitar la pausa | F-0 | claude | P2 | pendiente | T-01, T-02 |
+| 1 | T-24 | CI (lint y tests) y workflow diario que consulta Supabase para evitar la pausa | F-0 | claude | P2 | en_curso | T-01, T-02 |
 | 2 | T-25 | Script reanudable generar-clima-mensual.ts y seed clima_mensual | F-d | claude | P3 | pendiente | T-06 |
-| 3 | T-26 | Redactar la política de tratamiento de datos (Ley 1581 de 2012) | F-0 | claude | P3 | pendiente | - |
+| 3 | T-26 | Redactar la política de tratamiento de datos (Ley 1581 de 2012) | F-0 | claude | P3 | en_curso | - |
 | 4 | T-27 | Instancias de evaluación (20-30) e informe: voraz vs. voraz + búsqueda local vs. fuerza bruta | F-b | claude | P2 | pendiente | T-11 |
 | 5 | T-28 | Accesibilidad, rendimiento en móvil y revisión de textos en español | F-final | claude | P3 | pendiente | T-21 |
 | 6 | T-29 | Verificar en una sesión de Claude Code que CLAUDE.md y las skills cargan (/context all y /orquestador-proyecto retomar) | F-0 | usuario | P2 | pendiente | - |
@@ -63,7 +63,7 @@ Revisión 2, actualizado 2026-11-09T19:28:01. Avance: 1/29 tareas (3 %).
 
 | Id | Riesgo | Impacto | Prob. | Mitigación | Resp. | Estado |
 |---|---|---|---|---|---|---|
-| R-01 | El plan gratuito de Supabase pausa el proyecto tras 7 días de inactividad | alto | media | Workflow semanal con una consulta real (T-24) y verificación antes de la sustentación (T-23) | claude | activo |
+| R-01 | El plan gratuito de Supabase pausa el proyecto tras 7 días de inactividad | alto | media | Workflow diario con una consulta real (T-24) y verificación antes de la sustentación (T-23) | claude | activo |
 | R-02 | Generar clima_mensual puede superar la cuota gratuita de Open-Meteo | medio | media | 5 años, solo variables necesarias, pausas, resultados parciales y ejecución reanudable (T-25) | claude | activo |
 | R-03 | El acceso al PNN Los Nevados y al Nevado del Ruiz cambia con el nivel de alerta del SGC | medio | alta | Campos requiere_guia y estado_acceso; revisar antes de cada entrega | usuario | activo |
 | R-04 | Tarifas y rutas de bus sin fuente verificable o desactualizadas | medio | alta | Solo tramos directos reales con fecha_actualizacion y fuente; costo_aproximado = true | claude | activo |
@@ -85,6 +85,18 @@ Ninguna.
 
 | Fecha | Por | Operación | Id | Detalle |
 |---|---|---|---|---|
-| 2026-11-09T19:28:01 | claude | campo | T-01 | estado: 'pendiente' -> 'hecha' |
-| 2026-11-07T17:43:44 | claude | tarea_agregar | T-29 | Verificar en una sesión de Claude Code que CLAUDE.md y las skills cargan (/context all y /orquestador-proyecto retomar) |
-| 2026-11-07T00:00:00 | claude | crear |  | Tablero inicial a partir de plan.md (secciones 2.3, 9 y riesgos de las secciones 6 y 7) |
+| 2026-11-09T20:27:06 | claude | nota | T-24 | CI en verde en GitHub Actions (confirmado por el usuario el 2026-11-09). Solo falta activar la consulta diaria tras T-07 |
+| 2026-11-09T20:24:28 | claude | nota | T-24 | Push hecho el 2026-11-09; falta confirmar que la CI salió en verde en GitHub Actions. Frecuencia diaria aprobada por el usuario y aplicada en plan.md |
+| 2026-11-09T20:24:28 | claude | campo | R-01 | mitigacion: 'Workflow semanal con una consulta real (T-24) y verificación antes de la sustentación (T-23)' -> 'Workflow diario con una consulta real (T-24) y verificación antes de la sustentación (T-23)' |
+| 2026-11-09T20:24:28 | claude | campo | T-24 | titulo: 'CI (lint y tests) y workflow semanal que consulta Supabase para evitar la pausa' -> 'CI (lint y tests) y workflow diario que consulta Supabase para evitar la pausa' |
+| 2026-11-09T20:15:58 | claude | nota | T-26 | Borrador en docs/politica-tratamiento-datos.md. Falta que el usuario complete los campos entre corchetes y lo apruebe |
+| 2026-11-09T20:15:58 | claude | campo | T-26 | estado: 'pendiente' -> 'en_curso' |
+| 2026-11-09T20:15:58 | claude | nota | T-24 | ci.yml y supabase-actividad.yml creados (diario, no semanal: Supabase pide actividad varios dias por semana). Falta: push y ver CI en verde; tras T-07 el usuario crea la variable SUPABASE_URL y el secreto SUPABASE_ANON_KEY en GitHub |
+| 2026-11-09T20:15:58 | claude | campo | T-24 | estado: 'pendiente' -> 'en_curso' |
+| 2026-11-09T20:09:06 | claude | nota | T-04 | Commit 977c4c9: t(clave, parametros) en src/i18n/index.ts con claves y marcadores verificados por TypeScript; esClave() para clave_texto de la base |
+| 2026-11-09T20:09:06 | claude | campo | T-04 | estado: 'pendiente' -> 'hecha' |
+| 2026-11-09T20:07:15 | claude | nota | T-08 | Rutas del cafe y termales con atracciones del seed, cada una con su fuente (decision 2026-11-09) |
+| 2026-11-09T20:07:15 | claude | nota | T-06 | DIVIPOLA confirma 27/12/14 (cc24035). Pueblos patrimonio: Salamina y Aguadas. Ruta del cafe y termales sin lista oficial: el usuario decidio armarlas con atracciones del seed (supabase/seed/FUENTES.md) |
+| 2026-11-09T20:07:15 | claude | campo | T-06 | estado: 'pendiente' -> 'hecha' |
+| 2026-11-09T19:50:38 | claude | nota | T-02 | Proyecto creado por el usuario; .env.example en c337e06 y .env local ignorado por git |
+| 2026-11-09T19:50:38 | claude | campo | T-02 | estado: 'pendiente' -> 'hecha' |

@@ -47,3 +47,30 @@
 - Criterios de aceptación: la fase 0 sigue abierta (1/8 tareas). Cumplido "La app arranca". Avance parcial en "Los textos de la pantalla inicial salen de src/i18n/es-CO.ts" (T-04 lo completa). Pendientes: inicio y cierre de sesión con Google (T-02, T-03, T-05), CI (T-24) y `.env.example` sin la clave secreta (T-02).
 - Cambios del tablero: T-01 pasa a hecha. Sin tareas, riesgos, ideas ni prioridades nuevas.
 - Origen: sesión de Kiro con el usuario
+
+### 2026-11-09 — Fase 0: Supabase, textos, CI y política de datos; T-06
+- Cierre anterior: c96a82c
+- Commits: e072dc5, c337e06, cc24035, 6a768cf, 977c4c9, c3b83a4, 87b272f, a23f61d, cb0aecd
+- Qué se hizo:
+  - T-02 terminada: el usuario creó el proyecto en Supabase. `.env.example` sin valores (c337e06) y `.env` local ignorado por git, con `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` (sin prefijo `VITE_`) y `SUPABASE_PROJECT_REF`.
+  - T-06 terminada: `supabase/seed/divipola.csv` con los 53 municipios (código DANE y coordenadas de la cabecera) y `supabase/seed/FUENTES.md` con las fuentes.
+  - T-04 terminada: `src/i18n/es-CO.ts` con los textos de todas las fases y `t(clave, parametros)` en `src/i18n/index.ts`. TypeScript rechaza claves inexistentes y parámetros faltantes o sobrantes; `esClave()` valida las claves que llegan de la base. La pantalla inicial usa `t()`.
+  - T-24 en curso: `.github/workflows/ci.yml` (lint, formato, pruebas y build con Node 22) y `.github/workflows/supabase-actividad.yml` (consulta diaria a `departamentos` con la clave pública; se salta mientras no exista la variable `SUPABASE_URL`). Push de `dev` hecho por el usuario.
+  - T-26 en curso: borrador de `docs/politica-tratamiento-datos.md` (Ley 1581 de 2012 y Decreto 1377 de 2013).
+  - `plan.md` actualizado en la sección 7 (rutas temáticas), la sección 8 y la fase 0 (consulta diaria).
+- Decisiones:
+  - Ruta del café: se arma con atracciones cafeteras del seed, no con los municipios del PCC, porque no hay lista oficial y los 40 municipios del PCC se cruzan con la insignia "Eje Cafetero" (pedido del usuario, a propuesta de Claude).
+  - Ruta de termales: se arma con las atracciones termales del seed, cada una con su fuente (pedido del usuario).
+  - Consulta a Supabase diaria en lugar de semanal: la documentación de Supabase pide algunas consultas al día durante la semana (propuesta de Claude, aprobada por el usuario).
+  - La clave `service_role` no lleva prefijo `VITE_` para que no entre al bundle (`plan.md` 5.3).
+- Hallazgos:
+  - DIVIPOLA (datos.gov.co, conjunto `gdxc-w37w`, actualizado el 2025-01-24): Caldas 27, Quindío 12, Risaralda 14. Coincide con el plan.
+  - La Red Turística de Pueblos Patrimonio tiene 18 pueblos; de los tres departamentos solo Salamina y Aguadas.
+  - El sitio oficial del PCC dice 51 municipios, pero publica 50 mapas (40 en los tres departamentos y 10 en el Valle).
+  - El remoto `origin` tenía un token personal de GitHub en la URL; el usuario lo quitó. Falta confirmar que revocó el token.
+  - En PowerShell 5.1, `tablero.py cambio '<json>'` recibe el JSON cortado si tiene espacios; en la sesión se pasó por una variable de entorno.
+  - El repositorio es privado y no hay `gh` instalado: no se pudo ver desde la sesión si la CI pasó en GitHub.
+  - El bundle JS pasó de 143 kB a 147,66 kB por los textos.
+- Criterios de aceptación: la fase 0 sigue abierta (3/8 tareas hechas y 2 en curso). Cumplidos: "La app arranca", "Los textos de la pantalla inicial salen de src/i18n/es-CO.ts" (T-04, prueba en `src/App.test.tsx`) y ".env.example no contiene la clave secreta" (c337e06). Pendientes: inicio y cierre de sesión con Google (T-03, T-05). "CI corre lint y tests" quedó verificado: el usuario confirmó la ejecución en verde en GitHub Actions.
+- Cambios del tablero: T-02, T-04 y T-06 pasan a hechas; T-24 y T-26 pasan a en curso; T-24 cambia "semanal" por "diario" en su título y R-01 en su mitigación; nota en T-08 sobre las rutas del café y termales. Sin tareas, riesgos, ideas ni prioridades nuevas.
+- Origen: sesión de Kiro con el usuario

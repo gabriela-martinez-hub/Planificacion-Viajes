@@ -1,7 +1,7 @@
 {
   "proyecto": "Planificador de viajes del Eje Cafetero",
-  "revision": 2,
-  "actualizado": "2026-11-09T19:28:01",
+  "revision": 8,
+  "actualizado": "2026-11-09T20:27:06",
   "responsables": [
     "usuario",
     "claude",
@@ -115,9 +115,10 @@
       "responsable": "usuario",
       "prioridad": "P1",
       "dependencias": [],
-      "estado": "pendiente",
-      "notas": "Requiere la cuenta del usuario en Supabase",
-      "creada": "2026-11-07"
+      "estado": "hecha",
+      "notas": "Requiere la cuenta del usuario en Supabase\n[2026-11-09 claude] Proyecto creado por el usuario; .env.example en c337e06 y .env local ignorado por git",
+      "creada": "2026-11-07",
+      "terminada": "2026-11-09"
     },
     {
       "id": "T-03",
@@ -145,9 +146,10 @@
       "dependencias": [
         "T-01"
       ],
-      "estado": "pendiente",
-      "notas": "",
-      "creada": "2026-11-07"
+      "estado": "hecha",
+      "notas": "[2026-11-09 claude] Commit 977c4c9: t(clave, parametros) en src/i18n/index.ts con claves y marcadores verificados por TypeScript; esClave() para clave_texto de la base",
+      "creada": "2026-11-07",
+      "terminada": "2026-11-09"
     },
     {
       "id": "T-05",
@@ -174,9 +176,10 @@
       "responsable": "claude",
       "prioridad": "P1",
       "dependencias": [],
-      "estado": "pendiente",
-      "notas": "Referencia esperada: Caldas 27, Quindío 12, Risaralda 14",
-      "creada": "2026-11-07"
+      "estado": "hecha",
+      "notas": "Referencia esperada: Caldas 27, Quindío 12, Risaralda 14\n[2026-11-09 claude] DIVIPOLA confirma 27/12/14 (cc24035). Pueblos patrimonio: Salamina y Aguadas. Ruta del cafe y termales sin lista oficial: el usuario decidio armarlas con atracciones del seed (supabase/seed/FUENTES.md)",
+      "creada": "2026-11-07",
+      "terminada": "2026-11-09"
     },
     {
       "id": "T-07",
@@ -206,7 +209,7 @@
         "T-07"
       ],
       "estado": "pendiente",
-      "notas": "plan.md sección 7. Cada costo con fecha_actualizacion y fuente",
+      "notas": "plan.md sección 7. Cada costo con fecha_actualizacion y fuente\n[2026-11-09 claude] Rutas del cafe y termales con atracciones del seed, cada una con su fuente (decision 2026-11-09)",
       "creada": "2026-11-07"
     },
     {
@@ -449,7 +452,7 @@
     },
     {
       "id": "T-24",
-      "titulo": "CI (lint y tests) y workflow semanal que consulta Supabase para evitar la pausa",
+      "titulo": "CI (lint y tests) y workflow diario que consulta Supabase para evitar la pausa",
       "frente": "F-0",
       "grupo": "paralelo",
       "orden": 1,
@@ -459,8 +462,8 @@
         "T-01",
         "T-02"
       ],
-      "estado": "pendiente",
-      "notas": "",
+      "estado": "en_curso",
+      "notas": "[2026-11-09 claude] ci.yml y supabase-actividad.yml creados (diario, no semanal: Supabase pide actividad varios dias por semana). Falta: push y ver CI en verde; tras T-07 el usuario crea la variable SUPABASE_URL y el secreto SUPABASE_ANON_KEY en GitHub\n[2026-11-09 claude] Push hecho el 2026-11-09; falta confirmar que la CI salió en verde en GitHub Actions. Frecuencia diaria aprobada por el usuario y aplicada en plan.md\n[2026-11-09 claude] CI en verde en GitHub Actions (confirmado por el usuario el 2026-11-09). Solo falta activar la consulta diaria tras T-07",
       "creada": "2026-11-07"
     },
     {
@@ -487,8 +490,8 @@
       "responsable": "claude",
       "prioridad": "P3",
       "dependencias": [],
-      "estado": "pendiente",
-      "notas": "Borrador de Claude; la aprueba el usuario",
+      "estado": "en_curso",
+      "notas": "Borrador de Claude; la aprueba el usuario\n[2026-11-09 claude] Borrador en docs/politica-tratamiento-datos.md. Falta que el usuario complete los campos entre corchetes y lo apruebe",
       "creada": "2026-11-07"
     },
     {
@@ -541,7 +544,7 @@
       "descripcion": "El plan gratuito de Supabase pausa el proyecto tras 7 días de inactividad",
       "impacto": "alto",
       "probabilidad": "media",
-      "mitigacion": "Workflow semanal con una consulta real (T-24) y verificación antes de la sustentación (T-23)",
+      "mitigacion": "Workflow diario con una consulta real (T-24) y verificación antes de la sustentación (T-23)",
       "responsable": "claude",
       "estado": "activo",
       "creado": "2026-11-07"
@@ -634,6 +637,111 @@
       "op": "campo",
       "id": "T-01",
       "detalle": "estado: 'pendiente' -> 'hecha'"
+    },
+    {
+      "fecha": "2026-11-09T19:50:38",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-02",
+      "detalle": "estado: 'pendiente' -> 'hecha'"
+    },
+    {
+      "fecha": "2026-11-09T19:50:38",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-02",
+      "detalle": "Proyecto creado por el usuario; .env.example en c337e06 y .env local ignorado por git"
+    },
+    {
+      "fecha": "2026-11-09T20:07:15",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-06",
+      "detalle": "estado: 'pendiente' -> 'hecha'"
+    },
+    {
+      "fecha": "2026-11-09T20:07:15",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-06",
+      "detalle": "DIVIPOLA confirma 27/12/14 (cc24035). Pueblos patrimonio: Salamina y Aguadas. Ruta del cafe y termales sin lista oficial: el usuario decidio armarlas con atracciones del seed (supabase/seed/FUENTES.md)"
+    },
+    {
+      "fecha": "2026-11-09T20:07:15",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-08",
+      "detalle": "Rutas del cafe y termales con atracciones del seed, cada una con su fuente (decision 2026-11-09)"
+    },
+    {
+      "fecha": "2026-11-09T20:09:06",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-04",
+      "detalle": "estado: 'pendiente' -> 'hecha'"
+    },
+    {
+      "fecha": "2026-11-09T20:09:06",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-04",
+      "detalle": "Commit 977c4c9: t(clave, parametros) en src/i18n/index.ts con claves y marcadores verificados por TypeScript; esClave() para clave_texto de la base"
+    },
+    {
+      "fecha": "2026-11-09T20:15:58",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-24",
+      "detalle": "estado: 'pendiente' -> 'en_curso'"
+    },
+    {
+      "fecha": "2026-11-09T20:15:58",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-24",
+      "detalle": "ci.yml y supabase-actividad.yml creados (diario, no semanal: Supabase pide actividad varios dias por semana). Falta: push y ver CI en verde; tras T-07 el usuario crea la variable SUPABASE_URL y el secreto SUPABASE_ANON_KEY en GitHub"
+    },
+    {
+      "fecha": "2026-11-09T20:15:58",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-26",
+      "detalle": "estado: 'pendiente' -> 'en_curso'"
+    },
+    {
+      "fecha": "2026-11-09T20:15:58",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-26",
+      "detalle": "Borrador en docs/politica-tratamiento-datos.md. Falta que el usuario complete los campos entre corchetes y lo apruebe"
+    },
+    {
+      "fecha": "2026-11-09T20:24:28",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-24",
+      "detalle": "titulo: 'CI (lint y tests) y workflow semanal que consulta Supabase para evitar la pausa' -> 'CI (lint y tests) y workflow diario que consulta Supabase para evitar la pausa'"
+    },
+    {
+      "fecha": "2026-11-09T20:24:28",
+      "por": "claude",
+      "op": "campo",
+      "id": "R-01",
+      "detalle": "mitigacion: 'Workflow semanal con una consulta real (T-24) y verificación antes de la sustentación (T-23)' -> 'Workflow diario con una consulta real (T-24) y verificación antes de la sustentación (T-23)'"
+    },
+    {
+      "fecha": "2026-11-09T20:24:28",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-24",
+      "detalle": "Push hecho el 2026-11-09; falta confirmar que la CI salió en verde en GitHub Actions. Frecuencia diaria aprobada por el usuario y aplicada en plan.md"
+    },
+    {
+      "fecha": "2026-11-09T20:27:06",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-24",
+      "detalle": "CI en verde en GitHub Actions (confirmado por el usuario el 2026-11-09). Solo falta activar la consulta diaria tras T-07"
     }
   ]
 }
