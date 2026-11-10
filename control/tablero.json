@@ -1,7 +1,7 @@
 {
   "proyecto": "Planificador de viajes del Eje Cafetero",
-  "revision": 8,
-  "actualizado": "2026-11-09T20:27:06",
+  "revision": 9,
+  "actualizado": "2026-11-09T20:43:01",
   "responsables": [
     "usuario",
     "claude",
@@ -490,9 +490,10 @@
       "responsable": "claude",
       "prioridad": "P3",
       "dependencias": [],
-      "estado": "en_curso",
-      "notas": "Borrador de Claude; la aprueba el usuario\n[2026-11-09 claude] Borrador en docs/politica-tratamiento-datos.md. Falta que el usuario complete los campos entre corchetes y lo apruebe",
-      "creada": "2026-11-07"
+      "estado": "hecha",
+      "notas": "Borrador de Claude; la aprueba el usuario\n[2026-11-09 claude] Borrador en docs/politica-tratamiento-datos.md. Falta que el usuario complete los campos entre corchetes y lo apruebe\n[2026-11-09 claude] Version academica aprobada por el usuario el 2026-11-09 (sin usuarios publicos; solo equipo y evaluadores). Si se abre al publico se reemplaza por una politica completa segun la Ley 1581",
+      "creada": "2026-11-07",
+      "terminada": "2026-11-09"
     },
     {
       "id": "T-27",
@@ -531,7 +532,7 @@
       "grupo": "paralelo",
       "responsable": "usuario",
       "prioridad": "P2",
-      "notas": "No se pudo verificar en la sesión del 2026-11-07 (se trabajó desde Kiro)",
+      "notas": "No se pudo verificar en la sesión del 2026-11-07 (se trabajó desde Kiro)\n[2026-11-09 claude] El usuario decidio dejarla para mas adelante (2026-11-09)",
       "estado": "pendiente",
       "dependencias": [],
       "orden": 6,
@@ -742,6 +743,27 @@
       "op": "nota",
       "id": "T-24",
       "detalle": "CI en verde en GitHub Actions (confirmado por el usuario el 2026-11-09). Solo falta activar la consulta diaria tras T-07"
+    },
+    {
+      "fecha": "2026-11-09T20:43:01",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-26",
+      "detalle": "estado: 'en_curso' -> 'hecha'"
+    },
+    {
+      "fecha": "2026-11-09T20:43:01",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-26",
+      "detalle": "Version academica aprobada por el usuario el 2026-11-09 (sin usuarios publicos; solo equipo y evaluadores). Si se abre al publico se reemplaza por una politica completa segun la Ley 1581"
+    },
+    {
+      "fecha": "2026-11-09T20:43:01",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-29",
+      "detalle": "El usuario decidio dejarla para mas adelante (2026-11-09)"
     }
   ]
 }
