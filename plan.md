@@ -445,8 +445,10 @@ Las ediciones manuales del usuario marcan el ítem como `fijado`. Regenerar resp
 - Tarifas de alojamiento y comida: valor regional por nivel, más valores por municipio
   en los destinos donde difieren (p. ej. Salento, Filandia).
 - Cada costo lleva `costo_aproximado = true`, `fecha_actualizacion` y `fuente`.
-- Rutas temáticas (ruta del café, termales y pueblos patrimonio con Salamina y Aguadas)
-  verificadas con fuentes oficiales.
+- Rutas temáticas: pueblos patrimonio (Salamina y Aguadas, verificada con la Red
+  Turística de Pueblos Patrimonio); ruta del café y ruta de termales armadas con
+  atracciones del seed, cada una con su fuente (decisión del 9 de noviembre de 2026:
+  no hay una lista oficial para estas dos, ver `supabase/seed/FUENTES.md`).
 - Formato: archivos JSON/CSV en `supabase/seed/` + script de carga, validados con Zod.
 
 ---
