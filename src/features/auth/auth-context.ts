@@ -8,8 +8,9 @@ export interface EstadoAuth {
   usuario: User | null;
   /** true mientras se resuelve la sesión inicial. */
   cargando: boolean;
-  /** Inicia sesión con Google (redirige a Google y de vuelta a la app). */
-  iniciarSesionGoogle: () => Promise<void>;
+  /** Inicia sesión con Google (redirige a Google y de vuelta a la app).
+   *  `destino` es la ruta a la que volver (p. ej. '/planificar'). */
+  iniciarSesionGoogle: (destino?: string) => Promise<void>;
   /** Cierra la sesión actual. */
   cerrarSesion: () => Promise<void>;
 }

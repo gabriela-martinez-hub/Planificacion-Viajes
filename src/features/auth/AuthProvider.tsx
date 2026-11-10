@@ -43,10 +43,12 @@ export function AuthProvider({ children }: Props) {
       session,
       usuario: session?.user ?? null,
       cargando,
-      async iniciarSesionGoogle() {
+      async iniciarSesionGoogle(destino?: string) {
         await supabase.auth.signInWithOAuth({
           provider: 'google',
-          options: { redirectTo: window.location.origin },
+          options: {
+            redirectTo: `${window.location.origin}${destino ?? ''}`,
+          },
         });
       },
       async cerrarSesion() {

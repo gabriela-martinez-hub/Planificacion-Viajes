@@ -3,6 +3,7 @@ import { t } from '@/i18n';
 import { BotonAuth } from '@/features/auth/BotonAuth';
 import { ExplorarCatalogo } from '@/features/catalogo/ExplorarCatalogo';
 import { Planificador } from '@/features/planificador/Planificador';
+import { MisViajes } from '@/features/planificador/MisViajes';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         >
           <EnlaceNav to="/explorar">{t('nav.explorar')}</EnlaceNav>
           <EnlaceNav to="/planificar">{t('nav.planificar')}</EnlaceNav>
+          <EnlaceNav to="/mis-viajes">{t('nav.misViajes')}</EnlaceNav>
         </nav>
       </header>
       <main>
@@ -26,6 +28,7 @@ function App() {
           <Route path="/" element={<Navigate to="/explorar" replace />} />
           <Route path="/explorar" element={<ExplorarCatalogo />} />
           <Route path="/planificar" element={<Planificador />} />
+          <Route path="/mis-viajes" element={<MisViajes />} />
           <Route path="*" element={<Navigate to="/explorar" replace />} />
         </Routes>
       </main>

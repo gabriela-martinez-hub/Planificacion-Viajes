@@ -11,6 +11,7 @@ import { id, estilo } from '../catalogo/esquemas';
 
 export const NIVELES = ['economico', 'medio', 'alto'] as const;
 export const nivel = z.enum(NIVELES);
+export type Nivel = (typeof NIVELES)[number];
 
 export const modoPresupuesto = z.enum(['fijo', 'sonado']);
 export const estadoViaje = z.enum([

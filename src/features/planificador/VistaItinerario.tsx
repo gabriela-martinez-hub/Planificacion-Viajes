@@ -16,6 +16,8 @@ interface Props {
   nombreMunicipio: (id: string) => string;
   /** true si el usuario reordenó los destinos (orden quizá no óptimo). */
   ordenManual: boolean;
+  /** true para mostrar el itinerario sin controles de edición (viaje guardado). */
+  soloLectura?: boolean;
   alSubir: (dia: number, orden: number) => void;
   alBajar: (dia: number, orden: number) => void;
   alFijar: (dia: number, orden: number) => void;
@@ -26,6 +28,7 @@ export function VistaItinerario({
   itinerario,
   nombreMunicipio,
   ordenManual,
+  soloLectura = false,
   alSubir,
   alBajar,
   alFijar,
@@ -46,7 +49,7 @@ export function VistaItinerario({
         </ul>
       )}
 
-      {destinos.length > 1 && (
+      {!soloLectura && destinos.length > 1 && (
         <OrdenDestinos
           destinos={destinos}
           nombreMunicipio={nombreMunicipio}
@@ -60,6 +63,7 @@ export function VistaItinerario({
           key={dia.dia}
           dia={dia}
           nombreMunicipio={nombreMunicipio}
+          soloLectura={soloLectura}
           alSubir={alSubir}
           alBajar={alBajar}
           alFijar={alFijar}
@@ -143,6 +147,7 @@ function OrdenDestinos({
 interface DiaProps {
   dia: DiaItinerario;
   nombreMunicipio: (id: string) => string;
+  soloLectura: boolean;
   alSubir: (dia: number, orden: number) => void;
   alBajar: (dia: number, orden: number) => void;
   alFijar: (dia: number, orden: number) => void;
@@ -151,6 +156,7 @@ interface DiaProps {
 function DiaCard({
   dia,
   nombreMunicipio,
+  soloLectura,
   alSubir,
   alBajar,
   alFijar,
@@ -216,7 +222,7 @@ function DiaCard({
                 )}
               </span>
 
-              {esTraslado ? (
+              {soloLectura ? null : esTraslado ? (
                 // El traslado es fijo: no se mueve ni se edita suelto. Su
                 // destino se cambia reordenando los destinos arriba.
                 <span

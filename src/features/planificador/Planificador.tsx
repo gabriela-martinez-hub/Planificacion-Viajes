@@ -28,6 +28,10 @@ import {
   ordenDestinos,
   moverDestino,
 } from './editar-itinerario';
+import { serializarViaje } from './persistir';
+import { useGuardarViaje } from './use-viajes';
+import { useBorradorLocal } from './use-borrador';
+import { useAuth } from '@/features/auth/use-auth';
 import { hoyBogota } from './hoy';
 import { SelectorMunicipios } from './SelectorMunicipios';
 import { VistaItinerario } from './VistaItinerario';
@@ -40,6 +44,10 @@ export function Planificador() {
   const origenes = useOrigenesExternos();
   const rutas = useRutasBus();
   const tarifas = useTarifas();
+
+  const { usuario, iniciarSesionGoogle } = useAuth();
+  const guardar = useGuardarViaje();
+  const borradorLocal = useBorradorLocal();
 
   const cargando =
     municipios.isLoading ||
@@ -162,6 +170,38 @@ export function Planificador() {
     generar(formValido, nuevoOrden);
   };
 
+  const alGuardar = () => {
+    if (!formValido || !itinerario) return;
+    guardar.mutate(serializarViaje(formValido, itinerario));
+  };
+
+  const [guardadoLocal, setGuardadoLocal] = useState(false);
+
+  const alGuardarLocal = async () => {
+    if (!formValido || !itinerario) return;
+    await borradorLocal.guardar(formValido, itinerario);
+    setGuardadoLocal(true);
+  };
+
+  /** Guarda el borrador local y luego inicia sesión, volviendo al planificador
+   *  para ofrecer subirlo (el login recarga la página y borra el estado). */
+  const alIniciarParaGuardar = async () => {
+    if (formValido && itinerario) {
+      await borradorLocal.guardar(formValido, itinerario);
+    }
+    await iniciarSesionGoogle('/planificar');
+  };
+
+  const alSubirBorrador = () => {
+    if (!borradorLocal.borrador) return;
+    const { formulario, itinerario: it } = borradorLocal.borrador;
+    guardar.mutate(serializarViaje(formulario, it), {
+      onSuccess: () => {
+        void borradorLocal.descartar();
+      },
+    });
+  };
+
   // Municipios del catálogo + orígenes externos como posibles puntos de partida.
   const opcionesOrigen = useMemo(() => {
     const ext = (origenes.data ?? []).map((o) => ({
@@ -197,6 +237,29 @@ export function Planificador() {
           {t('planificador.titulo')}
         </h2>
       </header>
+
+      {usuario && borradorLocal.borrador && (
+        <div className="flex flex-col gap-2 rounded-md bg-amber-50 p-3 text-sm text-amber-900">
+          <p>{t('planificador.borradorPendiente')}</p>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={alSubirBorrador}
+              disabled={guardar.isPending}
+              className="rounded-md bg-emerald-600 px-3 py-1 font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
+            >
+              {t('planificador.subirBorrador')}
+            </button>
+            <button
+              type="button"
+              onClick={() => void borradorLocal.descartar()}
+              className="rounded-md border border-slate-300 px-3 py-1 text-slate-700 hover:bg-slate-100"
+            >
+              {t('planificador.descartarBorrador')}
+            </button>
+          </div>
+        </div>
+      )}
 
       <form
         className="flex flex-col gap-4"
@@ -351,21 +414,85 @@ export function Planificador() {
       </form>
 
       {itinerario && (
-        <VistaItinerario
-          itinerario={itinerario}
-          nombreMunicipio={nombreMunicipio}
-          ordenManual={ordenMunicipios !== null}
-          alSubir={(dia, orden) =>
-            setItinerario((it) => (it ? subirItem(it, dia, orden) : it))
-          }
-          alBajar={(dia, orden) =>
-            setItinerario((it) => (it ? bajarItem(it, dia, orden) : it))
-          }
-          alFijar={(dia, orden) =>
-            setItinerario((it) => (it ? alternarFijado(it, dia, orden) : it))
-          }
-          alMoverDestino={alMoverDestino}
-        />
+        <>
+          <div className="flex flex-col gap-2">
+            {usuario ? (
+              <>
+                <button
+                  type="button"
+                  onClick={alGuardar}
+                  disabled={guardar.isPending}
+                  className="rounded-md bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
+                >
+                  {guardar.isPending
+                    ? t('comun.cargando')
+                    : t('planificador.guardarViaje')}
+                </button>
+                {guardar.isSuccess && (
+                  <p className="text-sm text-emerald-700" role="status">
+                    {t('planificador.viajeGuardado')}
+                  </p>
+                )}
+                {guardar.isError && (
+                  <p className="text-sm text-red-600" role="alert">
+                    {t('planificador.errorGuardar')}
+                    {guardar.error instanceof Error
+                      ? ` (${guardar.error.message})`
+                      : ''}
+                  </p>
+                )}
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={() => void alGuardarLocal()}
+                  className="rounded-md border border-emerald-600 px-4 py-2 font-medium text-emerald-700 hover:bg-emerald-50"
+                >
+                  {t('planificador.guardarLocal')}
+                </button>
+                <p className="text-sm text-slate-500">
+                  {t('planificador.iniciaParaGuardar')}{' '}
+                  <button
+                    type="button"
+                    onClick={() => void alIniciarParaGuardar()}
+                    className="text-emerald-700 underline hover:text-emerald-800"
+                  >
+                    {t('auth.iniciarSesion')}
+                  </button>
+                </p>
+                {guardadoLocal && (
+                  <p className="text-sm text-emerald-700" role="status">
+                    {t('planificador.guardadoLocal')}{' '}
+                    <button
+                      type="button"
+                      onClick={() => void iniciarSesionGoogle('/planificar')}
+                      className="underline hover:text-emerald-800"
+                    >
+                      {t('auth.iniciarSesion')}
+                    </button>
+                  </p>
+                )}
+              </>
+            )}
+          </div>
+
+          <VistaItinerario
+            itinerario={itinerario}
+            nombreMunicipio={nombreMunicipio}
+            ordenManual={ordenMunicipios !== null}
+            alSubir={(dia, orden) =>
+              setItinerario((it) => (it ? subirItem(it, dia, orden) : it))
+            }
+            alBajar={(dia, orden) =>
+              setItinerario((it) => (it ? bajarItem(it, dia, orden) : it))
+            }
+            alFijar={(dia, orden) =>
+              setItinerario((it) => (it ? alternarFijado(it, dia, orden) : it))
+            }
+            alMoverDestino={alMoverDestino}
+          />
+        </>
       )}
     </section>
   );
