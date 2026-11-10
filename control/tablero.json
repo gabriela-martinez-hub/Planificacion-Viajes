@@ -1,7 +1,7 @@
 {
   "proyecto": "Planificador de viajes del Eje Cafetero",
-  "revision": 19,
-  "actualizado": "2026-11-10T11:49:41",
+  "revision": 20,
+  "actualizado": "2026-11-10T15:28:07",
   "responsables": [
     "usuario",
     "claude",
@@ -293,9 +293,10 @@
         "T-11",
         "T-09"
       ],
-      "estado": "pendiente",
-      "notas": "",
-      "creada": "2026-11-07"
+      "estado": "hecha",
+      "notas": "[2026-11-10 claude] Planificador en src/features/planificador (Planificador, SelectorMunicipios, VistaItinerario) y esquemas Zod de viaje en src/domain/viaje. React Router instalado (react-router-dom@6.26.2): rutas /explorar y /planificar. Formulario con validacion Zod (sin fechas en el pasado), boton Todos en estilos, generacion con el dominio T-11, vista dia por dia editable (subir/bajar y fijar actividades; traslados fijos con candado), reorden de destinos con aviso de orden no optimo (EntradaItinerario.ordenMunicipios). Bug de reparto del generador corregido: reparte atracciones entre dias con la misma base (caso Parque del Cafe). Todo en memoria; persistir es T-14. tsc 0, lint 0, build ok, 60/60 pruebas. El usuario verifico la pantalla en el navegador (2026-11-10).",
+      "creada": "2026-11-07",
+      "terminada": "2026-11-10"
     },
     {
       "id": "T-14",
@@ -935,6 +936,20 @@
       "op": "campo",
       "id": "T-12",
       "detalle": "estado: 'pendiente' -> 'hecha'"
+    },
+    {
+      "fecha": "2026-11-10T15:28:07",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-13",
+      "detalle": "estado: 'pendiente' -> 'hecha'"
+    },
+    {
+      "fecha": "2026-11-10T15:28:07",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-13",
+      "detalle": "Planificador en src/features/planificador (Planificador, SelectorMunicipios, VistaItinerario) y esquemas Zod de viaje en src/domain/viaje. React Router instalado (react-router-dom@6.26.2): rutas /explorar y /planificar. Formulario con validacion Zod (sin fechas en el pasado), boton Todos en estilos, generacion con el dominio T-11, vista dia por dia editable (subir/bajar y fijar actividades; traslados fijos con candado), reorden de destinos con aviso de orden no optimo (EntradaItinerario.ordenMunicipios). Bug de reparto del generador corregido: reparte atracciones entre dias con la misma base (caso Parque del Cafe). Todo en memoria; persistir es T-14. tsc 0, lint 0, build ok, 60/60 pruebas. El usuario verifico la pantalla en el navegador (2026-11-10)."
     }
   ]
 }

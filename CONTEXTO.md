@@ -108,6 +108,22 @@ Catálogo y exploración (2026-11-10, ver `HISTORIA.md`):
   6.2), con nota de que puede variar por edad. El modelo completo es la idea
   I-03.
 
+Planificador (2026-11-10, ver `HISTORIA.md`):
+- React Router (`react-router-dom@6.26.2`) con rutas `/explorar` y `/planificar`
+  (se instaló al haber dos vistas).
+- El generador acepta `EntradaItinerario.ordenMunicipios`: si la UI lo pasa,
+  respeta ese orden de destinos en vez de ordenar por cercanía. Lo usa el reorden
+  de destinos del planificador.
+- "Cambiar el destino de un traslado" se resuelve reordenando los destinos y
+  recalculando los traslados (interpretación A), no editando el bus suelto, que
+  dejaría el día incoherente. Los traslados quedan fijos en la vista.
+- El generador reparte las atracciones entre los días que comparten municipio
+  base (no las amontona en el primer día); corregido al detectar el caso del
+  Parque del Café.
+- Las fechas de viaje no pueden estar en el pasado: se valida en el formulario
+  (atributo `min`) y en Zod, pasando la fecha de hoy (America/Bogota) como dato
+  al dominio.
+
 ## Decisiones reemplazadas
 - Internacionalización con react-i18next: reemplazada por el archivo tipado
   `src/i18n/es-CO.ts` (2026-11-07, segunda ronda).
@@ -128,10 +144,20 @@ Catálogo y exploración (2026-11-10, ver `HISTORIA.md`):
 ## Estado actual
 - **Fase 0 cerrada** (7/8 tareas; T-29 es una verificación opcional que el
   usuario pospuso). Los 5 criterios de aceptación están verificados.
-- Tablero en revisión 19: 14/30 tareas hechas, 6 riesgos activos y 3 ideas. La
+- Tablero en revisión 20: 15/30 tareas hechas, 6 riesgos activos y 3 ideas. La
   fase (a) va 5/5 tareas, pero **sigue formalmente abierta** por un criterio de
-  aceptación sin evidencia (ver abajo). La **fase (b) avanza** con T-11 y T-12
-  hechas (2/4 tareas de la fase).
+  aceptación sin evidencia (ver abajo). La **fase (b) avanza** con T-11, T-12 y
+  T-13 hechas (3/4 tareas de la fase; falta T-14).
+- **Planificador funcionando (T-13, 2026-11-10):** `src/features/planificador/`
+  con `Planificador.tsx` (formulario validado con Zod, botón "Todos" en estilos,
+  sin fechas en el pasado), `SelectorMunicipios.tsx` (combobox buscable) y
+  `VistaItinerario.tsx` (días editables: subir/bajar y fijar actividades;
+  traslados fijos con candado; panel de orden de destinos con aviso de orden no
+  óptimo). Helpers puros `armar-entrada.ts`, `editar-itinerario.ts`, `hoy.ts`.
+  Esquemas Zod de usuario en `src/domain/viaje/esquemas.ts`. React Router
+  (`react-router-dom@6.26.2`) con rutas `/explorar` y `/planificar`. El servicio
+  de catálogo ahora lee orígenes externos, rutas de bus y tarifas. Todo en
+  memoria (persistir es T-14). El usuario verificó la pantalla en el navegador.
 - **Generador de itinerario listo (T-11, 2026-11-10):** lógica pura en
   `src/domain/itinerario/` (commit f751373). Módulos: `tipos.ts` (entrada,
   salida y resultado ok/no-ok), `grafo-buses.ts` (Dijkstra con penalización de
@@ -193,24 +219,21 @@ Catálogo y exploración (2026-11-10, ver `HISTORIA.md`):
   pendiente: `.gitattributes` con `* text=auto eol=lf`.
 
 ## Próximos pasos
-1. T-13: formulario del viaje y vista día por día con edición, subir/bajar e
-   ítems fijados. Próxima tarea de la ruta crítica. Depende de T-11 (hecha) y
-   T-09 (hecha). Usa el generador de T-11 y las tablas de T-12. Aquí se crean los
-   esquemas Zod de los tipos de usuario (pospuestos en T-12).
+1. T-14: guardar y listar viajes, lectura offline (PWA) e itinerarios sin cuenta
+   en IndexedDB. Próxima tarea de la ruta crítica. Depende de T-13 (hecha),
+   T-12 (hecha) y T-05 (hecha). Cierra la fase (b) junto con el resto.
 2. T-15: presupuesto, paso 8 del generador (modo fijo con ajuste). Depende de
    T-11 (hecha).
-3. T-14: guardar y listar viajes, lectura offline (PWA) e itinerarios sin cuenta
-   en IndexedDB. Depende de T-13, T-12 (hecha) y T-05 (hecha).
-4. En paralelo, disponibles: T-17 (servicio Open-Meteo, depende de T-01),
+3. En paralelo, disponibles: T-17 (servicio Open-Meteo, depende de T-01),
    T-25 (script de clima mensual, depende de T-06), T-27 (instancias de
    evaluación del generador, depende de T-11) y T-30 (verificar el criterio RLS
    de la fase a).
-5. Criterio de F-b pendiente de medir: cobertura >= 80 % en domain/itinerario.
+4. Criterio de F-b pendiente de medir: cobertura >= 80 % en domain/itinerario.
    Falta el provider `@vitest/coverage-v8` (no instalado por no estar acordado);
    medirlo al abordar T-27 o instalando ese provider.
-6. Usuario (cuando quiera): crear la variable `SUPABASE_URL` y el secreto
+5. Usuario (cuando quiera): crear la variable `SUPABASE_URL` y el secreto
    `SUPABASE_ANON_KEY` en GitHub para activar la consulta diaria contra la pausa.
-7. Antes de la sustentación: revisar costos, tarifas y tiempos de bus del seed
+6. Antes de la sustentación: revisar costos, tarifas y tiempos de bus del seed
    (marcados aproximados, R-04) y el acceso al Nevado del Ruiz (R-03).
 
 ## Pendientes de decisión del usuario

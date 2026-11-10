@@ -446,3 +446,92 @@
 - Cambios del tablero: T-12 pasa a hecha. Sin tareas, riesgos ni ideas nuevos. La
   próxima tarea de la ruta crítica es T-13 (formulario del viaje y vista día por día).
 - Origen: sesión de Kiro con el usuario
+
+### 2026-11-10 — T-13: planificador (formulario, generación y vista día por día)
+- Cierre anterior: 86646e1 (memoria: cierre de T-12)
+- Commits: 7c3562a (feat del planificador); este cierre agrega el commit de memoria
+- Qué se hizo:
+  - T-13 terminada. Primera pantalla interactiva con estado. Conecta catálogo
+    (T-09), generador (T-11) y tablas de usuario (T-12).
+  - React Router instalado (`react-router-dom@6.26.2`, pinned). Dos rutas:
+    `/explorar` y `/planificar`, con nav en el header. `App.tsx` reescrito con
+    `Routes`; `main.tsx` envuelto en `BrowserRouter`; `App.test.tsx` usa
+    `MemoryRouter`.
+  - Esquemas Zod de datos de usuario en `src/domain/viaje/esquemas.ts`
+    (`formularioViajeSchema`, `viaje`, `viajeDia`, `viajeItem`), reflejando la
+    migración de T-12. Son los que en T-12 se aplazaron.
+  - Servicio ampliado (`src/services/catalogo.ts`): `obtenerOrigenesExternos`,
+    `obtenerRutasBus`, `obtenerTarifas` (validados con Zod) y sus hooks en
+    `use-catalogo.ts`, porque el generador necesita orígenes, grafo de buses y
+    tarifas además de municipios y atracciones.
+  - UI en `src/features/planificador/`: `Planificador.tsx` (formulario: título,
+    origen, fechas, viajeros, nivel, estilos, municipios, incluir regreso;
+    validación con Zod; generación), `SelectorMunicipios.tsx` (combobox buscable
+    sin tildes, el que en T-09 se aplazó), `VistaItinerario.tsx` (días con sus
+    ítems, costos, reorden y fijado), y helpers puros `armar-entrada.ts`
+    (forma la EntradaItinerario), `editar-itinerario.ts` (subir/bajar/fijar y
+    orden de destinos) y `hoy.ts` (fecha de hoy en America/Bogota, calculada en
+    la UI y pasada al dominio como dato).
+  - Observaciones del usuario resueltas en la misma sesión:
+    1. No se permiten fechas de viaje en el pasado: inputs `date` con `min`
+       (ida = hoy, regreso = fecha de ida) y un refinamiento Zod que rechaza
+       `fechaInicio` anterior a `hoy` (hoy se pasa como dato, el dominio no lee
+       el reloj).
+    2. Botón "Todos" en estilos: selecciona/deselecciona todos de una vez,
+       conservando la selección múltiple individual.
+    3. Bug de reparto del generador (descubierto con el Parque del Café): el
+       generador amontonaba todas las atracciones de un municipio en el primer
+       día y dejaba vacíos los demás. Ahora reparte entre los días que comparten
+       municipio base, eligiendo el día con más tiempo libre (desempate por día).
+       El Parque del Café (450 min, cierra lunes y martes) ahora aparece y se
+       reparte; si la fecha cae en día cerrado, se excluye.
+    4. Reordenar destinos: panel "Orden de los destinos" con subir/bajar por
+       municipio; al reordenar se regenera respetando el orden elegido
+       (`EntradaItinerario.ordenMunicipios`), con aviso de que el orden puede no
+       ser óptimo.
+    5. Traslados fijos: los ítems de tipo traslado ya no se mueven ni se fijan
+       sueltos (candado 🔒); su destino se cambia reordenando los destinos, que
+       recalcula tiempos y tarifas. Las actividades se siguen reordenando entre
+       ellas, saltando los traslados.
+- Decisiones:
+  - Alcance de T-13 = formulario + generación + vista editable en memoria. NO
+    persiste (eso es T-14), no ajusta presupuesto (T-15) ni usa clima real
+    (T-17/T-18). Avalado por el usuario.
+  - Se instaló React Router ahora (avalado), porque ya hay dos vistas.
+  - Para "cambiar el destino de un traslado" se eligió la interpretación A
+    (reordenar destinos y recalcular los traslados), no editar el bus suelto,
+    que dejaría el día incoherente (llegar a un municipio pero tener el paseo en
+    otro). Recomendación de Claude, avalada por el usuario.
+  - El reparto por día y el orden de destinos tocan el generador (T-11), pero se
+    hicieron aquí porque el usuario los detectó probando T-13 y afectan lo que ve.
+  - El formato COP se reutiliza de `features/catalogo/formato.ts` en vez de
+    duplicarlo; moverlo a `src/lib` queda como mejora menor.
+- Hallazgos:
+  - El tipado de supabase-js para selects con columnas explícitas (rutas_bus,
+    tarifas) infiere un tipo que incluye el de error; se castea vía `unknown`
+    antes de `sinNulos`, coherente con el patrón del join de municipios.
+  - Bundle inicial: de ~366 kB a ~417 kB (122 kB gzip) por React Router y el
+    planificador. El mapa sigue en su chunk aparte (lazy).
+  - La prueba visual (dev server) la hizo el usuario: no se puede arrancar el
+    servidor desde la sesión del agente. El usuario aprobó el formulario, el
+    reparto del Parque del Café, el botón Todos, el reorden de destinos con su
+    aviso y los traslados fijos.
+  - Git avisa LF->CRLF al indexar los archivos nuevos (Windows); la CI en Ubuntu
+    los ve con LF y pasa.
+- Criterios de aceptación (F-b sigue abierta; falta T-14):
+  - "Misma entrada y mismo clima producen el mismo itinerario": verificado en
+    T-11; el reparto nuevo mantiene el determinismo (desempate por día).
+  - "El día 1 parte del origen elegido": verificado (T-11 y la UI).
+  - "Ningún día supera el límite de jornada salvo los de solo traslado":
+    verificado (T-11).
+  - "Los cambios persisten tras recargar": **pendiente**, es T-14 (en T-13 el
+    viaje vive en memoria).
+  - "0 violaciones en las instancias", "< 500 ms" y "cobertura >= 80 %":
+    pendientes (T-27 y provider de cobertura).
+  - Verificación: tsc 0, lint 0, format limpio, build ok, 60/60 pruebas
+    (12 nuevas: 8 de T-13 inicial + 4 de reorden/parque; más las de validación
+    de fechas).
+- Cambios del tablero: T-13 pasa a hecha. Dependencia nueva react-router-dom.
+  Sin riesgos ni ideas nuevos. La próxima tarea de la ruta crítica es T-14
+  (guardar y listar viajes, PWA offline, itinerarios sin cuenta en IndexedDB).
+- Origen: sesión de Kiro con el usuario

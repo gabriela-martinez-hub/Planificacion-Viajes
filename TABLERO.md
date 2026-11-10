@@ -2,7 +2,7 @@
 
 > Vista generada desde `control/tablero.json` con `python3 .claude/skills/orquestador-proyecto/scripts/tablero.py render`. No se edita a mano.
 
-Revisión 19, actualizado 2026-11-10T11:49:41. Avance: 14/30 tareas (47 %).
+Revisión 20, actualizado 2026-11-10T15:28:07. Avance: 15/30 tareas (50 %).
 
 ## Avance por frente
 
@@ -10,7 +10,7 @@ Revisión 19, actualizado 2026-11-10T11:49:41. Avance: 14/30 tareas (47 %).
 |---|---|---|
 | Fase 0: Preparación | 7 | 8 |
 | Fase (a): Catálogo + mapa | 5 | 6 |
-| Fase (b): Planificador de itinerarios | 2 | 5 |
+| Fase (b): Planificador de itinerarios | 3 | 5 |
 | Fase (c): Presupuesto | 0 | 2 |
 | Fase (d): Clima | 0 | 3 |
 | Fase (e): Insignias y perfil | 0 | 3 |
@@ -18,7 +18,7 @@ Revisión 19, actualizado 2026-11-10T11:49:41. Avance: 14/30 tareas (47 %).
 
 ## Próxima tarea
 
-**T-13** Formulario del viaje y vista día por día con edición, subir/bajar e ítems fijados (claude)
+**T-14** Guardar y listar viajes, lectura offline (PWA) e itinerarios sin cuenta en IndexedDB (claude)
 
 ## Ruta crítica
 
@@ -36,7 +36,7 @@ Revisión 19, actualizado 2026-11-10T11:49:41. Avance: 14/30 tareas (47 %).
 | 10 | T-10 | ~~Mapa Leaflet con marcadores agrupados, atribución OSM y caché de teselas (6.5)~~ | F-a | claude | P2 | hecha | T-08 |
 | 11 | T-11 | ~~Generador de itinerario (6.1 pasos 1-7) con pruebas unitarias de los casos límite~~ | F-b | claude | P1 | hecha | T-08 |
 | 12 | T-12 | ~~Migraciones de datos de usuario (perfiles, viajes, viaje_dias, viaje_items, metas, aportes) con RLS~~ | F-b | claude | P2 | hecha | T-07 |
-| 13 | T-13 | Formulario del viaje y vista día por día con edición, subir/bajar e ítems fijados | F-b | claude | P2 | pendiente | T-11, T-09 |
+| 13 | T-13 | ~~Formulario del viaje y vista día por día con edición, subir/bajar e ítems fijados~~ | F-b | claude | P2 | hecha | T-11, T-09 |
 | 14 | T-14 | Guardar y listar viajes, lectura offline (PWA) e itinerarios sin cuenta en IndexedDB | F-b | claude | P2 | pendiente | T-13, T-12, T-05 |
 | 15 | T-15 | Presupuesto: desglose (6.2) y modo fijo con ajuste automático (paso 8) | F-c | claude | P2 | pendiente | T-11 |
 | 16 | T-16 | Modo viaje soñado: meta de ahorro, aportes y barra de progreso | F-c | claude | P3 | pendiente | T-15, T-14 |
@@ -87,6 +87,8 @@ Ninguna.
 
 | Fecha | Por | Operación | Id | Detalle |
 |---|---|---|---|---|
+| 2026-11-10T15:28:07 | claude | nota | T-13 | Planificador en src/features/planificador (Planificador, SelectorMunicipios, VistaItinerario) y esquemas Zod de viaje en src/domain/viaje. React Router instalado (react-router-dom@6.26.2): rutas /explorar y /planificar. Formulario con validacion Zod (sin fechas en el pasado), boton Todos en estilos, generacion con el dominio T-11, vista dia por dia editable (subir/bajar y fijar actividades; traslados fijos con candado), reorden de destinos con aviso de orden no optimo (EntradaItinerario.ordenMunicipios). Bug de reparto del generador corregido: reparte atracciones entre dias con la misma base (caso Parque del Cafe). Todo en memoria; persistir es T-14. tsc 0, lint 0, build ok, 60/60 pruebas. El usuario verifico la pantalla en el navegador (2026-11-10). |
+| 2026-11-10T15:28:07 | claude | campo | T-13 | estado: 'pendiente' -> 'hecha' |
 | 2026-11-10T11:49:41 | claude | campo | T-12 | estado: 'pendiente' -> 'hecha' |
 | 2026-11-10T11:29:06 | claude | campo | T-11 | estado: 'pendiente' -> 'hecha' |
 | 2026-11-10T10:53:47 | claude | tarea_agregar | T-30 | Verificar el criterio RLS de la fase (a): un INSERT con la clave publica sobre atracciones falla |
@@ -100,5 +102,3 @@ Ninguna.
 | 2026-11-10T09:31:25 | claude | campo | T-08 | estado: 'pendiente' -> 'en_curso' |
 | 2026-11-09T21:29:46 | claude | nota | T-07 | El usuario aplico la migracion del catalogo en el proyecto Supabase (2026-11-09). T-07 completa: codigo en el repo (c48fe44) y esquema con RLS aplicado en la base |
 | 2026-11-09T21:25:34 | claude | nota | T-24 | CI en verde en GitHub Actions. La consulta diaria a Supabase se salta sola mientras no exista la variable SUPABASE_URL en GitHub; se activa cuando el usuario cree esa variable y el secreto SUPABASE_ANON_KEY tras aplicar T-07. Se da por hecha la parte de CI; la activacion de la consulta queda cubierta por T-23 (verificacion antes de la sustentacion) |
-| 2026-11-09T21:25:34 | claude | campo | T-24 | estado: 'en_curso' -> 'hecha' |
-| 2026-11-09T21:25:34 | claude | nota | T-05 | Commit 58eefab: cliente Supabase (src/services/supabase.ts) con anon key, config validada con Zod (src/lib/config.ts), AuthProvider y contexto de sesion (src/features/auth), BotonAuth con textos de auth.* del i18n. Dependencias @supabase/supabase-js@2.45.4 y zod@3.23.8. El usuario verifico login y logout con Google en el navegador (2026-11-09). lint 0, 2/2 pruebas, build ok |
