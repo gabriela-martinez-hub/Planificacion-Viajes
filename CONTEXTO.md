@@ -87,7 +87,26 @@ Autenticación e infraestructura de cliente (2026-11-09, ver `HISTORIA.md`):
 - El redirect de OAuth usa `window.location.origin`; esa URL
   (`http://localhost:5173` en desarrollo) debe estar en las Redirect URLs de
   Supabase.
-- Dependencias de runtime fijadas: `@supabase/supabase-js@2.45.4`, `zod@3.23.8`.
+- Dependencias de runtime fijadas: `@supabase/supabase-js@2.45.4`, `zod@3.23.8`,
+  `@tanstack/react-query@5.59.0`, `leaflet@1.9.4`, `react-leaflet@4.2.1`,
+  `react-leaflet-cluster@2.1.0`.
+
+Catálogo y exploración (2026-11-10, ver `HISTORIA.md`):
+- El catálogo se lee de Supabase con TanStack Query (`QueryClient` en
+  `src/app/query-client.ts`, provider en `main.tsx`). Servicio de lectura en
+  `src/services/catalogo.ts` (clave anon, respuestas validadas con Zod); hooks
+  en `src/features/catalogo/use-catalogo.ts`.
+- Vista de exploración `src/features/catalogo/ExplorarCatalogo.tsx`: tres
+  pestañas (Municipios | Atracciones | Mapa), buscador sin tildes, filtros por
+  departamento y estilo, ficha de detalle `FichaAtraccion.tsx`. El mapa
+  (`MapaCatalogo.tsx`) es Leaflet con los 53 municipios como marcadores
+  agrupados, atribución OSM y zoom con rueda desactivado; se carga diferido
+  (`React.lazy`) para no engordar el arranque. Lógica pura en `filtrar.ts` y
+  `formato.ts` con pruebas. Es solo para explorar; la selección de destinos se
+  hará en el planificador (T-13).
+- Precio de atracciones: tarifa general de adulto (camino simple de `plan.md`
+  6.2), con nota de que puede variar por edad. El modelo completo es la idea
+  I-03.
 
 ## Decisiones reemplazadas
 - Internacionalización con react-i18next: reemplazada por el archivo tipado
@@ -109,8 +128,17 @@ Autenticación e infraestructura de cliente (2026-11-09, ver `HISTORIA.md`):
 ## Estado actual
 - **Fase 0 cerrada** (7/8 tareas; T-29 es una verificación opcional que el
   usuario pospuso). Los 5 criterios de aceptación están verificados.
-- Tablero en revisión 13: 10/29 tareas hechas, 6 riesgos activos y 2 ideas. La
-  fase (a) va 3/5 (T-06, T-07 y T-08 hechas).
+- Tablero en revisión 17: 12/30 tareas hechas, 6 riesgos activos y 3 ideas. La
+  fase (a) va 5/5 tareas, pero **sigue formalmente abierta** por un criterio de
+  aceptación sin evidencia (ver abajo).
+- **Catálogo completo y explorable:** el seed está en Supabase (T-08) y la vista
+  lo lee con TanStack Query. Tres pestañas: Municipios, Atracciones y Mapa
+  (Leaflet con los 53 municipios agrupados). El usuario verificó la vista y el
+  mapa en el navegador.
+- **Fase (a) casi cerrada (5/5 tareas).** Verificados 5 de 6 criterios: los 53
+  en el mapa, Salamina y Aguadas como patrimonio, filtros en móvil, seed pasa
+  Zod, grafo de buses conexo. Falta el criterio RLS "un INSERT con la clave
+  pública sobre atracciones falla" (tarea T-30, paralelo).
 - Autenticación con Google funcionando (T-03 del usuario + T-05 en código,
   commit 58eefab). El usuario probó login y logout en el navegador.
 - Migración del catálogo en `supabase/migrations/20261109210000_catalogo.sql`
@@ -141,17 +169,16 @@ Autenticación e infraestructura de cliente (2026-11-09, ver `HISTORIA.md`):
   pendiente: `.gitattributes` con `* text=auto eol=lf`.
 
 ## Próximos pasos
-1. T-09: lista filtrable de municipios y atracciones y ficha de atracción
-   (lee el catálogo con la clave anon). Próxima tarea de la ruta crítica;
-   depende de T-04 y T-08, ambas hechas.
-2. T-10: mapa Leaflet con los 53 municipios, atribución OSM y caché de teselas.
-   Depende de T-08.
-3. T-11: generador de itinerario (ruta crítica, P1). Depende de T-08.
-4. En paralelo, disponibles: T-17 (servicio Open-Meteo, depende de T-01) y
-   T-25 (script de clima mensual, depende de T-06; llena `clima_mensual`).
-5. Usuario (cuando quiera): crear la variable `SUPABASE_URL` y el secreto
+1. T-11: generador de itinerario (`plan.md` 6.1 pasos 1-7) con pruebas de los
+   casos límite. Próxima tarea de la ruta crítica (P1). Depende de T-08 (hecha).
+2. T-12: migraciones de datos de usuario (perfiles, viajes, etc.) con RLS.
+   Depende de T-07 (hecha).
+3. En paralelo, disponibles: T-17 (servicio Open-Meteo, depende de T-01),
+   T-25 (script de clima mensual, depende de T-06) y T-30 (verificar el criterio
+   RLS de la fase a).
+4. Usuario (cuando quiera): crear la variable `SUPABASE_URL` y el secreto
    `SUPABASE_ANON_KEY` en GitHub para activar la consulta diaria contra la pausa.
-6. Antes de la sustentación: revisar costos, tarifas y tiempos de bus del seed
+5. Antes de la sustentación: revisar costos, tarifas y tiempos de bus del seed
    (marcados aproximados, R-04) y el acceso al Nevado del Ruiz (R-03).
 
 ## Pendientes de decisión del usuario

@@ -175,3 +175,121 @@
   ideas nuevos. La próxima tarea de la ruta crítica es T-09 (lista filtrable y
   ficha de atracción).
 - Origen: sesión de Kiro con el usuario
+
+### 2026-11-10 — T-09: explorar el catálogo (lista filtrable y ficha)
+- Cierre anterior: 4aca043 (memoria: cierre de T-08)
+- Commits: (se hará junto con T-10, según acuerdo con el usuario: dos commits al
+  cerrar T-10, uno de código y otro de memoria, que cubren T-09 y T-10)
+- Qué se hizo:
+  - T-09 terminada. Lectura del catálogo desde Supabase con TanStack Query:
+    dependencia `@tanstack/react-query@5.59.0`, `QueryClient` en
+    `src/app/query-client.ts` (caché larga porque el catálogo es de solo
+    lectura), `QueryClientProvider` en `main.tsx`.
+  - `src/services/catalogo.ts`: lee departamentos, municipios (join con `nodos`
+    para nombre y coordenadas) y atracciones con la clave anon; valida cada
+    respuesta con los esquemas Zod del dominio. Hooks en
+    `src/features/catalogo/use-catalogo.ts`.
+  - UI `ExplorarCatalogo.tsx` con dos pestañas **Municipios** y **Atracciones**
+    (cambio pedido por el usuario: separar municipios de atracciones). Buscador
+    que ignora tildes, filtro por departamento y por estilo, contadores y
+    mensajes claros cuando no hay resultados, incluido el de "municipio no
+    encontrado" para quien no conoce la región. `FichaAtraccion.tsx` muestra el
+    detalle con duración, horario, altitud, costo, días cerrados, avisos de
+    guía/acceso y la fuente.
+  - Lógica de filtrado y formato pura y probada en `filtrar.ts` y `formato.ts`.
+    Pruebas en `src/features/catalogo/filtrar.test.ts` (10) usando el seed real.
+    `App.test.tsx` actualizado para el nuevo provider y el mock de lectura.
+- Decisiones:
+  - Lectura del catálogo con TanStack Query, como indica `plan.md` sección 3
+    (aprobado por el usuario). El catálogo es de solo lectura con caché larga,
+    el caso ideal para esta librería; además deja listo el terreno para T-17
+    (clima) y la lectura de viajes.
+  - Esta pantalla es solo para explorar/descubrir. El selector tipo combobox
+    para elegir destinos ("escribir o desplegar") se construye en T-13
+    (planificador), que es su lugar natural (decisión con el usuario).
+  - Precio de las atracciones: se mantiene el camino simple de `plan.md` 6.2
+    (tarifa general de adulto, marcada como aproximada). La ficha ahora aclara
+    que el precio puede variar por edad o tipo de entrada. El modelo completo de
+    tarifas por edad queda como idea I-03 (observación del usuario sobre el
+    Parque del Café).
+  - No se instaló React Router: todavía hay una sola pantalla. Se añadirá cuando
+    haya varias vistas que navegar (decisión con el usuario).
+- Hallazgos:
+  - El join anidado de PostgREST (`municipios` con `nodos!inner`) confunde al
+    tipado de supabase-js; se castea la fila a un tipo explícito vía `unknown` y
+    se valida con Zod, coherente con el principio de validación del plan.
+  - `react-hooks/exhaustive-deps` avisaba porque un objeto `filtros` intermedio
+    se recreaba en cada render; se pasaron los valores primitivos directo a los
+    `useMemo`.
+  - `npm run format` normalizó a LF los archivos preexistentes con CRLF
+    (`src/i18n/index.ts`, `src/index.css`, `src/test/setup.ts`), así que
+    `format:check` ahora pasa limpio también en local. El issue de CRLF
+    documentado queda resuelto de hecho; un `.gitattributes` sigue siendo mejora
+    opcional.
+  - El bundle JS pasó de ~313 kB a ~366 kB (107 kB gzip) por TanStack Query.
+  - El usuario verificó la vista en el navegador y pidió los cambios de pestañas
+    y mensajes; aplicados y validados.
+- Criterios de aceptación (F-a sigue abierta, 4/5 tareas; falta T-10, el mapa):
+  - "Los filtros funcionan en móvil": **verificado** en código (filtros por
+    departamento y estilo, buscador; layout mobile-first) y por el usuario en el
+    navegador. Pruebas de la lógica en `filtrar.test.ts`.
+  - "Salamina y Aguadas aparecen como pueblos patrimonio": **verificado** (se
+    muestran con su etiqueta en la lista de municipios).
+  - "Los 53 municipios aparecen en el mapa": pendiente, es T-10.
+  - "El seed pasa la validación Zod" y el grafo de buses: verificados en T-08.
+  - "Un INSERT con la clave pública sobre atracciones falla": pendiente (RLS).
+- Cambios del tablero: T-09 pasa a hecha. Nueva idea I-03 (tarifas por edad).
+  Revisión 15. La próxima tarea de la ruta crítica es T-10 (mapa Leaflet).
+- Origen: sesión de Kiro con el usuario
+
+### 2026-11-10 — T-10: mapa Leaflet (cierre casi total de la fase a)
+- Cierre anterior: 4aca043 (memoria: cierre de T-08)
+- Commits: (dos en este cierre: uno de código que cubre T-09 y T-10, otro de
+  memoria; según acuerdo con el usuario de commitear al terminar T-10)
+- Qué se hizo:
+  - T-10 terminada. Mapa Leaflet en `src/features/catalogo/MapaCatalogo.tsx`
+    con los 53 municipios como marcadores agrupados (`react-leaflet-cluster`),
+    teselas de OpenStreetMap con atribución visible "© OpenStreetMap
+    contributors", y popups con el municipio, su etiqueta de pueblo patrimonio y
+    enlaces a sus atracciones (que abren la ficha). `icono-leaflet.ts` arregla el
+    icono por defecto de Leaflet con Vite.
+  - Tercera pestaña **Mapa** en `ExplorarCatalogo`, cargada con `React.lazy` para
+    no engordar el arranque: Leaflet queda en un chunk aparte (~206 kB) que solo
+    se descarga al abrir el mapa. El bundle inicial se mantiene en ~366 kB.
+  - Zoom con rueda desactivado (`scrollWheelZoom={false}`), aprobado por el
+    usuario (molesto en móvil y en páginas con scroll).
+  - Dependencias fijadas: `leaflet@1.9.4`, `react-leaflet@4.2.1`,
+    `react-leaflet-cluster@2.1.0`, `@types/leaflet@1.9.12`.
+- Decisiones:
+  - Marcadores agrupados con `react-leaflet-cluster` sobre `leaflet.markercluster`,
+    compatible con react-leaflet v4 y React 18.
+  - El mapa se carga diferido para proteger el arranque en móvil (objetivo
+    mobile-first del plan).
+  - La caché de teselas en tiempo de ejecución (Workbox, CacheFirst) es parte de
+    la PWA y se hará en T-14; en T-10 solo se cumple la atribución y el no usar
+    precarga (`plan.md` 6.5).
+- Hallazgos:
+  - Sin code splitting el bundle llegaba a ~573 kB (aviso de Vite); con el lazy
+    del mapa el principal baja a ~366 kB y Leaflet queda en su propio chunk.
+  - El mapa lazy no afecta las pruebas: no se monta en la pestaña inicial, así
+    que Vitest/jsdom no cargan Leaflet.
+- Criterios de aceptación de la fase (a) — revisión completa:
+  - "Los 53 municipios aparecen en el mapa": **verificado** (T-10; el usuario lo
+    vio en el navegador).
+  - "Salamina y Aguadas aparecen como pueblos patrimonio": **verificado** (T-08
+    datos; T-09/T-10 los muestran con etiqueta).
+  - "Los filtros funcionan en móvil": **verificado** (T-09, mobile-first; pruebas
+    en `filtrar.test.ts`; el usuario lo probó).
+  - "El seed pasa la validación Zod": **verificado** (T-08).
+  - "El grafo de buses conecta todos los municipios y los que no, quedan
+    listados": **verificado** (T-08, 0 aislados).
+  - "Un INSERT con la clave pública sobre atracciones falla": **pendiente**. Es
+    el único criterio sin evidencia. La migración T-07 ya revoca
+    insert/update/delete a anon y authenticated, pero falta probarlo. Se crea la
+    tarea **T-30** (paralelo, P2) para ello. **Por eso la fase (a) sigue
+    formalmente abierta** hasta que T-30 aporte la evidencia; en producto está
+    completa (catálogo, filtros y mapa funcionando).
+- Cambios del tablero: T-10 pasa a hecha. Nueva tarea T-30 (verificación RLS de
+  la fase a). Revisión 16/17. La próxima tarea de la ruta crítica es T-11
+  (generador de itinerario, P1).
+- Origen: sesión de Kiro con el usuario

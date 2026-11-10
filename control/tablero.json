@@ -1,7 +1,7 @@
 {
   "proyecto": "Planificador de viajes del Eje Cafetero",
-  "revision": 13,
-  "actualizado": "2026-11-10T10:00:06",
+  "revision": 17,
+  "actualizado": "2026-11-10T10:53:47",
   "responsables": [
     "usuario",
     "claude",
@@ -228,9 +228,10 @@
         "T-04",
         "T-08"
       ],
-      "estado": "pendiente",
-      "notas": "",
-      "creada": "2026-11-07"
+      "estado": "hecha",
+      "notas": "[2026-11-10 claude] Vista de exploracion del catalogo en src/features/catalogo/ con TanStack Query (dependencia @tanstack/react-query@5.59.0; QueryClient en src/app/query-client.ts con cache larga). Servicio de lectura src/services/catalogo.ts (clave anon, solo lectura, respuestas validadas con Zod); hooks en use-catalogo.ts. UI ExplorarCatalogo.tsx con dos pestanas Municipios | Atracciones, buscador (ignora tildes), filtro por departamento y por estilo, y mensajes claros cuando no hay resultados (incluido el de municipio no encontrado, pedido del usuario). FichaAtraccion.tsx muestra detalle con nota de tarifa general de adulto (el precio por edad quedo como idea I-03). Logica pura en filtrar.ts y formato.ts. Pruebas en filtrar.test.ts (10, con el seed real). App.tsx monta la vista; main.tsx envuelve con QueryClientProvider; App.test.tsx actualizado. El combobox de seleccion de destinos se hara en T-13 (planificador). lint 0, tsc 0, build ok, 22/22 tests. El usuario verifico la vista en el navegador (2026-11-10).",
+      "creada": "2026-11-07",
+      "terminada": "2026-11-10"
     },
     {
       "id": "T-10",
@@ -243,9 +244,10 @@
       "dependencias": [
         "T-08"
       ],
-      "estado": "pendiente",
-      "notas": "",
-      "creada": "2026-11-07"
+      "estado": "hecha",
+      "notas": "[2026-11-10 claude] Mapa Leaflet en src/features/catalogo/MapaCatalogo.tsx: los 53 municipios como marcadores agrupados (react-leaflet-cluster), teselas de OpenStreetMap con atribucion visible (c OpenStreetMap contributors), popups con el municipio, su etiqueta de pueblo patrimonio y enlaces a sus atracciones. icono-leaflet.ts arregla el icono por defecto con Vite. Tercera pestana Mapa en ExplorarCatalogo con carga diferida (React.lazy): Leaflet queda en un chunk aparte (~206 kB) que solo se descarga al abrir el mapa; el bundle inicial se mantiene en ~366 kB. Zoom con rueda desactivado a proposito (molesto en movil y con scroll), aprobado por el usuario. scrollWheelZoom off. La cache de teselas en runtime (Workbox) es de la PWA (T-14). Dependencias fijadas: leaflet@1.9.4, react-leaflet@4.2.1, react-leaflet-cluster@2.1.0, @types/leaflet@1.9.12. lint 0, tsc 0, build ok con code splitting, 22/22 tests. El usuario verifico el mapa en el navegador (2026-11-10).",
+      "creada": "2026-11-07",
+      "terminada": "2026-11-10"
     },
     {
       "id": "T-11",
@@ -542,6 +544,21 @@
       "dependencias": [],
       "orden": 6,
       "creada": "2026-11-07"
+    },
+    {
+      "id": "T-30",
+      "titulo": "Verificar el criterio RLS de la fase (a): un INSERT con la clave publica sobre atracciones falla",
+      "frente": "F-a",
+      "grupo": "paralelo",
+      "responsable": "claude",
+      "prioridad": "P2",
+      "dependencias": [
+        "T-08"
+      ],
+      "notas": "Ultimo criterio de aceptacion de la fase (a) sin verificar. Probar que anon/authenticated no pueden INSERT/UPDATE/DELETE en el catalogo (atracciones y demas tablas), desde el SQL Editor de Supabase con la anon key o con una prueba de integracion. La migracion T-07 ya revoca esos permisos; falta la evidencia.",
+      "estado": "pendiente",
+      "orden": 7,
+      "creada": "2026-11-10"
     }
   ],
   "riesgos": [
@@ -620,6 +637,13 @@
       "origen": "plan.md sección 2.2",
       "estado": "nueva",
       "creada": "2026-11-07"
+    },
+    {
+      "descripcion": "Modelo de tarifas por edad y categoria (adulto, nino, adulto mayor, extranjero) y pasaportes por nivel en atracciones como el Parque del Cafe o PANACA. Hoy el esquema usa un unico costo_entrada_cop (tarifa general de adulto) mas tarifa_extranjero_cop, acorde a plan.md 6.2. Implicaria una tabla de tarifas por atraccion y categoria y que el planificador pregunte las edades del grupo; afecta presupuesto (T-15).",
+      "origen": "Observacion del usuario en T-09 (2026-11-10): el precio del Parque del Cafe depende de la edad",
+      "estado": "nueva",
+      "id": "I-03",
+      "creada": "2026-11-10"
     }
   ],
   "historial": [
@@ -853,6 +877,48 @@
       "op": "nota",
       "id": "T-08",
       "detalle": "Seed en supabase/seed/datos/ (modulos TS tipados y validados con Zod en src/domain/catalogo/esquemas.ts). Script scripts/cargar-seed.ts carga con la service_role key, valida Zod + integridad referencial + conectividad del grafo antes de escribir, carga idempotente con upsert. npm run seed y npm run seed:dry-run. Contenido: 3 departamentos, 53 municipios, 70 atracciones (53 cascos + 17 reales con fuente y fecha), 142 rutas de bus (0 municipios aislados), 6 tarifas regionales, 3 rutas tematicas con items, 7 insignias. clima_mensual vacio (lo llena T-25). Pruebas en src/domain/catalogo/seed.test.ts (8, verifican los criterios de F-a). lint 0, tsc 0, build ok, 10/10 tests. El usuario ejecuto npm run seed y cargo los datos en Supabase sin error (2026-11-10). Costos/tarifas/tiempos marcados costo_aproximado=true (R-04); revisar antes de la sustentacion."
+    },
+    {
+      "fecha": "2026-11-10T10:36:50",
+      "por": "claude",
+      "op": "idea_agregar",
+      "id": "I-03",
+      "detalle": "Modelo de tarifas por edad y categoria (adulto, nino, adulto mayor, extranjero) y pasaportes por nivel en atracciones como el Parque del Cafe o PANACA. Hoy el esquema usa un unico costo_entrada_cop (tarifa general de adulto) mas tarifa_extranjero_cop, acorde a plan.md 6.2. Implicaria una tabla de tarifas por atraccion y categoria y que el planificador pregunte las edades del grupo; afecta presupuesto (T-15)."
+    },
+    {
+      "fecha": "2026-11-10T10:43:54",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-09",
+      "detalle": "estado: 'pendiente' -> 'hecha'"
+    },
+    {
+      "fecha": "2026-11-10T10:43:54",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-09",
+      "detalle": "Vista de exploracion del catalogo en src/features/catalogo/ con TanStack Query (dependencia @tanstack/react-query@5.59.0; QueryClient en src/app/query-client.ts con cache larga). Servicio de lectura src/services/catalogo.ts (clave anon, solo lectura, respuestas validadas con Zod); hooks en use-catalogo.ts. UI ExplorarCatalogo.tsx con dos pestanas Municipios | Atracciones, buscador (ignora tildes), filtro por departamento y por estilo, y mensajes claros cuando no hay resultados (incluido el de municipio no encontrado, pedido del usuario). FichaAtraccion.tsx muestra detalle con nota de tarifa general de adulto (el precio por edad quedo como idea I-03). Logica pura en filtrar.ts y formato.ts. Pruebas en filtrar.test.ts (10, con el seed real). App.tsx monta la vista; main.tsx envuelve con QueryClientProvider; App.test.tsx actualizado. El combobox de seleccion de destinos se hara en T-13 (planificador). lint 0, tsc 0, build ok, 22/22 tests. El usuario verifico la vista en el navegador (2026-11-10)."
+    },
+    {
+      "fecha": "2026-11-10T10:53:19",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-10",
+      "detalle": "estado: 'pendiente' -> 'hecha'"
+    },
+    {
+      "fecha": "2026-11-10T10:53:19",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-10",
+      "detalle": "Mapa Leaflet en src/features/catalogo/MapaCatalogo.tsx: los 53 municipios como marcadores agrupados (react-leaflet-cluster), teselas de OpenStreetMap con atribucion visible (c OpenStreetMap contributors), popups con el municipio, su etiqueta de pueblo patrimonio y enlaces a sus atracciones. icono-leaflet.ts arregla el icono por defecto con Vite. Tercera pestana Mapa en ExplorarCatalogo con carga diferida (React.lazy): Leaflet queda en un chunk aparte (~206 kB) que solo se descarga al abrir el mapa; el bundle inicial se mantiene en ~366 kB. Zoom con rueda desactivado a proposito (molesto en movil y con scroll), aprobado por el usuario. scrollWheelZoom off. La cache de teselas en runtime (Workbox) es de la PWA (T-14). Dependencias fijadas: leaflet@1.9.4, react-leaflet@4.2.1, react-leaflet-cluster@2.1.0, @types/leaflet@1.9.12. lint 0, tsc 0, build ok con code splitting, 22/22 tests. El usuario verifico el mapa en el navegador (2026-11-10)."
+    },
+    {
+      "fecha": "2026-11-10T10:53:47",
+      "por": "claude",
+      "op": "tarea_agregar",
+      "id": "T-30",
+      "detalle": "Verificar el criterio RLS de la fase (a): un INSERT con la clave publica sobre atracciones falla"
     }
   ]
 }
