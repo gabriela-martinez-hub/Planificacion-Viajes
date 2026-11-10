@@ -11,9 +11,15 @@ import {
   municipioSchema,
   atraccionSchema,
   departamentoSchema,
+  origenExternoSchema,
+  rutaBusSchema,
+  tarifaReferenciaSchema,
   type Municipio,
   type Atraccion,
   type Departamento,
+  type OrigenExterno,
+  type RutaBus,
+  type TarifaReferencia,
 } from '@/domain/catalogo/esquemas';
 
 /** Convierte null de la base en undefined para que Zod aplique opcionales. */
@@ -84,4 +90,64 @@ export async function obtenerAtracciones(): Promise<Atraccion[]> {
     .array(atraccionSchema)
     .parse(filas)
     .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+}
+
+// --- Datos que necesita el generador de itinerario (T-11/T-13) ---
+
+/** Orígenes externos (Bogotá, Medellín, Cali). Nombre y coordenadas en `nodos`. */
+export async function obtenerOrigenesExternos(): Promise<OrigenExterno[]> {
+  const { data, error } = await supabase
+    .from('origenes_externos')
+    .select('id, nodos!inner(nombre, lat, lon)');
+  if (error)
+    throw new Error(
+      `No se pudieron leer los orígenes externos: ${error.message}`,
+    );
+
+  interface Fila {
+    id: string;
+    nodos: { nombre: string; lat: number; lon: number };
+  }
+  const filas = ((data ?? []) as unknown as Fila[]).map((o) => ({
+    id: o.id,
+    nombre: o.nodos.nombre,
+    lat: o.nodos.lat,
+    lon: o.nodos.lon,
+  }));
+  return z
+    .array(origenExternoSchema)
+    .parse(filas)
+    .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+}
+
+/** Rutas de bus directas (ambos sentidos). El grafo se arma en el dominio. */
+export async function obtenerRutasBus(): Promise<RutaBus[]> {
+  const { data, error } = await supabase
+    .from('rutas_bus')
+    .select(
+      'nodo_origen, nodo_destino, minutos, distancia_km, tarifa_cop, ' +
+        'costo_aproximado, frecuencia_diaria, empresa, fecha_actualizacion, fuente',
+    );
+  if (error)
+    throw new Error(`No se pudieron leer las rutas de bus: ${error.message}`);
+  const filas = (data ?? []).map((r) =>
+    sinNulos(r as unknown as Record<string, unknown>),
+  );
+  return z.array(rutaBusSchema).parse(filas);
+}
+
+/** Tarifas de referencia de alojamiento y comida por nivel. */
+export async function obtenerTarifas(): Promise<TarifaReferencia[]> {
+  const { data, error } = await supabase
+    .from('tarifas_referencia')
+    .select(
+      'concepto, nivel, municipio_id, valor_cop, unidad, ' +
+        'costo_aproximado, fecha_actualizacion, fuente',
+    );
+  if (error)
+    throw new Error(`No se pudieron leer las tarifas: ${error.message}`);
+  const filas = (data ?? []).map((tf) =>
+    sinNulos(tf as unknown as Record<string, unknown>),
+  );
+  return z.array(tarifaReferenciaSchema).parse(filas);
 }

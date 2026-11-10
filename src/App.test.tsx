@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { vi } from 'vitest';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+import { MemoryRouter } from 'react-router-dom';
 import type { ReactNode } from 'react';
 import App from '@/App';
 import { AuthProvider } from '@/features/auth/AuthProvider';
@@ -36,7 +37,9 @@ function envolver(nodo: ReactNode) {
   });
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>{nodo}</AuthProvider>
+      <AuthProvider>
+        <MemoryRouter>{nodo}</MemoryRouter>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

@@ -201,4 +201,70 @@ describe('generarItinerario', () => {
       uno.itinerario.costos.total,
     );
   });
+
+  it('reparte las atracciones entre los días en vez de amontonarlas (Parque del Café)', () => {
+    // Montenegro tiene el Parque del Café (450 min) y su casco. En un viaje de
+    // 3 días no deben quedar ambos en el día 1: se reparten entre días.
+    const r = generarItinerario(
+      entrada({
+        origenNodoId: 'armenia',
+        municipiosElegidos: ['montenegro'],
+        estilos: ['aventura'],
+        fechaInicio: '2026-12-02', // miércoles: el Parque abre
+        fechaFin: '2026-12-04',
+        incluyeRegreso: true,
+      }),
+    );
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    // El Parque del Café aparece en el itinerario.
+    const diaParque = r.itinerario.dias.find((d) =>
+      d.items.some((i) => i.atraccionId === 'parque-del-cafe'),
+    );
+    expect(diaParque).toBeDefined();
+    // El día del Parque no incluye además el casco: se repartieron.
+    const actividadesEseDia = diaParque!.items.filter(
+      (i) => i.tipo === 'actividad',
+    ).length;
+    expect(actividadesEseDia).toBe(1);
+  });
+
+  it('respeta el orden de municipios que elige el usuario', () => {
+    // Con dos destinos, el orden pedido manda sobre el de cercanía.
+    const forzado = generarItinerario(
+      entrada({
+        origenNodoId: 'armenia',
+        municipiosElegidos: ['salento', 'filandia'],
+        fechaInicio: '2026-12-01',
+        fechaFin: '2026-12-02',
+        incluyeRegreso: false,
+        ordenMunicipios: ['filandia', 'salento'],
+      }),
+    );
+    expect(forzado.ok).toBe(true);
+    if (!forzado.ok) return;
+    // El primer día (día 1) tiene como base el primer municipio del orden pedido.
+    expect(forzado.itinerario.dias[0].municipioBaseId).toBe('filandia');
+  });
+
+  it('no incluye una atracción cerrada ese día de la semana', () => {
+    // El Parque del Café cierra lunes (1) y martes (2). Un viaje de un solo día
+    // en lunes, con base en Montenegro, no debe incluirlo.
+    const r = generarItinerario(
+      entrada({
+        origenNodoId: 'montenegro',
+        municipiosElegidos: ['montenegro'],
+        estilos: ['aventura'],
+        fechaInicio: '2026-12-07', // lunes
+        fechaFin: '2026-12-07',
+        incluyeRegreso: false,
+      }),
+    );
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    const incluido = r.itinerario.dias.some((d) =>
+      d.items.some((i) => i.atraccionId === 'parque-del-cafe'),
+    );
+    expect(incluido).toBe(false);
+  });
 });

@@ -99,18 +99,33 @@ export const textos = {
 
   planificador: {
     titulo: 'Planifica tu viaje',
+    tituloViaje: 'Nombre del viaje',
+    elige: 'Elige una opción',
     origen: 'Punto de partida',
     fechaInicio: 'Fecha de ida',
     fechaFin: 'Fecha de regreso',
     viajeros: 'Número de viajeros',
+    nivelViaje: 'Nivel del viaje',
     estilos: 'Estilos de viaje',
+    estilosTodos: 'Todos',
     municipios: 'Municipios que quieres visitar',
+    municipiosElegidos: '{n} municipio(s) elegido(s)',
     obligatorias: 'Atracciones que no te quieres perder',
     limiteJornada: 'Horas máximas de actividad por día',
     incluyeRegreso: 'Incluir el regreso al punto de partida',
     generar: 'Generar itinerario',
     dia: 'Día {numero}',
+    diaLluvioso: 'Día lluvioso',
     soloTraslado: 'Día de solo traslado',
+    ordenDestinos: 'Orden de los destinos',
+    ordenDestinosAyuda:
+      'Puedes cambiar el orden en que visitas los municipios. Los traslados se recalculan solos.',
+    ordenNoOptimo:
+      'Este orden lo elegiste tú y puede no ser el más corto en tiempo de viaje.',
+    trasladoFijo:
+      'El traslado es fijo. Para cambiar su destino, reordena los destinos arriba.',
+    subir: 'Subir',
+    bajar: 'Bajar',
     fijar: 'Fijar',
     desfijar: 'Quitar fijado',
     fijado: 'Fijado: no se mueve al reorganizar',

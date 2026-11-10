@@ -62,6 +62,12 @@ export interface EntradaItinerario {
   nivel: Nivel;
   municipiosElegidos: string[];
   atraccionesObligatorias: string[];
+  /**
+   * Orden preferido de los municipios base (ids). Si está, el generador respeta
+   * este orden en vez de ordenar por cercanía al origen. Lo usa la UI cuando el
+   * usuario reordena los destinos a mano (puede no ser el óptimo).
+   */
+  ordenMunicipios?: string[];
   /** Minutos máximos de jornada entre actividades y traslados (por defecto 540 = 9 h). */
   limiteJornadaMin: number;
   /** Clima por día del viaje. Puede faltar algún día (se trata como seco). */

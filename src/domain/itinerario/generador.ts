@@ -66,6 +66,7 @@ export function generarItinerario(
     nivel,
     municipiosElegidos,
     atraccionesObligatorias,
+    ordenMunicipios,
     climaPorDia,
   } = entrada;
   const limiteJornada = entrada.limiteJornadaMin || LIMITE_JORNADA_POR_DEFECTO;
@@ -141,12 +142,24 @@ export function generarItinerario(
       'Ninguno de los municipios elegidos es alcanzable en bus desde el origen.',
     );
   }
-  // Orden determinista: menor tiempo de camino, luego id.
-  alcanzables.sort((a, b) => {
-    if (a.camino.minutos !== b.camino.minutos)
-      return a.camino.minutos - b.camino.minutos;
-    return a.municipio.id.localeCompare(b.municipio.id);
-  });
+  // Orden de los municipios base. Por defecto, determinista por cercanía
+  // (menor tiempo de camino, luego id). Si la UI pasó `ordenMunicipios`, se
+  // respeta ese orden (el usuario puede preferir una ruta no óptima).
+  if (ordenMunicipios && ordenMunicipios.length > 0) {
+    const posicion = new Map(ordenMunicipios.map((id, i) => [id, i]));
+    alcanzables.sort((a, b) => {
+      const pa = posicion.get(a.municipio.id) ?? Number.MAX_SAFE_INTEGER;
+      const pb = posicion.get(b.municipio.id) ?? Number.MAX_SAFE_INTEGER;
+      if (pa !== pb) return pa - pb;
+      return a.municipio.id.localeCompare(b.municipio.id);
+    });
+  } else {
+    alcanzables.sort((a, b) => {
+      if (a.camino.minutos !== b.camino.minutos)
+        return a.camino.minutos - b.camino.minutos;
+      return a.municipio.id.localeCompare(b.municipio.id);
+    });
+  }
 
   // --- Asignar municipio base a cada día del viaje ---
   // Reservamos el último día para el regreso solo si hace falta; por ahora cada
@@ -211,35 +224,58 @@ export function generarItinerario(
     candidatasPorMuni.set(a.municipio_id, lista);
   }
 
-  const usadas = new Set<string>();
+  // Días que pueden recibir actividades (no son de solo traslado), agrupados por
+  // municipio base. Repartir entre los días de una misma base evita amontonar
+  // todo en el primer día y dejar los siguientes vacíos.
+  const minutosDia = new Map<DiaEnConstruccion, number>();
+  const diasPorBase = new Map<string, DiaEnConstruccion[]>();
   for (const d of dias) {
-    // Minutos ya comprometidos por el traslado de llegada/regreso del día.
     let minutosTraslado = 0;
     if (d.caminoLlegada) minutosTraslado += d.caminoLlegada.minutos;
     if (d.caminoRegreso) minutosTraslado += d.caminoRegreso.minutos;
+    minutosDia.set(d, minutosTraslado);
 
     const soloTraslado =
       (d.dia === 1 && diaLlegadaSoloTraslado) ||
       (d.esRegreso && diaRegresoSoloTraslado);
-    if (soloTraslado) continue; // el día solo tiene el traslado
+    if (soloTraslado) continue;
 
-    const dow = diaSemana(d.fecha);
+    const lista = diasPorBase.get(d.municipioBaseId) ?? [];
+    lista.push(d);
+    diasPorBase.set(d.municipioBaseId, lista);
+  }
+
+  const usadas = new Set<string>();
+  for (const [base, diasBase] of diasPorBase) {
     const candidatas = ordenarPorPreferencia(
-      (candidatasPorMuni.get(d.municipioBaseId) ?? []).filter((a) => {
-        if (usadas.has(a.id)) return false;
-        if (a.dias_cerrado.includes(dow)) return false;
-        return true;
-      }),
+      candidatasPorMuni.get(base) ?? [],
       estilos,
     );
-
-    let minutosUsados = minutosTraslado;
     for (const a of candidatas) {
+      if (usadas.has(a.id)) continue;
       const costoTiempo = a.duracion_min + 2 * a.minutos_desde_casco;
-      if (minutosUsados + costoTiempo > limiteJornada) continue;
-      d.actividades.push(a);
-      usadas.add(a.id);
-      minutosUsados += costoTiempo;
+      // Elegir, entre los días de esta base donde la atracción abre y cabe, el
+      // que tenga más tiempo libre (desempate por número de día) para repartir.
+      let elegido: DiaEnConstruccion | undefined;
+      let maxLibre = -1;
+      for (const d of diasBase) {
+        if (a.dias_cerrado.includes(diaSemana(d.fecha))) continue;
+        const usado = minutosDia.get(d) ?? 0;
+        const libre = limiteJornada - usado;
+        if (costoTiempo > libre) continue;
+        if (
+          libre > maxLibre ||
+          (libre === maxLibre && (elegido === undefined || d.dia < elegido.dia))
+        ) {
+          maxLibre = libre;
+          elegido = d;
+        }
+      }
+      if (elegido) {
+        elegido.actividades.push(a);
+        usadas.add(a.id);
+        minutosDia.set(elegido, (minutosDia.get(elegido) ?? 0) + costoTiempo);
+      }
     }
   }
 
