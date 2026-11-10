@@ -1,6 +1,8 @@
 // Todos los textos de interfaz viven aquí (es-CO). Los componentes no llevan
-// texto escrito directamente. La versión completa y la función t(clave) se
-// desarrollan en T-04; por ahora cubre la pantalla inicial (criterio de la fase 0).
+// texto escrito directamente: lo piden con t('seccion.clave') desde '@/i18n'.
+// Los marcadores {nombre} se reemplazan con los parámetros de t().
+// Moneda, números y fechas no van aquí: se formatean con Intl y el locale es-CO.
+// Las claves de rutas.* e insignias.* son las que guarda clave_texto en la base.
 
 export const textos = {
   app: {
@@ -8,6 +10,186 @@ export const textos = {
     descripcion:
       'Planifica viajes por Caldas, Quindío y Risaralda según fechas, presupuesto y clima.',
   },
+
+  comun: {
+    cargando: 'Cargando…',
+    reintentar: 'Reintentar',
+    guardar: 'Guardar',
+    cancelar: 'Cancelar',
+    eliminar: 'Eliminar',
+    confirmar: 'Confirmar',
+    cerrar: 'Cerrar',
+    volver: 'Volver',
+    subir: 'Subir',
+    bajar: 'Bajar',
+    sinConexion: 'Sin conexión. Estás viendo la última versión guardada.',
+    errorGenerico: 'Algo salió mal. Inténtalo de nuevo.',
+  },
+
+  nav: {
+    inicio: 'Inicio',
+    explorar: 'Explorar',
+    planificar: 'Planificar',
+    misViajes: 'Mis viajes',
+    perfil: 'Perfil',
+  },
+
+  auth: {
+    iniciarSesion: 'Iniciar sesión con Google',
+    cerrarSesion: 'Cerrar sesión',
+    saludo: 'Hola, {nombre}',
+    sinCuenta:
+      'Puedes explorar y crear un itinerario sin cuenta. Se guardará solo en este dispositivo.',
+    errorInicio: 'No se pudo iniciar sesión con Google. Inténtalo de nuevo.',
+  },
+
+  catalogo: {
+    buscar: 'Buscar municipio o atracción',
+    filtroDepartamento: 'Departamento',
+    filtroEstilo: 'Estilo de viaje',
+    sinResultados: 'No hay resultados con esos filtros.',
+    puebloPatrimonio: 'Pueblo patrimonio',
+    cascoUrbano: 'Casco urbano',
+    duracion: 'Duración aproximada',
+    horario: 'Horario',
+    cerradoLos: 'Cerrado: {dias}',
+    costoAproximado: 'Costo aproximado, actualizado el {fecha}.',
+    fuente: 'Fuente: {fuente}',
+    requiereGuia: 'Requiere guía u operador',
+    estilos: {
+      aventura: 'Aventura',
+      naturaleza: 'Naturaleza',
+      cultura_cafetera: 'Cultura cafetera',
+      descanso: 'Descanso',
+      gastronomia: 'Gastronomía',
+    },
+    estadoAcceso: {
+      abierta: 'Abierta',
+      restringida: 'Acceso restringido',
+      cerrada: 'Cerrada',
+    },
+  },
+
+  planificador: {
+    titulo: 'Planifica tu viaje',
+    origen: 'Punto de partida',
+    fechaInicio: 'Fecha de ida',
+    fechaFin: 'Fecha de regreso',
+    viajeros: 'Número de viajeros',
+    estilos: 'Estilos de viaje',
+    municipios: 'Municipios que quieres visitar',
+    obligatorias: 'Atracciones que no te quieres perder',
+    limiteJornada: 'Horas máximas de actividad por día',
+    incluyeRegreso: 'Incluir el regreso al punto de partida',
+    generar: 'Generar itinerario',
+    dia: 'Día {numero}',
+    soloTraslado: 'Día de solo traslado',
+    fijar: 'Fijar',
+    desfijar: 'Quitar fijado',
+    fijado: 'Fijado: no se mueve al reorganizar',
+    sinFactible: 'No se pudo armar un itinerario con estas condiciones.',
+    nivel: {
+      economico: 'Económico',
+      medio: 'Medio',
+      alto: 'Alto',
+    },
+    tipoItem: {
+      actividad: 'Actividad',
+      traslado: 'Traslado',
+      alojamiento: 'Alojamiento',
+      comida: 'Comida',
+      libre: 'Tiempo libre',
+    },
+  },
+
+  presupuesto: {
+    titulo: 'Presupuesto',
+    modoFijo: 'Tengo un monto fijo',
+    modoSonado: 'Viaje soñado',
+    montoTotal: 'Presupuesto total del grupo',
+    total: 'Total estimado',
+    porPersona: 'Por persona',
+    noAlcanza:
+      'El presupuesto no alcanza. El mínimo para este viaje es {minimo}. Prueba acortar el viaje o cambiar de nivel.',
+    ajustado: 'Itinerario ajustado a tu presupuesto',
+    desglose: {
+      transporte: 'Transporte',
+      alojamiento: 'Alojamiento',
+      comida: 'Comida',
+      entradas: 'Entradas y actividades',
+    },
+    meta: {
+      titulo: 'Meta de ahorro',
+      objetivo: 'Monto objetivo',
+      frecuencia: 'Frecuencia de ahorro',
+      semanal: 'Semanal',
+      mensual: 'Mensual',
+      cuota: 'Cuota sugerida',
+      registrarAporte: 'Registrar aporte',
+      cumplida: '¡Meta cumplida!',
+      vencida: 'La fecha del viaje ya pasó.',
+    },
+  },
+
+  clima: {
+    pronostico: 'Pronóstico',
+    estimacion: 'Estimación con promedios históricos',
+    avisoSinRed:
+      'No se pudo consultar el pronóstico. Se muestra la estimación con promedios históricos.',
+    lluvia: 'Probabilidad de lluvia: {probabilidad}',
+    reorganizar: 'Reorganizar por clima',
+    vistaPrevia: 'Vista previa de los cambios',
+    aplicar: 'Aplicar cambios',
+    atribucion: 'Datos del clima: Open-Meteo',
+  },
+
+  checkin: {
+    registrar: 'Hacer check-in',
+    sinConexion: 'El check-in necesita conexión a internet.',
+    verificado: 'Check-in verificado',
+    manual: 'Registro manual (no verificado)',
+    fueraDeRadio:
+      'Estás fuera del área del lugar. Puedes hacer un registro manual.',
+    precisionBaja:
+      'La ubicación no es lo bastante precisa. Inténtalo al aire libre.',
+  },
+
+  privacidad: {
+    titulo: 'Tratamiento de datos personales',
+    consentimiento:
+      'Para hacer check-in usamos tu ubicación una sola vez para compararla con la del lugar. No guardamos tus coordenadas.',
+    aceptar: 'Acepto',
+    verPolitica: 'Ver la política de tratamiento de datos',
+  },
+
+  perfil: {
+    titulo: 'Mi perfil',
+    municipiosVisitados: 'Municipios visitados',
+    progreso: '{visitados} de {total}',
+    eliminarCuenta: 'Eliminar mi cuenta y mis datos',
+    confirmarEliminar:
+      'Se borrarán tus viajes, check-ins e insignias. Esta acción no se puede deshacer.',
+  },
+
+  rutas: {
+    cafe: 'Ruta del café',
+    termales: 'Ruta de termales',
+    pueblosPatrimonio: 'Pueblos patrimonio',
+  },
+
+  insignias: {
+    titulo: 'Insignias',
+    verificada: 'Verificada',
+    noVerificada: 'Con registros manuales',
+    caldas: 'Caldas completo',
+    quindio: 'Quindío completo',
+    risaralda: 'Risaralda completo',
+    ejeCafetero: 'Eje Cafetero',
+  },
 } as const;
+
+/** Misma forma que `textos`, con cualquier texto. Otro idioma tendría este tipo. */
+type Forma<T> = { [K in keyof T]: T[K] extends string ? string : Forma<T[K]> };
+export type Textos = Forma<typeof textos>;
 
 export default textos;
