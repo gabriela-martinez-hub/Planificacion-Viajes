@@ -466,7 +466,7 @@ Las ediciones manuales del usuario marcan el ítem como `fijado`. Regenerar resp
 ├─ scripts/
 │  ├─ generar-clima-mensual.ts   # reanudable, respeta la cuota de Open-Meteo
 │  └─ cargar-seed.ts             # usa la clave secreta (variable sin prefijo VITE_)
-├─ .github/workflows/      # CI (lint, tests) y consulta semanal para evitar la pausa de Supabase
+├─ .github/workflows/      # CI (lint, tests) y consulta diaria para evitar la pausa de Supabase
 └─ src/
    ├─ app/                 # router, providers, layout
    ├─ domain/              # lógica pura + tests
@@ -507,7 +507,7 @@ Cada fase termina con: qué se hizo, cómo probarlo y qué sigue.
   - Publicar la pantalla de consentimiento o agregar como usuarios de prueba a quienes vayan a evaluar el proyecto (en modo *Testing* solo entran usuarios de prueba).
 - Crear `src/i18n/es-CO.ts` y la función `t(clave)`; los componentes no llevan textos de interfaz escritos directamente.
 - Redactar la política de tratamiento de datos.
-- Workflow semanal que haga una consulta real a Supabase, porque el plan gratuito pausa proyectos tras 7 días de inactividad ([documentación](https://supabase.com/docs/guides/platform/pausing)).
+- Workflow diario que haga una consulta real a Supabase, porque el plan gratuito pausa proyectos con poca actividad en 7 días y la documentación recomienda algunas consultas al día ([documentación](https://supabase.com/docs/guides/platform/pausing); decisión del 9 de noviembre de 2026).
 - **Aceptación:** la app arranca, se puede iniciar y cerrar sesión con Google, CI corre lint y tests, los textos de la pantalla inicial salen de `es-CO.ts`, `.env.example` no contiene la clave secreta.
 
 ### Fase (a): Catálogo + mapa
