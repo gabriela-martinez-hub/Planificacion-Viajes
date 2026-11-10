@@ -26,15 +26,20 @@ Operaciones:
 Nada se borra: las tareas se descartan con estado "descartada"; el historial solo crece.
 """
 
-import fcntl
 import json
 import os
 import sys
 import tempfile
+import time
 from contextlib import contextmanager
 from datetime import date, datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+
+try:
+    import fcntl  # Unix
+except ImportError:  # Windows no tiene fcntl
+    fcntl = None
 
 
 def _raiz_proyecto() -> Path:
@@ -96,12 +101,37 @@ def guardar(datos: dict) -> None:
 @contextmanager
 def bloqueo():
     BLOQUEO.parent.mkdir(parents=True, exist_ok=True)
-    with BLOQUEO.open("w") as f:
-        fcntl.flock(f, fcntl.LOCK_EX)
+    if fcntl is not None:
+        # Unix: bloqueo de archivo con fcntl.
+        with BLOQUEO.open("w") as f:
+            fcntl.flock(f, fcntl.LOCK_EX)
+            try:
+                yield
+            finally:
+                fcntl.flock(f, fcntl.LOCK_UN)
+    else:
+        # Windows (sin fcntl): bloqueo por creación exclusiva del archivo.
+        intentos = 0
+        while True:
+            try:
+                fd = os.open(str(BLOQUEO), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+                break
+            except FileExistsError:
+                intentos += 1
+                if intentos > 100:
+                    raise ErrorTablero(
+                        f"No se pudo tomar el bloqueo {BLOQUEO}; "
+                        "si no hay otro proceso, borra ese archivo."
+                    )
+                time.sleep(0.1)
         try:
             yield
         finally:
-            fcntl.flock(f, fcntl.LOCK_UN)
+            os.close(fd)
+            try:
+                os.unlink(BLOQUEO)
+            except FileNotFoundError:
+                pass
 
 
 # ---------------------------------------------------------------- utilidades
