@@ -42,11 +42,15 @@ Verificación de la tarea T-06 (2026-11-09). El seed (T-08) parte de estos datos
   - Con los 10 del Valle suman 50 mapas, no 51. No se resolvió cuál falta.
 - El PCC se delimita por veredas: la lista indica municipios con área en el PCC,
   no municipios completos.
-- Queda pendiente la decisión del usuario sobre cómo definir esta ruta.
+- Decisión del usuario (2026-11-09): la ruta se arma con atracciones cafeteras
+  del seed (p. ej. Parque del Café, Recinto del Pensamiento, fincas con
+  recorrido), no con los municipios del PCC. Cada atracción cita su propia
+  fuente.
 
 ## Ruta de termales: sin fuente oficial con lista definida
 
 - No se encontró una ruta de termales oficial. Los termales son atracciones
   privadas (p. ej. en Santa Rosa de Cabal, Manizales y Villamaría), así que la
   ruta tendría que definirse con las atracciones del seed (T-08).
-- Queda pendiente la decisión del usuario.
+- Decisión del usuario (2026-11-09): la ruta se arma con las atracciones
+  termales del seed. Cada atracción cita su propia fuente.
