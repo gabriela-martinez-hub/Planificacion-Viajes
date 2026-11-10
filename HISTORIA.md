@@ -323,3 +323,74 @@
   la sustentación los costos/tarifas aproximados (R-04) y el acceso al Nevado
   del Ruiz (R-03). Opcional: publicar los 6 commits con `git push`.
 - Origen: sesión de Kiro con el usuario
+
+### 2026-11-10 — T-11: generador de itinerario (dominio puro)
+- Cierre anterior: 8fe36e7 (memoria: cierre de sesion 2026-11-10 con el plan de T-11)
+- Commits: f751373 (feat del generador); este cierre agrega el commit de memoria
+- Qué se hizo:
+  - T-11 terminada. Generador de itinerario determinista en `src/domain/itinerario/`
+    como lógica pura (sin red ni hora del sistema), siguiendo el plan acordado con el
+    usuario en el cierre anterior. Seis módulos más dos de pruebas:
+    - `tipos.ts`: entrada (`EntradaItinerario`, `ClimaDia`), salida (`Itinerario`,
+      `DiaItinerario`, `ItemItinerario`, `DesgloseCostos`) y resultado tipado ok/no-ok
+      (`ResultadoItinerario`, `MotivoFallo`). El clima entra como parámetro; el servicio
+      real es T-17.
+    - `grafo-buses.ts`: `GrafoBuses` con Dijkstra y penalización de 30 min por trasbordo
+      (plan.md 6.1 paso 3); desempate por id (determinista); null si no hay camino;
+      camino vacío y costo 0 si origen = destino.
+    - `puntuacion.ts`: puntuación por coincidencia de estilos y comparador de desempate
+      (puntuación desc, costo asc, id asc), plan.md 6.0.
+    - `fechas.ts`: aritmética de fechas civiles 'AAAA-MM-DD' en UTC para no depender del
+      huso del entorno (plan.md 5.4, zona America/Bogota).
+    - `generador.ts`: construcción voraz (pasos 1-6): filtra por municipio/estado/día de
+      cierre, elige municipios base por cercanía al origen, reparte actividades
+      respetando el límite de jornada (9 h por defecto) con el tiempo de ida y vuelta
+      desde el casco (2 × minutos_desde_casco), inserta traslado de llegada el día 1 y de
+      regreso el último (días de solo traslado exentos del límite, con aviso), fuerza las
+      atracciones obligatorias y calcula costos de alojamiento y comida.
+    - `busqueda-local.ts`: ascenso de colina determinista (paso 7): mueve actividades al
+      aire libre de días lluviosos a días secos con el mismo municipio base, sin tocar
+      ítems fijados, acotado por iteraciones; no cambia el costo total.
+    - `index.ts`: `generarItinerario` (voraz + búsqueda local) y `catalogoParaItinerario`
+      que arma el subconjunto de catálogo desde el catálogo validado por Zod.
+  - Pruebas: `generador.test.ts` (14) y `grafo-buses.test.ts` (5). Casos: determinismo,
+    día 1 desde el origen, origen = destino sin traslado de llegada, límite de jornada,
+    traslado largo desde Bogotá como solo-traslado, municipio inalcanzable listado,
+    infactible (1 día + origen externo + regreso), rango de fechas invertido, origen
+    desconocido, sin municipios, obligatorias incluidas, 0 noches, costo escala con
+    viajeros; y del grafo: tramo directo, trasbordo con penalización, sin camino, empate
+    determinista, origen = destino.
+- Decisiones:
+  - El módulo no requiere la tabla `nodos`: los municipios y orígenes externos ya llevan
+    nombre y coordenadas, así que `CatalogoItinerario` se arma solo con municipios,
+    orígenes, atracciones, rutas de bus y tarifas. (Coherente con que `nodos` se deriva en
+    el script de carga del seed, no vive en el catálogo validado.)
+  - T-11 cubre los pasos 1-7. NO incluye el ajuste de presupuesto (paso 8, T-15), el
+    reordenamiento por clima con vista previa (paso 9, T-18) ni las 20-30 instancias de
+    evaluación (T-27). El clima entra como `ClimaDia[]` por parámetro (servicio en T-17).
+  - El desempate de Dijkstra y de la selección de atracciones es siempre por id, de modo
+    que la misma entrada produce el mismo itinerario sin aleatoriedad.
+- Hallazgos:
+  - `eslint` marcaba `no-constant-condition` por el `while (true)` del bucle de Dijkstra;
+    se reescribió con una bandera `quedan` sin cambiar la lógica.
+  - No se pudo medir la cobertura: falta la dependencia `@vitest/coverage-v8` y no se
+    instaló por no estar acordada para T-11. Queda pendiente para el criterio de
+    cobertura de F-b (se puede medir instalando ese provider o junto con T-27).
+  - Git avisa LF→CRLF al indexar los archivos nuevos (Windows, core.autocrlf); la CI en
+    Ubuntu los ve con LF y pasa, como en cierres anteriores.
+- Criterios de aceptación (F-b sigue abierta; T-11 es su primera tarea):
+  - "Misma entrada y mismo clima producen el mismo itinerario": **verificado** (prueba de
+    determinismo en `generador.test.ts`).
+  - "El día 1 parte del origen elegido": **verificado** (prueba).
+  - "Ningún día supera el límite de jornada salvo los días de solo traslado marcados":
+    **verificado** (prueba con límite 540 y con el caso de Bogotá a 300 min).
+  - "0 violaciones de restricciones en las instancias de prueba": **pendiente** (las
+    instancias son T-27).
+  - "Generación en < 500 ms en un móvil de gama media": **pendiente de medición formal**
+    (las pruebas corren en < 35 ms en escritorio; medición ligada a T-27).
+  - "Cobertura >= 80 % en domain/itinerario": **pendiente de medir** (falta el provider de
+    cobertura; 19 pruebas ejercitan cada módulo).
+  - "Los cambios persisten tras recargar": **pendiente** (persistencia es T-13/T-14).
+- Cambios del tablero: T-11 pasa a hecha. Sin tareas, riesgos ni ideas nuevos. La próxima
+  tarea de la ruta crítica es T-12 (migraciones de datos de usuario con RLS).
+- Origen: sesión de Kiro con el usuario

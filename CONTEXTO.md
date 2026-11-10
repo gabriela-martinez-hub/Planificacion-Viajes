@@ -128,9 +128,22 @@ Catálogo y exploración (2026-11-10, ver `HISTORIA.md`):
 ## Estado actual
 - **Fase 0 cerrada** (7/8 tareas; T-29 es una verificación opcional que el
   usuario pospuso). Los 5 criterios de aceptación están verificados.
-- Tablero en revisión 17: 12/30 tareas hechas, 6 riesgos activos y 3 ideas. La
+- Tablero en revisión 18: 13/30 tareas hechas, 6 riesgos activos y 3 ideas. La
   fase (a) va 5/5 tareas, pero **sigue formalmente abierta** por un criterio de
-  aceptación sin evidencia (ver abajo).
+  aceptación sin evidencia (ver abajo). La **fase (b) está iniciada** con T-11
+  hecha (1/4 tareas de la fase).
+- **Generador de itinerario listo (T-11, 2026-11-10):** lógica pura en
+  `src/domain/itinerario/` (commit f751373). Módulos: `tipos.ts` (entrada,
+  salida y resultado ok/no-ok), `grafo-buses.ts` (Dijkstra con penalización de
+  30 min por trasbordo), `puntuacion.ts` (estilos + desempate determinista),
+  `fechas.ts` (fechas civiles en UTC), `generador.ts` (construcción voraz, pasos
+  1-6), `busqueda-local.ts` (ascenso de colina, paso 7) e `index.ts`
+  (`generarItinerario` y `catalogoParaItinerario`). Pruebas en
+  `generador.test.ts` (14) y `grafo-buses.test.ts` (5). Cubre los pasos 1-7; el
+  presupuesto (paso 8) es T-15, el reordenamiento por clima (paso 9) es T-18 y
+  las 20-30 instancias de evaluación son T-27. El clima entra como `ClimaDia[]`
+  por parámetro (servicio en T-17). Verificado: tsc 0, lint 0, build ok, 41/41
+  pruebas en total.
 - **Catálogo completo y explorable:** el seed está en Supabase (T-08) y la vista
   lo lee con TanStack Query. Tres pestañas: Municipios, Atracciones y Mapa
   (Leaflet con los 53 municipios agrupados). El usuario verificó la vista y el
@@ -169,16 +182,24 @@ Catálogo y exploración (2026-11-10, ver `HISTORIA.md`):
   pendiente: `.gitattributes` con `* text=auto eol=lf`.
 
 ## Próximos pasos
-1. T-11: generador de itinerario (`plan.md` 6.1 pasos 1-7) con pruebas de los
-   casos límite. Próxima tarea de la ruta crítica (P1). Depende de T-08 (hecha).
-2. T-12: migraciones de datos de usuario (perfiles, viajes, etc.) con RLS.
-   Depende de T-07 (hecha).
-3. En paralelo, disponibles: T-17 (servicio Open-Meteo, depende de T-01),
-   T-25 (script de clima mensual, depende de T-06) y T-30 (verificar el criterio
-   RLS de la fase a).
-4. Usuario (cuando quiera): crear la variable `SUPABASE_URL` y el secreto
+1. T-12: migraciones de datos de usuario (perfiles, viajes, viaje_dias,
+   viaje_items, metas_ahorro, aportes_ahorro) con RLS (`plan.md` 5.2 y 5.3).
+   Próxima tarea de la ruta crítica. Depende de T-07 (hecha). El usuario aplica
+   la migración en Supabase (no hay CLI local).
+2. T-13: formulario del viaje y vista día por día (usa el generador de T-11).
+   Depende de T-11 (hecha) y T-09 (hecha).
+3. T-15: presupuesto, paso 8 del generador (modo fijo con ajuste). Depende de
+   T-11 (hecha).
+4. En paralelo, disponibles: T-17 (servicio Open-Meteo, depende de T-01),
+   T-25 (script de clima mensual, depende de T-06), T-27 (instancias de
+   evaluación del generador, depende de T-11 —ahora desbloqueada—) y T-30
+   (verificar el criterio RLS de la fase a).
+5. Criterio de F-b pendiente de medir: cobertura >= 80 % en domain/itinerario.
+   Falta el provider `@vitest/coverage-v8` (no instalado por no estar acordado);
+   medirlo al abordar T-27 o instalando ese provider.
+6. Usuario (cuando quiera): crear la variable `SUPABASE_URL` y el secreto
    `SUPABASE_ANON_KEY` en GitHub para activar la consulta diaria contra la pausa.
-5. Antes de la sustentación: revisar costos, tarifas y tiempos de bus del seed
+7. Antes de la sustentación: revisar costos, tarifas y tiempos de bus del seed
    (marcados aproximados, R-04) y el acceso al Nevado del Ruiz (R-03).
 
 ## Pendientes de decisión del usuario

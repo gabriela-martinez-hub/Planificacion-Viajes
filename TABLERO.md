@@ -2,7 +2,7 @@
 
 > Vista generada desde `control/tablero.json` con `python3 .claude/skills/orquestador-proyecto/scripts/tablero.py render`. No se edita a mano.
 
-Revisión 17, actualizado 2026-11-10T10:53:47. Avance: 12/30 tareas (40 %).
+Revisión 18, actualizado 2026-11-10T11:29:06. Avance: 13/30 tareas (43 %).
 
 ## Avance por frente
 
@@ -10,7 +10,7 @@ Revisión 17, actualizado 2026-11-10T10:53:47. Avance: 12/30 tareas (40 %).
 |---|---|---|
 | Fase 0: Preparación | 7 | 8 |
 | Fase (a): Catálogo + mapa | 5 | 6 |
-| Fase (b): Planificador de itinerarios | 0 | 5 |
+| Fase (b): Planificador de itinerarios | 1 | 5 |
 | Fase (c): Presupuesto | 0 | 2 |
 | Fase (d): Clima | 0 | 3 |
 | Fase (e): Insignias y perfil | 0 | 3 |
@@ -18,7 +18,7 @@ Revisión 17, actualizado 2026-11-10T10:53:47. Avance: 12/30 tareas (40 %).
 
 ## Próxima tarea
 
-**T-11** Generador de itinerario (6.1 pasos 1-7) con pruebas unitarias de los casos límite (claude)
+**T-12** Migraciones de datos de usuario (perfiles, viajes, viaje_dias, viaje_items, metas, aportes) con RLS (claude)
 
 ## Ruta crítica
 
@@ -34,7 +34,7 @@ Revisión 17, actualizado 2026-11-10T10:53:47. Avance: 12/30 tareas (40 %).
 | 8 | T-08 | ~~Seed del catálogo (municipios, 40-60 atracciones, casco urbano, rutas de bus, tarifas, rutas temáticas) con validación Zod y scripts/cargar-seed.ts~~ | F-a | claude | P1 | hecha | T-06, T-07 |
 | 9 | T-09 | ~~Lista filtrable de municipios y atracciones y ficha de atracción~~ | F-a | claude | P2 | hecha | T-04, T-08 |
 | 10 | T-10 | ~~Mapa Leaflet con marcadores agrupados, atribución OSM y caché de teselas (6.5)~~ | F-a | claude | P2 | hecha | T-08 |
-| 11 | T-11 | Generador de itinerario (6.1 pasos 1-7) con pruebas unitarias de los casos límite | F-b | claude | P1 | pendiente | T-08 |
+| 11 | T-11 | ~~Generador de itinerario (6.1 pasos 1-7) con pruebas unitarias de los casos límite~~ | F-b | claude | P1 | hecha | T-08 |
 | 12 | T-12 | Migraciones de datos de usuario (perfiles, viajes, viaje_dias, viaje_items, metas, aportes) con RLS | F-b | claude | P2 | pendiente | T-07 |
 | 13 | T-13 | Formulario del viaje y vista día por día con edición, subir/bajar e ítems fijados | F-b | claude | P2 | pendiente | T-11, T-09 |
 | 14 | T-14 | Guardar y listar viajes, lectura offline (PWA) e itinerarios sin cuenta en IndexedDB | F-b | claude | P2 | pendiente | T-13, T-12, T-05 |
@@ -87,6 +87,7 @@ Ninguna.
 
 | Fecha | Por | Operación | Id | Detalle |
 |---|---|---|---|---|
+| 2026-11-10T11:29:06 | claude | campo | T-11 | estado: 'pendiente' -> 'hecha' |
 | 2026-11-10T10:53:47 | claude | tarea_agregar | T-30 | Verificar el criterio RLS de la fase (a): un INSERT con la clave publica sobre atracciones falla |
 | 2026-11-10T10:53:19 | claude | nota | T-10 | Mapa Leaflet en src/features/catalogo/MapaCatalogo.tsx: los 53 municipios como marcadores agrupados (react-leaflet-cluster), teselas de OpenStreetMap con atribucion visible (c OpenStreetMap contributors), popups con el municipio, su etiqueta de pueblo patrimonio y enlaces a sus atracciones. icono-leaflet.ts arregla el icono por defecto con Vite. Tercera pestana Mapa en ExplorarCatalogo con carga diferida (React.lazy): Leaflet queda en un chunk aparte (~206 kB) que solo se descarga al abrir el mapa; el bundle inicial se mantiene en ~366 kB. Zoom con rueda desactivado a proposito (molesto en movil y con scroll), aprobado por el usuario. scrollWheelZoom off. La cache de teselas en runtime (Workbox) es de la PWA (T-14). Dependencias fijadas: leaflet@1.9.4, react-leaflet@4.2.1, react-leaflet-cluster@2.1.0, @types/leaflet@1.9.12. lint 0, tsc 0, build ok con code splitting, 22/22 tests. El usuario verifico el mapa en el navegador (2026-11-10). |
 | 2026-11-10T10:53:19 | claude | campo | T-10 | estado: 'pendiente' -> 'hecha' |
@@ -101,4 +102,3 @@ Ninguna.
 | 2026-11-09T21:25:34 | claude | campo | T-24 | estado: 'en_curso' -> 'hecha' |
 | 2026-11-09T21:25:34 | claude | nota | T-05 | Commit 58eefab: cliente Supabase (src/services/supabase.ts) con anon key, config validada con Zod (src/lib/config.ts), AuthProvider y contexto de sesion (src/features/auth), BotonAuth con textos de auth.* del i18n. Dependencias @supabase/supabase-js@2.45.4 y zod@3.23.8. El usuario verifico login y logout con Google en el navegador (2026-11-09). lint 0, 2/2 pruebas, build ok |
 | 2026-11-09T21:25:34 | claude | campo | T-05 | estado: 'pendiente' -> 'hecha' |
-| 2026-11-09T21:25:34 | claude | nota | T-03 | El usuario configuro Google Cloud (pantalla de consentimiento en Testing, credenciales OAuth web, usuarios de prueba) y el proveedor Google y las Redirect URLs en Supabase (2026-11-09) |

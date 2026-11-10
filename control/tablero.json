@@ -1,7 +1,7 @@
 {
   "proyecto": "Planificador de viajes del Eje Cafetero",
-  "revision": 17,
-  "actualizado": "2026-11-10T10:53:47",
+  "revision": 18,
+  "actualizado": "2026-11-10T11:29:06",
   "responsables": [
     "usuario",
     "claude",
@@ -260,9 +260,10 @@
       "dependencias": [
         "T-08"
       ],
-      "estado": "pendiente",
+      "estado": "hecha",
       "notas": "Casos: 1 día, origen igual a destino, municipio inalcanzable, traslado largo desde Bogotá",
-      "creada": "2026-11-07"
+      "creada": "2026-11-07",
+      "terminada": "2026-11-10"
     },
     {
       "id": "T-12",
@@ -919,6 +920,13 @@
       "op": "tarea_agregar",
       "id": "T-30",
       "detalle": "Verificar el criterio RLS de la fase (a): un INSERT con la clave publica sobre atracciones falla"
+    },
+    {
+      "fecha": "2026-11-10T11:29:06",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-11",
+      "detalle": "estado: 'pendiente' -> 'hecha'"
     }
   ]
 }
