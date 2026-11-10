@@ -54,3 +54,55 @@ Verificación de la tarea T-06 (2026-11-09). El seed (T-08) parte de estos datos
   ruta tendría que definirse con las atracciones del seed (T-08).
 - Decisión del usuario (2026-11-09): la ruta se arma con las atracciones
   termales del seed. Cada atracción cita su propia fuente.
+
+## Seed del catálogo (T-08, 2026-11-10)
+
+El seed vive en `supabase/seed/datos/` como módulos TypeScript tipados y
+validados con Zod (`src/domain/catalogo/esquemas.ts`). Se carga con
+`npm run seed` (script `scripts/cargar-seed.ts`, clave `service_role`).
+`npm run seed:dry-run` valida sin escribir.
+
+### Municipios y cascos urbanos
+- 53 municipios desde `divipola.csv` (DANE, ver arriba). Cada municipio tiene
+  una pseudoatracción "Casco urbano" con las coordenadas de la cabecera, para
+  el generador y el check-in (plan.md 1.1, 7).
+- Altitud de la cabecera: fichas municipales y fuentes abiertas. Donde el valor
+  es aproximado, se mantiene como referencia; no afecta la selección, solo el
+  ajuste de clima por altura (fase d).
+
+### Atracciones reales (17)
+- Concentradas en los municipios turísticos (Salento, Montenegro, Quimbaya,
+  Filandia, Manizales, Villamaría, Aguadas, Salamina, Pereira, Santa Rosa de
+  Cabal, Marsella). Cada fila cita su fuente (sitio oficial cuando existe) y
+  `fecha_actualizacion`.
+- Costos y horarios marcados con `costo_aproximado = true` (riesgo R-04): son
+  de referencia y pueden cambiar. **El usuario debe revisarlos antes de la
+  sustentación.**
+- El PNN Los Nevados / Nevado del Ruiz queda con `estado_acceso = restringida`
+  y `requiere_guia = true` (riesgo R-03): el acceso depende del nivel de alerta
+  del volcán (SGC) y debe revisarse antes de cada entrega.
+
+### Rutas de bus
+- Grafo de tramos directos entre cabeceras por los corredores principales
+  (autopista del Café, hubs de Armenia y Pereira, occidente y norte de Caldas,
+  corredor del Magdalena, orígenes externos Bogotá/Medellín/Cali).
+- Tiempos y tarifas son de referencia (`costo_aproximado = true`, riesgo R-04);
+  **el usuario debe revisarlos antes de la sustentación.**
+- El diseño garantiza que los 53 municipios quedan en una sola componente
+  conexa; lo verifica `analizarConectividadBus` y la prueba `seed.test.ts`.
+
+### Tarifas de referencia
+- Alojamiento (persona/noche) y comida (persona/día) por nivel económico, medio
+  y alto, como tarifas regionales (sin municipio). Valores de referencia
+  (`costo_aproximado = true`); **el usuario debe revisarlos.**
+
+### Rutas temáticas e insignias
+- Pueblos patrimonio: Salamina y Aguadas (Red Turística de Pueblos Patrimonio).
+- Ruta del café y ruta de termales: armadas con atracciones del seed (decisión
+  del usuario 2026-11-09).
+- Insignias: por departamento (3), del eje (53 municipios) y por ruta (3).
+
+### Clima mensual
+- Vacío en este seed. Lo genera la tarea T-25 con el script reanudable que
+  consulta la API histórica de Open-Meteo respetando su cuota (plan.md 6.3,
+  riesgo R-02).

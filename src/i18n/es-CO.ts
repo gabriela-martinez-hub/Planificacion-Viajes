@@ -185,6 +185,9 @@ export const textos = {
     quindio: 'Quindío completo',
     risaralda: 'Risaralda completo',
     ejeCafetero: 'Eje Cafetero',
+    rutaPueblosPatrimonio: 'Pueblos patrimonio',
+    rutaCafe: 'Ruta del café',
+    rutaTermales: 'Ruta de termales',
   },
 } as const;
 
