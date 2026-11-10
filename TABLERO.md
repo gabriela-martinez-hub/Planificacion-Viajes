@@ -2,14 +2,14 @@
 
 > Vista generada desde `control/tablero.json` con `python3 .claude/skills/orquestador-proyecto/scripts/tablero.py render`. No se edita a mano.
 
-Revisión 11, actualizado 2026-11-09T21:29:46. Avance: 9/29 tareas (31 %).
+Revisión 13, actualizado 2026-11-10T10:00:06. Avance: 10/29 tareas (34 %).
 
 ## Avance por frente
 
 | Frente | Hechas | Total |
 |---|---|---|
 | Fase 0: Preparación | 7 | 8 |
-| Fase (a): Catálogo + mapa | 2 | 5 |
+| Fase (a): Catálogo + mapa | 3 | 5 |
 | Fase (b): Planificador de itinerarios | 0 | 5 |
 | Fase (c): Presupuesto | 0 | 2 |
 | Fase (d): Clima | 0 | 3 |
@@ -18,7 +18,7 @@ Revisión 11, actualizado 2026-11-09T21:29:46. Avance: 9/29 tareas (31 %).
 
 ## Próxima tarea
 
-**T-08** Seed del catálogo (municipios, 40-60 atracciones, casco urbano, rutas de bus, tarifas, rutas temáticas) con validación Zod y scripts/cargar-seed.ts (claude)
+**T-09** Lista filtrable de municipios y atracciones y ficha de atracción (claude)
 
 ## Ruta crítica
 
@@ -31,7 +31,7 @@ Revisión 11, actualizado 2026-11-09T21:29:46. Avance: 9/29 tareas (31 %).
 | 5 | T-05 | ~~Inicio y cierre de sesión con Google en la app~~ | F-0 | claude | P2 | hecha | T-01, T-03 |
 | 6 | T-06 | ~~Verificar el conteo de municipios con la DIVIPOLA del DANE y verificar rutas temáticas con fuentes oficiales~~ | F-a | claude | P1 | hecha | - |
 | 7 | T-07 | ~~Migraciones SQL del catálogo con RLS de solo lectura~~ | F-a | claude | P1 | hecha | T-02 |
-| 8 | T-08 | Seed del catálogo (municipios, 40-60 atracciones, casco urbano, rutas de bus, tarifas, rutas temáticas) con validación Zod y scripts/cargar-seed.ts | F-a | claude | P1 | pendiente | T-06, T-07 |
+| 8 | T-08 | ~~Seed del catálogo (municipios, 40-60 atracciones, casco urbano, rutas de bus, tarifas, rutas temáticas) con validación Zod y scripts/cargar-seed.ts~~ | F-a | claude | P1 | hecha | T-06, T-07 |
 | 9 | T-09 | Lista filtrable de municipios y atracciones y ficha de atracción | F-a | claude | P2 | pendiente | T-04, T-08 |
 | 10 | T-10 | Mapa Leaflet con marcadores agrupados, atribución OSM y caché de teselas (6.5) | F-a | claude | P2 | pendiente | T-08 |
 | 11 | T-11 | Generador de itinerario (6.1 pasos 1-7) con pruebas unitarias de los casos límite | F-b | claude | P1 | pendiente | T-08 |
@@ -85,6 +85,9 @@ Ninguna.
 
 | Fecha | Por | Operación | Id | Detalle |
 |---|---|---|---|---|
+| 2026-11-10T10:00:06 | claude | nota | T-08 | Seed en supabase/seed/datos/ (modulos TS tipados y validados con Zod en src/domain/catalogo/esquemas.ts). Script scripts/cargar-seed.ts carga con la service_role key, valida Zod + integridad referencial + conectividad del grafo antes de escribir, carga idempotente con upsert. npm run seed y npm run seed:dry-run. Contenido: 3 departamentos, 53 municipios, 70 atracciones (53 cascos + 17 reales con fuente y fecha), 142 rutas de bus (0 municipios aislados), 6 tarifas regionales, 3 rutas tematicas con items, 7 insignias. clima_mensual vacio (lo llena T-25). Pruebas en src/domain/catalogo/seed.test.ts (8, verifican los criterios de F-a). lint 0, tsc 0, build ok, 10/10 tests. El usuario ejecuto npm run seed y cargo los datos en Supabase sin error (2026-11-10). Costos/tarifas/tiempos marcados costo_aproximado=true (R-04); revisar antes de la sustentacion. |
+| 2026-11-10T10:00:06 | claude | campo | T-08 | estado: 'en_curso' -> 'hecha' |
+| 2026-11-10T09:31:25 | claude | campo | T-08 | estado: 'pendiente' -> 'en_curso' |
 | 2026-11-09T21:29:46 | claude | nota | T-07 | El usuario aplico la migracion del catalogo en el proyecto Supabase (2026-11-09). T-07 completa: codigo en el repo (c48fe44) y esquema con RLS aplicado en la base |
 | 2026-11-09T21:25:34 | claude | nota | T-24 | CI en verde en GitHub Actions. La consulta diaria a Supabase se salta sola mientras no exista la variable SUPABASE_URL en GitHub; se activa cuando el usuario cree esa variable y el secreto SUPABASE_ANON_KEY tras aplicar T-07. Se da por hecha la parte de CI; la activacion de la consulta queda cubierta por T-23 (verificacion antes de la sustentacion) |
 | 2026-11-09T21:25:34 | claude | campo | T-24 | estado: 'en_curso' -> 'hecha' |
@@ -97,6 +100,3 @@ Ninguna.
 | 2026-11-09T20:43:01 | claude | nota | T-29 | El usuario decidio dejarla para mas adelante (2026-11-09) |
 | 2026-11-09T20:43:01 | claude | nota | T-26 | Version academica aprobada por el usuario el 2026-11-09 (sin usuarios publicos; solo equipo y evaluadores). Si se abre al publico se reemplaza por una politica completa segun la Ley 1581 |
 | 2026-11-09T20:43:01 | claude | campo | T-26 | estado: 'en_curso' -> 'hecha' |
-| 2026-11-09T20:27:06 | claude | nota | T-24 | CI en verde en GitHub Actions (confirmado por el usuario el 2026-11-09). Solo falta activar la consulta diaria tras T-07 |
-| 2026-11-09T20:24:28 | claude | nota | T-24 | Push hecho el 2026-11-09; falta confirmar que la CI salió en verde en GitHub Actions. Frecuencia diaria aprobada por el usuario y aplicada en plan.md |
-| 2026-11-09T20:24:28 | claude | campo | R-01 | mitigacion: 'Workflow semanal con una consulta real (T-24) y verificación antes de la sustentación (T-23)' -> 'Workflow diario con una consulta real (T-24) y verificación antes de la sustentación (T-23)' |

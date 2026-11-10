@@ -1,7 +1,7 @@
 {
   "proyecto": "Planificador de viajes del Eje Cafetero",
-  "revision": 11,
-  "actualizado": "2026-11-09T21:29:46",
+  "revision": 13,
+  "actualizado": "2026-11-10T10:00:06",
   "responsables": [
     "usuario",
     "claude",
@@ -211,9 +211,10 @@
         "T-06",
         "T-07"
       ],
-      "estado": "pendiente",
-      "notas": "plan.md sección 7. Cada costo con fecha_actualizacion y fuente\n[2026-11-09 claude] Rutas del cafe y termales con atracciones del seed, cada una con su fuente (decision 2026-11-09)",
-      "creada": "2026-11-07"
+      "estado": "hecha",
+      "notas": "plan.md sección 7. Cada costo con fecha_actualizacion y fuente\n[2026-11-09 claude] Rutas del cafe y termales con atracciones del seed, cada una con su fuente (decision 2026-11-09)\n[2026-11-10 claude] Seed en supabase/seed/datos/ (modulos TS tipados y validados con Zod en src/domain/catalogo/esquemas.ts). Script scripts/cargar-seed.ts carga con la service_role key, valida Zod + integridad referencial + conectividad del grafo antes de escribir, carga idempotente con upsert. npm run seed y npm run seed:dry-run. Contenido: 3 departamentos, 53 municipios, 70 atracciones (53 cascos + 17 reales con fuente y fecha), 142 rutas de bus (0 municipios aislados), 6 tarifas regionales, 3 rutas tematicas con items, 7 insignias. clima_mensual vacio (lo llena T-25). Pruebas en src/domain/catalogo/seed.test.ts (8, verifican los criterios de F-a). lint 0, tsc 0, build ok, 10/10 tests. El usuario ejecuto npm run seed y cargo los datos en Supabase sin error (2026-11-10). Costos/tarifas/tiempos marcados costo_aproximado=true (R-04); revisar antes de la sustentacion.",
+      "creada": "2026-11-07",
+      "terminada": "2026-11-10"
     },
     {
       "id": "T-09",
@@ -831,6 +832,27 @@
       "op": "nota",
       "id": "T-07",
       "detalle": "El usuario aplico la migracion del catalogo en el proyecto Supabase (2026-11-09). T-07 completa: codigo en el repo (c48fe44) y esquema con RLS aplicado en la base"
+    },
+    {
+      "fecha": "2026-11-10T09:31:25",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-08",
+      "detalle": "estado: 'pendiente' -> 'en_curso'"
+    },
+    {
+      "fecha": "2026-11-10T10:00:06",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-08",
+      "detalle": "estado: 'en_curso' -> 'hecha'"
+    },
+    {
+      "fecha": "2026-11-10T10:00:06",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-08",
+      "detalle": "Seed en supabase/seed/datos/ (modulos TS tipados y validados con Zod en src/domain/catalogo/esquemas.ts). Script scripts/cargar-seed.ts carga con la service_role key, valida Zod + integridad referencial + conectividad del grafo antes de escribir, carga idempotente con upsert. npm run seed y npm run seed:dry-run. Contenido: 3 departamentos, 53 municipios, 70 atracciones (53 cascos + 17 reales con fuente y fecha), 142 rutas de bus (0 municipios aislados), 6 tarifas regionales, 3 rutas tematicas con items, 7 insignias. clima_mensual vacio (lo llena T-25). Pruebas en src/domain/catalogo/seed.test.ts (8, verifican los criterios de F-a). lint 0, tsc 0, build ok, 10/10 tests. El usuario ejecuto npm run seed y cargo los datos en Supabase sin error (2026-11-10). Costos/tarifas/tiempos marcados costo_aproximado=true (R-04); revisar antes de la sustentacion."
     }
   ]
 }

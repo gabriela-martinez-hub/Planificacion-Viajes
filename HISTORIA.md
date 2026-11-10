@@ -100,3 +100,78 @@
 
 #### Actualización 2026-11-09 (misma sesión)
 - El usuario aplicó la migración del catálogo (T-07) en el proyecto Supabase. T-07 queda completa: código en el repo (c48fe44) y esquema con RLS aplicado en la base. Deja de ser una tarea pendiente del usuario.
+
+### 2026-11-10 — T-08: seed del catálogo (esquemas Zod, datos y carga)
+- Cierre anterior: 552de13 (memoria: cierre de fase 0)
+- Commits: (pendiente de este cierre)
+- Qué se hizo:
+  - T-08 terminada. Esquemas Zod del catálogo en `src/domain/catalogo/esquemas.ts`,
+    reflejando el SQL de la migración T-07. Tipos de salida (`z.infer`) y de entrada
+    (`z.input`, sufijo `*Seed`) para que el seed pueda omitir los campos con valor
+    por defecto.
+  - `src/domain/catalogo/validar.ts`: integridad referencial (claves foráneas,
+    unicidades, un casco por municipio, 12 meses de clima por municipio) y
+    `analizarConectividadBus` (componente conexa del grafo de buses entre
+    municipios). Son funciones puras.
+  - Datos del seed en `supabase/seed/datos/` como módulos TS tipados: 3
+    departamentos, 53 municipios (desde `divipola.csv`, con su casco urbano),
+    70 atracciones (53 cascos + 17 reales con fuente y fecha), 142 rutas de bus
+    (71 corredores en ambos sentidos), 6 tarifas regionales, 3 rutas temáticas
+    (café, termales, pueblos patrimonio) con sus ítems, 7 insignias
+    (3 departamento + 1 eje + 3 ruta). `clima_mensual` vacío (lo llena T-25).
+  - `scripts/cargar-seed.ts`: construye y valida el seed (Zod + referencias +
+    conectividad) y carga en Supabase con la clave `service_role` leyendo el
+    `.env` por sí mismo (cargador propio, sin dependencias). Carga idempotente con
+    upsert, en orden de dependencias (nodos antes que municipios y externos).
+    Modos `npm run seed` y `npm run seed:dry-run`.
+  - Dependencia nueva (pinned): `tsx@4.19.2` para ejecutar el script.
+  - Pruebas en `src/domain/catalogo/seed.test.ts` (8): 53 municipios (27/12/14),
+    Salamina y Aguadas como patrimonio y ningún otro, un casco por municipio,
+    integridad referencial sin problemas, 0 municipios aislados en el grafo, todo
+    costo con fecha y fuente, rutas temáticas y sus ítems.
+  - Se añadieron a `src/i18n/es-CO.ts` las claves de las insignias de ruta
+    (`insignias.rutaPueblosPatrimonio`, `rutaCafe`, `rutaTermales`).
+  - `tsconfig.node.json` ahora incluye `scripts` para que `tsc -b` y la CI
+    verifiquen el script de carga. `format` y `format:check` se ampliaron a
+    `{src,scripts,supabase/seed}`.
+- Decisiones:
+  - El clima mensual NO se genera en T-08: es tarea de T-25 (script reanudable que
+    respeta la cuota de Open-Meteo). Inventar promedios sin fuente contradiría el
+    principio de datos verificables del plan.
+  - Las 17 atracciones reales se concentran en los municipios turísticos; los demás
+    quedan representados por su casco urbano, de modo que los 53 aparecen en el mapa
+    sin inventar atracciones sin fuente (propuesta de Claude, coherente con R-04).
+  - Los archivos del seed usan rutas relativas a `src/domain/catalogo/esquemas` en
+    vez del alias `@`, porque viven fuera de `src` y los consume también `tsx`.
+  - El script carga el `.env` con un lector propio: `tsx` no lo hace solo. Las
+    variables del entorno real ganan sobre las del archivo (útil en CI).
+  - Costos, tarifas y tiempos de bus marcados `costo_aproximado = true` (R-04); el
+    PNN Los Nevados queda `restringida` y `requiere_guia` (R-03).
+- Hallazgos:
+  - Palestina (Caldas) quedaba aislada en el primer diseño del grafo; se agregó el
+    corredor Chinchiná–Palestina–Manizales. Ahora los 53 están en una sola
+    componente conexa.
+  - El tipo `z.infer` del esquema (salida) exige los campos con default; el seed
+    debe tiparse con `z.input` (entrada) para poder omitirlos. `catalogoSchema.parse`
+    aplica los defaults al construir.
+  - El usuario ejecutó `npm run seed` y cargó los datos en Supabase sin error
+    (conteos esperados por tabla), tras arreglar la carga del `.env`.
+  - Persiste el aviso de CRLF en `src/i18n/*` y `src/index.css`/`src/test/setup.ts`
+    en `format:check` local (Windows); la CI en Ubuntu los ve con LF y pasa. Los
+    archivos nuevos del seed quedaron con LF y no aparecen en el aviso. Mejora
+    opcional aún pendiente: un `.gitattributes` con `* text=auto eol=lf`.
+- Criterios de aceptación (F-a sigue abierta, 3/5 tareas):
+  - "El seed pasa la validación Zod": **verificado** (prueba `seed.test.ts` y
+    `npm run seed:dry-run`).
+  - "El grafo de buses conecta todos los municipios... y los que no, quedan
+    listados": **verificado** (0 aislados; `analizarConectividadBus` y prueba).
+  - "Salamina y Aguadas como pueblos patrimonio": verificado en datos; mostrarlo es
+    T-09.
+  - "Los 53 municipios aparecen en el mapa": datos listos; el mapa es T-10.
+  - "Los filtros funcionan en móvil": T-09.
+  - "Un INSERT con la clave pública sobre atracciones falla": pendiente (RLS; se
+    prueba desde el SQL Editor con la anon key o con la UI de T-09/T-10).
+- Cambios del tablero: T-08 pasa a hecha. Revisión 13. Sin tareas, riesgos ni
+  ideas nuevos. La próxima tarea de la ruta crítica es T-09 (lista filtrable y
+  ficha de atracción).
+- Origen: sesión de Kiro con el usuario

@@ -60,6 +60,13 @@ Datos, textos e infraestructura (2026-11-09, ver `HISTORIA.md`):
   `.env.example`.
 - Municipios: `supabase/seed/divipola.csv` (DIVIPOLA del DANE, 53 municipios) es
   la base del seed. Fuentes en `supabase/seed/FUENTES.md`.
+- Seed del catálogo (T-08, 2026-11-10): esquemas Zod en
+  `src/domain/catalogo/esquemas.ts` (tipos de salida `z.infer` y de entrada
+  `z.input`/`*Seed`); validación de referencias y conectividad del grafo en
+  `src/domain/catalogo/validar.ts`; datos en `supabase/seed/datos/` (módulos TS
+  tipados); carga con `scripts/cargar-seed.ts` (`npm run seed`, `seed:dry-run`),
+  que lee el `.env` por sí mismo y usa la clave `service_role`. Pruebas en
+  `src/domain/catalogo/seed.test.ts`. `clima_mensual` lo llena T-25.
 - Ruta del café y ruta de termales: se arman con atracciones del seed, cada una
   con su fuente, porque no hay lista oficial. "Pueblos patrimonio" sigue con
   Salamina y Aguadas (`plan.md` sección 7).
@@ -100,26 +107,28 @@ Autenticación e infraestructura de cliente (2026-11-09, ver `HISTORIA.md`):
   reemplaza por una política completa según la Ley 1581 de 2012 (2026-11-09).
 
 ## Estado actual
-- **Fase 0 cerrada** (7/8 tareas: T-01, T-02, T-04, T-05, T-24, más T-03 del
-  usuario; T-29 es una verificación opcional que el usuario pospuso). Los 5
-  criterios de aceptación están verificados: la app arranca, se inicia y cierra
-  sesión con Google (verificado en el navegador), la CI corre lint y tests (en
-  verde), los textos de la pantalla inicial salen de `src/i18n/es-CO.ts` y
-  `.env.example` no tiene la clave secreta.
-- Tablero en revisión 10: 9/29 tareas hechas, 6 riesgos activos y 2 ideas. La
-  fase (a) va 2/5 (T-06 y T-07 hechas).
+- **Fase 0 cerrada** (7/8 tareas; T-29 es una verificación opcional que el
+  usuario pospuso). Los 5 criterios de aceptación están verificados.
+- Tablero en revisión 13: 10/29 tareas hechas, 6 riesgos activos y 2 ideas. La
+  fase (a) va 3/5 (T-06, T-07 y T-08 hechas).
 - Autenticación con Google funcionando (T-03 del usuario + T-05 en código,
   commit 58eefab). El usuario probó login y logout en el navegador.
 - Migración del catálogo en `supabase/migrations/20261109210000_catalogo.sql`
-  (T-07, commit c48fe44): todas las tablas de `plan.md` 5.1 con RLS de solo
-  lectura. **Aplicada en el proyecto Supabase por el usuario (2026-11-09).**
-- Supabase creado (T-02). Claves completas en `.env` local (las cuatro
-  variables con valor).
+  (T-07, commit c48fe44), aplicada en el proyecto Supabase por el usuario.
+- **Seed del catálogo cargado en Supabase (T-08, 2026-11-10):** el usuario
+  ejecutó `npm run seed` sin error. En la base hay 3 departamentos, 53
+  municipios (+ 53 cascos urbanos), 70 atracciones, 142 rutas de bus, 6 tarifas
+  regionales, 3 rutas temáticas con ítems y 7 insignias. `clima_mensual` vacío
+  (lo llena T-25). El seed pasa Zod y el grafo conecta los 53 municipios
+  (0 aislados), verificado por `seed.test.ts` y `npm run seed:dry-run`.
+- Supabase creado (T-02). Claves completas en `.env` local.
 - CI en verde en GitHub Actions (T-24). La consulta diaria a Supabase se salta
   hasta que existan la variable `SUPABASE_URL` y el secreto `SUPABASE_ANON_KEY`
   en GitHub; su activación queda cubierta por T-23 antes de la sustentación.
 - Política de datos aprobada en versión académica (T-26,
   `docs/politica-tratamiento-datos.md`).
+- Dependencia nueva: `tsx@4.19.2` (devDependency) para ejecutar el script de
+  carga del seed.
 - Trabajo en la rama `dev`.
 - Entorno local: hay `python`, `python3` y `py`; Node 22 activo en la sesión. No
   hay CLI de Supabase, psql ni docker, así que las migraciones las aplica el
@@ -128,18 +137,22 @@ Autenticación e infraestructura de cliente (2026-11-09, ver `HISTORIA.md`):
   `cambio()` leyendo el JSON de un archivo.
 - Archivos preexistentes con CRLF (`src/i18n/*.ts`, `src/index.css`,
   `src/test/setup.ts`) que `format:check` marca en local pero la CI en Ubuntu
-  acepta. Mejora opcional pendiente: `.gitattributes` con `* text=auto eol=lf`.
+  acepta. Los archivos nuevos del seed quedaron con LF. Mejora opcional
+  pendiente: `.gitattributes` con `* text=auto eol=lf`.
 
 ## Próximos pasos
-1. Usuario: crear la variable `SUPABASE_URL` y el secreto `SUPABASE_ANON_KEY` en
-   GitHub para activar la consulta diaria contra la pausa de Supabase.
-2. T-08: seed del catálogo (municipios, 40-60 atracciones, casco urbano, rutas
-   de bus, tarifas, rutas temáticas) con validación Zod y `scripts/cargar-seed.ts`,
-   a partir de `supabase/seed/divipola.csv`. Próxima tarea de la ruta crítica.
-3. En paralelo, disponibles: T-17 (servicio Open-Meteo, solo depende de T-01) y
-   T-25 (script de clima mensual, depende de T-06).
-4. T-29 (usuario, opcional): abrir Claude Code y ejecutar `/context all` y
-   `/orquestador-proyecto retomar`.
+1. T-09: lista filtrable de municipios y atracciones y ficha de atracción
+   (lee el catálogo con la clave anon). Próxima tarea de la ruta crítica;
+   depende de T-04 y T-08, ambas hechas.
+2. T-10: mapa Leaflet con los 53 municipios, atribución OSM y caché de teselas.
+   Depende de T-08.
+3. T-11: generador de itinerario (ruta crítica, P1). Depende de T-08.
+4. En paralelo, disponibles: T-17 (servicio Open-Meteo, depende de T-01) y
+   T-25 (script de clima mensual, depende de T-06; llena `clima_mensual`).
+5. Usuario (cuando quiera): crear la variable `SUPABASE_URL` y el secreto
+   `SUPABASE_ANON_KEY` en GitHub para activar la consulta diaria contra la pausa.
+6. Antes de la sustentación: revisar costos, tarifas y tiempos de bus del seed
+   (marcados aproximados, R-04) y el acceso al Nevado del Ruiz (R-03).
 
 ## Pendientes de decisión del usuario
 - Si se cambia `python3` por `python` en la skill para Windows y se automatiza
