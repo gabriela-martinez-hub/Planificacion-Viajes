@@ -70,6 +70,18 @@ Datos, textos e infraestructura (2026-11-09, ver `HISTORIA.md`):
   request a `dev` y `main`. Consulta diaria a Supabase en lugar de semanal
   (`plan.md` fase 0).
 
+Autenticación e infraestructura de cliente (2026-11-09, ver `HISTORIA.md`):
+- Cliente único de Supabase en `src/services/supabase.ts` (clave anon, sesión
+  persistente). Configuración validada con Zod en `src/lib/config.ts`: si falta
+  una variable `VITE_`, lanza error al arrancar.
+- Autenticación con Google en `src/features/auth/` (contexto, hook `useAuth`,
+  `AuthProvider`, `BotonAuth`), montada en `main.tsx`. Login y logout
+  verificados en el navegador.
+- El redirect de OAuth usa `window.location.origin`; esa URL
+  (`http://localhost:5173` en desarrollo) debe estar en las Redirect URLs de
+  Supabase.
+- Dependencias de runtime fijadas: `@supabase/supabase-js@2.45.4`, `zod@3.23.8`.
+
 ## Decisiones reemplazadas
 - Internacionalización con react-i18next: reemplazada por el archivo tipado
   `src/i18n/es-CO.ts` (2026-11-07, segunda ronda).
@@ -83,51 +95,54 @@ Datos, textos e infraestructura (2026-11-09, ver `HISTORIA.md`):
   (2026-11-09).
 - Rutas del café y de termales "verificadas con fuentes oficiales": se arman con
   atracciones del seed porque no existe lista oficial (2026-11-09).
+- Política de tratamiento de datos: aprobada en versión académica (sin usuarios
+  públicos; solo equipo y evaluadores). Si la app se abre al público se
+  reemplaza por una política completa según la Ley 1581 de 2012 (2026-11-09).
 
 ## Estado actual
-- Fase 0 en curso: 3/8 tareas hechas (T-01, T-02, T-04) y 2 en curso (T-24,
-  T-26). Tablero: 4/29 tareas hechas (también T-06 de la fase a), 6 riesgos
-  activos y 2 ideas.
-- Criterios de la fase 0 cumplidos: la app arranca, los textos de la pantalla
-  inicial salen de `src/i18n/es-CO.ts`, `.env.example` no tiene la clave
-  secreta y la CI corre lint y tests (en verde en GitHub Actions). Falta: sesión
-  con Google (T-03, T-05).
-- Supabase creado (T-02). Claves en `.env` local. `supabase/migrations/` sigue
-  vacío.
-- CI y consulta diaria a Supabase en `.github/workflows/` (T-24). Push de `dev`
-  hecho el 2026-11-09 y CI en verde. La consulta
-  diaria se salta hasta que existan la variable `SUPABASE_URL` y el secreto
-  `SUPABASE_ANON_KEY` en GitHub.
-- Borrador de la política de datos en `docs/politica-tratamiento-datos.md`
-  (T-26), con campos entre corchetes por completar.
-- Trabajo en la rama `dev`, al día con `origin/dev`.
-- Configuración de Claude Code integrada en `dev` (`68dff1d`); falta verificar
-  que carga en una sesión de Claude Code (T-29).
-- Entorno local: el Node global es v14. Hay que activar Node 22 con
-  `nvm use 22` en una terminal con permisos de administrador, o anteponer
-  `C:\Users\User\AppData\Roaming\nvm\v22.16.0` al PATH. Python 3.12 en
-  `%LOCALAPPDATA%\Programs\Python\Python312`. En PowerShell 5.1,
-  `tablero.py cambio` recibe cortado un JSON con espacios: pasarlo por una
-  variable de entorno.
+- **Fase 0 cerrada** (7/8 tareas: T-01, T-02, T-04, T-05, T-24, más T-03 del
+  usuario; T-29 es una verificación opcional que el usuario pospuso). Los 5
+  criterios de aceptación están verificados: la app arranca, se inicia y cierra
+  sesión con Google (verificado en el navegador), la CI corre lint y tests (en
+  verde), los textos de la pantalla inicial salen de `src/i18n/es-CO.ts` y
+  `.env.example` no tiene la clave secreta.
+- Tablero en revisión 10: 9/29 tareas hechas, 6 riesgos activos y 2 ideas. La
+  fase (a) va 2/5 (T-06 y T-07 hechas).
+- Autenticación con Google funcionando (T-03 del usuario + T-05 en código,
+  commit 58eefab). El usuario probó login y logout en el navegador.
+- Migración del catálogo en `supabase/migrations/20261109210000_catalogo.sql`
+  (T-07, commit c48fe44): todas las tablas de `plan.md` 5.1 con RLS de solo
+  lectura. **Aplicada en el proyecto Supabase por el usuario (2026-11-09).**
+- Supabase creado (T-02). Claves completas en `.env` local (las cuatro
+  variables con valor).
+- CI en verde en GitHub Actions (T-24). La consulta diaria a Supabase se salta
+  hasta que existan la variable `SUPABASE_URL` y el secreto `SUPABASE_ANON_KEY`
+  en GitHub; su activación queda cubierta por T-23 antes de la sustentación.
+- Política de datos aprobada en versión académica (T-26,
+  `docs/politica-tratamiento-datos.md`).
+- Trabajo en la rama `dev`.
+- Entorno local: hay `python`, `python3` y `py`; Node 22 activo en la sesión. No
+  hay CLI de Supabase, psql ni docker, así que las migraciones las aplica el
+  usuario. En PowerShell 5.1, `tablero.py cambio` recibe cortado un JSON con
+  comillas: aplicar los cambios con un runner Python que llame a la función
+  `cambio()` leyendo el JSON de un archivo.
+- Archivos preexistentes con CRLF (`src/i18n/*.ts`, `src/index.css`,
+  `src/test/setup.ts`) que `format:check` marca en local pero la CI en Ubuntu
+  acepta. Mejora opcional pendiente: `.gitattributes` con `* text=auto eol=lf`.
 
 ## Próximos pasos
-1. Usuario: revocar el token de GitHub que estuvo en la URL del remoto.
-2. T-03 (usuario): cliente OAuth en Google Cloud Console con la URI
-   `https://<reference-id>.supabase.co/auth/v1/callback`, proveedor Google y
-   Redirect URLs en Supabase, usuarios de prueba (incluidos los evaluadores).
-3. T-05: inicio y cierre de sesión con Google (cuando T-03 esté lista).
-4. T-07: migraciones del catálogo con RLS de solo lectura. Después, el usuario
-   crea `SUPABASE_URL` y `SUPABASE_ANON_KEY` en GitHub para activar la consulta
-   diaria.
-5. T-26 (usuario): completar los campos de la política y aprobarla.
-6. T-08: seed del catálogo a partir de `divipola.csv`.
-7. T-29 (usuario): abrir Claude Code y ejecutar `/context all` y
+1. Usuario: crear la variable `SUPABASE_URL` y el secreto `SUPABASE_ANON_KEY` en
+   GitHub para activar la consulta diaria contra la pausa de Supabase.
+2. T-08: seed del catálogo (municipios, 40-60 atracciones, casco urbano, rutas
+   de bus, tarifas, rutas temáticas) con validación Zod y `scripts/cargar-seed.ts`,
+   a partir de `supabase/seed/divipola.csv`. Próxima tarea de la ruta crítica.
+3. En paralelo, disponibles: T-17 (servicio Open-Meteo, solo depende de T-01) y
+   T-25 (script de clima mensual, depende de T-06).
+4. T-29 (usuario, opcional): abrir Claude Code y ejecutar `/context all` y
    `/orquestador-proyecto retomar`.
 
 ## Pendientes de decisión del usuario
-- Datos para la política de tratamiento de datos: responsables, universidad y
-  programa, correo de contacto, región del proyecto en Supabase, proveedor de
-  despliegue, qué pasa con los datos al terminar el curso y fecha de vigencia.
-- Si se cambia `python3` por `python` en la skill para Windows y se arregla el
-  paso del JSON en PowerShell, o se sigue invocando a mano.
+- Si se cambia `python3` por `python` en la skill para Windows y se automatiza
+  el paso del JSON en PowerShell, o se sigue aplicando con un runner.
+- Si se agrega un `.gitattributes` para normalizar los finales de línea a LF.
 - Sobre el diseño del producto no hay preguntas abiertas (`plan.md`, sección 10).

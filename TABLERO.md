@@ -2,14 +2,14 @@
 
 > Vista generada desde `control/tablero.json` con `python3 .claude/skills/orquestador-proyecto/scripts/tablero.py render`. No se edita a mano.
 
-Revisión 9, actualizado 2026-11-09T20:43:01. Avance: 5/29 tareas (17 %).
+Revisión 11, actualizado 2026-11-09T21:29:46. Avance: 9/29 tareas (31 %).
 
 ## Avance por frente
 
 | Frente | Hechas | Total |
 |---|---|---|
-| Fase 0: Preparación | 4 | 8 |
-| Fase (a): Catálogo + mapa | 1 | 5 |
+| Fase 0: Preparación | 7 | 8 |
+| Fase (a): Catálogo + mapa | 2 | 5 |
 | Fase (b): Planificador de itinerarios | 0 | 5 |
 | Fase (c): Presupuesto | 0 | 2 |
 | Fase (d): Clima | 0 | 3 |
@@ -18,7 +18,7 @@ Revisión 9, actualizado 2026-11-09T20:43:01. Avance: 5/29 tareas (17 %).
 
 ## Próxima tarea
 
-**T-03** Configurar OAuth de Google (Google Cloud Console + proveedor y Redirect URLs en Supabase; usuarios de prueba) (usuario)
+**T-08** Seed del catálogo (municipios, 40-60 atracciones, casco urbano, rutas de bus, tarifas, rutas temáticas) con validación Zod y scripts/cargar-seed.ts (claude)
 
 ## Ruta crítica
 
@@ -26,11 +26,11 @@ Revisión 9, actualizado 2026-11-09T20:43:01. Avance: 5/29 tareas (17 %).
 |---|---|---|---|---|---|---|---|
 | 1 | T-01 | ~~Crear proyecto Vite + React + TS con Tailwind, ESLint/Prettier y Vitest~~ | F-0 | claude | P1 | hecha | - |
 | 2 | T-02 | ~~Crear el proyecto en Supabase y .env.example sin secretos~~ | F-0 | usuario | P1 | hecha | - |
-| 3 | T-03 | Configurar OAuth de Google (Google Cloud Console + proveedor y Redirect URLs en Supabase; usuarios de prueba) | F-0 | usuario | P1 | pendiente | T-02 |
+| 3 | T-03 | ~~Configurar OAuth de Google (Google Cloud Console + proveedor y Redirect URLs en Supabase; usuarios de prueba)~~ | F-0 | usuario | P1 | hecha | T-02 |
 | 4 | T-04 | ~~Crear src/i18n/es-CO.ts y la función t(clave)~~ | F-0 | claude | P2 | hecha | T-01 |
-| 5 | T-05 | Inicio y cierre de sesión con Google en la app | F-0 | claude | P2 | pendiente | T-01, T-03 |
+| 5 | T-05 | ~~Inicio y cierre de sesión con Google en la app~~ | F-0 | claude | P2 | hecha | T-01, T-03 |
 | 6 | T-06 | ~~Verificar el conteo de municipios con la DIVIPOLA del DANE y verificar rutas temáticas con fuentes oficiales~~ | F-a | claude | P1 | hecha | - |
-| 7 | T-07 | Migraciones SQL del catálogo con RLS de solo lectura | F-a | claude | P1 | pendiente | T-02 |
+| 7 | T-07 | ~~Migraciones SQL del catálogo con RLS de solo lectura~~ | F-a | claude | P1 | hecha | T-02 |
 | 8 | T-08 | Seed del catálogo (municipios, 40-60 atracciones, casco urbano, rutas de bus, tarifas, rutas temáticas) con validación Zod y scripts/cargar-seed.ts | F-a | claude | P1 | pendiente | T-06, T-07 |
 | 9 | T-09 | Lista filtrable de municipios y atracciones y ficha de atracción | F-a | claude | P2 | pendiente | T-04, T-08 |
 | 10 | T-10 | Mapa Leaflet con marcadores agrupados, atribución OSM y caché de teselas (6.5) | F-a | claude | P2 | pendiente | T-08 |
@@ -52,7 +52,7 @@ Revisión 9, actualizado 2026-11-09T20:43:01. Avance: 5/29 tareas (17 %).
 
 | # | Id | Tarea | Frente | Resp. | Prio. | Estado | Depende de |
 |---|---|---|---|---|---|---|---|
-| 1 | T-24 | CI (lint y tests) y workflow diario que consulta Supabase para evitar la pausa | F-0 | claude | P2 | en_curso | T-01, T-02 |
+| 1 | T-24 | ~~CI (lint y tests) y workflow diario que consulta Supabase para evitar la pausa~~ | F-0 | claude | P2 | hecha | T-01, T-02 |
 | 2 | T-25 | Script reanudable generar-clima-mensual.ts y seed clima_mensual | F-d | claude | P3 | pendiente | T-06 |
 | 3 | T-26 | ~~Redactar la política de tratamiento de datos (Ley 1581 de 2012)~~ | F-0 | claude | P3 | hecha | - |
 | 4 | T-27 | Instancias de evaluación (20-30) e informe: voraz vs. voraz + búsqueda local vs. fuerza bruta | F-b | claude | P2 | pendiente | T-11 |
@@ -85,18 +85,18 @@ Ninguna.
 
 | Fecha | Por | Operación | Id | Detalle |
 |---|---|---|---|---|
+| 2026-11-09T21:29:46 | claude | nota | T-07 | El usuario aplico la migracion del catalogo en el proyecto Supabase (2026-11-09). T-07 completa: codigo en el repo (c48fe44) y esquema con RLS aplicado en la base |
+| 2026-11-09T21:25:34 | claude | nota | T-24 | CI en verde en GitHub Actions. La consulta diaria a Supabase se salta sola mientras no exista la variable SUPABASE_URL en GitHub; se activa cuando el usuario cree esa variable y el secreto SUPABASE_ANON_KEY tras aplicar T-07. Se da por hecha la parte de CI; la activacion de la consulta queda cubierta por T-23 (verificacion antes de la sustentacion) |
+| 2026-11-09T21:25:34 | claude | campo | T-24 | estado: 'en_curso' -> 'hecha' |
+| 2026-11-09T21:25:34 | claude | nota | T-05 | Commit 58eefab: cliente Supabase (src/services/supabase.ts) con anon key, config validada con Zod (src/lib/config.ts), AuthProvider y contexto de sesion (src/features/auth), BotonAuth con textos de auth.* del i18n. Dependencias @supabase/supabase-js@2.45.4 y zod@3.23.8. El usuario verifico login y logout con Google en el navegador (2026-11-09). lint 0, 2/2 pruebas, build ok |
+| 2026-11-09T21:25:34 | claude | campo | T-05 | estado: 'pendiente' -> 'hecha' |
+| 2026-11-09T21:25:34 | claude | nota | T-03 | El usuario configuro Google Cloud (pantalla de consentimiento en Testing, credenciales OAuth web, usuarios de prueba) y el proveedor Google y las Redirect URLs en Supabase (2026-11-09) |
+| 2026-11-09T21:25:34 | claude | campo | T-03 | estado: 'pendiente' -> 'hecha' |
+| 2026-11-09T21:25:34 | claude | nota | T-07 | Migracion supabase/migrations/20261109210000_catalogo.sql (commit c48fe44): todas las tablas del catalogo (plan.md 5.1) con RLS de solo lectura (5.3), politica unica FOR SELECT y revoke de insert/update/delete/truncate a anon y authenticated. El tablero la tenia como pendiente; se reconcilia con el repo. Pendiente del usuario: aplicarla en el proyecto Supabase (SQL Editor o supabase db push) |
+| 2026-11-09T21:25:34 | claude | campo | T-07 | estado: 'pendiente' -> 'hecha' |
 | 2026-11-09T20:43:01 | claude | nota | T-29 | El usuario decidio dejarla para mas adelante (2026-11-09) |
 | 2026-11-09T20:43:01 | claude | nota | T-26 | Version academica aprobada por el usuario el 2026-11-09 (sin usuarios publicos; solo equipo y evaluadores). Si se abre al publico se reemplaza por una politica completa segun la Ley 1581 |
 | 2026-11-09T20:43:01 | claude | campo | T-26 | estado: 'en_curso' -> 'hecha' |
 | 2026-11-09T20:27:06 | claude | nota | T-24 | CI en verde en GitHub Actions (confirmado por el usuario el 2026-11-09). Solo falta activar la consulta diaria tras T-07 |
 | 2026-11-09T20:24:28 | claude | nota | T-24 | Push hecho el 2026-11-09; falta confirmar que la CI salió en verde en GitHub Actions. Frecuencia diaria aprobada por el usuario y aplicada en plan.md |
 | 2026-11-09T20:24:28 | claude | campo | R-01 | mitigacion: 'Workflow semanal con una consulta real (T-24) y verificación antes de la sustentación (T-23)' -> 'Workflow diario con una consulta real (T-24) y verificación antes de la sustentación (T-23)' |
-| 2026-11-09T20:24:28 | claude | campo | T-24 | titulo: 'CI (lint y tests) y workflow semanal que consulta Supabase para evitar la pausa' -> 'CI (lint y tests) y workflow diario que consulta Supabase para evitar la pausa' |
-| 2026-11-09T20:15:58 | claude | nota | T-26 | Borrador en docs/politica-tratamiento-datos.md. Falta que el usuario complete los campos entre corchetes y lo apruebe |
-| 2026-11-09T20:15:58 | claude | campo | T-26 | estado: 'pendiente' -> 'en_curso' |
-| 2026-11-09T20:15:58 | claude | nota | T-24 | ci.yml y supabase-actividad.yml creados (diario, no semanal: Supabase pide actividad varios dias por semana). Falta: push y ver CI en verde; tras T-07 el usuario crea la variable SUPABASE_URL y el secreto SUPABASE_ANON_KEY en GitHub |
-| 2026-11-09T20:15:58 | claude | campo | T-24 | estado: 'pendiente' -> 'en_curso' |
-| 2026-11-09T20:09:06 | claude | nota | T-04 | Commit 977c4c9: t(clave, parametros) en src/i18n/index.ts con claves y marcadores verificados por TypeScript; esClave() para clave_texto de la base |
-| 2026-11-09T20:09:06 | claude | campo | T-04 | estado: 'pendiente' -> 'hecha' |
-| 2026-11-09T20:07:15 | claude | nota | T-08 | Rutas del cafe y termales con atracciones del seed, cada una con su fuente (decision 2026-11-09) |
-| 2026-11-09T20:07:15 | claude | nota | T-06 | DIVIPOLA confirma 27/12/14 (cc24035). Pueblos patrimonio: Salamina y Aguadas. Ruta del cafe y termales sin lista oficial: el usuario decidio armarlas con atracciones del seed (supabase/seed/FUENTES.md) |

@@ -74,3 +74,29 @@
 - Criterios de aceptación: la fase 0 sigue abierta (3/8 tareas hechas y 2 en curso). Cumplidos: "La app arranca", "Los textos de la pantalla inicial salen de src/i18n/es-CO.ts" (T-04, prueba en `src/App.test.tsx`) y ".env.example no contiene la clave secreta" (c337e06). Pendientes: inicio y cierre de sesión con Google (T-03, T-05). "CI corre lint y tests" quedó verificado: el usuario confirmó la ejecución en verde en GitHub Actions.
 - Cambios del tablero: T-02, T-04 y T-06 pasan a hechas; T-24 y T-26 pasan a en curso; T-24 cambia "semanal" por "diario" en su título y R-01 en su mitigación; nota en T-08 sobre las rutas del café y termales. Sin tareas, riesgos, ideas ni prioridades nuevas.
 - Origen: sesión de Kiro con el usuario
+
+### 2026-11-09 — T-03, T-05 y T-07: autenticación con Google y migración del catálogo
+- Cierre anterior: f943ba2
+- Commits: 7fd2e43, c48fe44, 7569b53 (previos a la sesión), 58eefab (T-05)
+- Qué se hizo:
+  - T-03 terminada: el usuario configuró Google Cloud (pantalla de consentimiento en modo Testing, credenciales OAuth de aplicación web, usuarios de prueba) y, en Supabase, el proveedor Google y las Redirect URLs.
+  - T-05 terminada (commit 58eefab): cliente único de Supabase con la clave anon (`src/services/supabase.ts`), configuración validada con Zod que detiene el arranque si faltan `VITE_SUPABASE_URL` o `VITE_SUPABASE_ANON_KEY` (`src/lib/config.ts`), contexto de sesión (`src/features/auth/auth-context.ts`, `use-auth.ts`, `AuthProvider.tsx`) y `BotonAuth` con los textos de `auth.*` del i18n. Montado en `main.tsx` y usado en `App.tsx`. El usuario verificó en el navegador el inicio y cierre de sesión con Google reales.
+  - T-07 reconciliada: la migración del catálogo (`supabase/migrations/20261109210000_catalogo.sql`, commit c48fe44 de una sesión anterior) ya estaba en el repo pero el tablero la tenía como pendiente. Revisada: todas las tablas de plan.md 5.1 con RLS de solo lectura (5.3), política única `FOR SELECT` y `revoke` de insert/update/delete/truncate a `anon` y `authenticated`. Queda como tarea del usuario aplicarla en el proyecto Supabase.
+  - Dependencias nuevas (pinned): `@supabase/supabase-js@2.45.4` y `zod@3.23.8`.
+- Decisiones:
+  - El redirect de OAuth usa `window.location.origin` (en desarrollo, `http://localhost:5173`), por lo que esa URL debe estar en las Redirect URLs de Supabase (propuesta de Claude).
+  - La configuración del cliente se valida con Zod y lanza error explícito si falta una variable, en lugar de fallar de forma confusa más adelante (propuesta de Claude, coherente con el principio de validación del plan).
+  - El contexto, el hook y el provider de auth se separaron en archivos distintos para no disparar el aviso de `react-refresh/only-export-components` (propuesta de Claude).
+  - T-24 se da por hecha: la CI está en verde y la consulta diaria a Supabase se salta sola hasta que exista la variable `SUPABASE_URL` en GitHub; su activación queda cubierta por T-23 antes de la sustentación.
+- Hallazgos:
+  - No hay CLI de Supabase, psql, docker ni parser de Postgres en el entorno local, así que la migración de T-07 no se pudo aplicar ni validar ejecutándola; queda como tarea del usuario (SQL Editor o `supabase db push`).
+  - El entorno del agente bloquea arrancar el servidor de desarrollo; la prueba visual del login la hizo el usuario. El `vite build` sí carga el `.env` y confirmó que la configuración valida los valores reales sin lanzar error.
+  - Los archivos preexistentes `src/i18n/es-CO.ts`, `src/i18n/index.ts`, `src/index.css` y `src/test/setup.ts` tienen CRLF en la copia de trabajo (Windows + `core.autocrlf=true`) y `format:check` los marca en local, pero la CI en Ubuntu los ve con LF y pasa. No hay `.gitattributes`. Queda como mejora opcional (un `.gitattributes` con `* text=auto eol=lf`), no abordada para no mezclarla con estas tareas.
+  - El bundle JS pasó de 147 kB a ~313 kB (91 kB gzip) por incluir el cliente de Supabase.
+  - PowerShell 5.1 corta el JSON con comillas al pasarlo como argumento a `tablero.py cambio`; el cambio se aplicó con un runner Python temporal que invoca la función oficial `cambio()` leyendo el JSON de un archivo (ya borrado).
+- Criterios de aceptación: **Fase 0 cerrada (7/8 tareas; T-29 es verificación opcional que el usuario pospuso).** Los 5 criterios están verificados: "La app arranca" (T-01), "Se puede iniciar y cerrar sesión con Google" (T-05, verificado por el usuario en el navegador), "CI corre lint y tests" (T-24, en verde), "Los textos de la pantalla inicial salen de src/i18n/es-CO.ts" (T-04, prueba en App.test.tsx) y ".env.example no contiene la clave secreta" (c337e06).
+- Cambios del tablero: T-03, T-05 y T-07 pasan a hechas; T-24 pasa de en_curso a hecha. Revisión 10. Sin tareas, riesgos ni ideas nuevos. La próxima tarea de la ruta crítica es T-08 (seed del catálogo).
+- Origen: sesión de Kiro con el usuario
+
+#### Actualización 2026-11-09 (misma sesión)
+- El usuario aplicó la migración del catálogo (T-07) en el proyecto Supabase. T-07 queda completa: código en el repo (c48fe44) y esquema con RLS aplicado en la base. Deja de ser una tarea pendiente del usuario.

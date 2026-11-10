@@ -1,7 +1,7 @@
 {
   "proyecto": "Planificador de viajes del Eje Cafetero",
-  "revision": 9,
-  "actualizado": "2026-11-09T20:43:01",
+  "revision": 11,
+  "actualizado": "2026-11-09T21:29:46",
   "responsables": [
     "usuario",
     "claude",
@@ -131,9 +131,10 @@
       "dependencias": [
         "T-02"
       ],
-      "estado": "pendiente",
-      "notas": "En modo Testing solo entran los usuarios de prueba",
-      "creada": "2026-11-07"
+      "estado": "hecha",
+      "notas": "En modo Testing solo entran los usuarios de prueba\n[2026-11-09 claude] El usuario configuro Google Cloud (pantalla de consentimiento en Testing, credenciales OAuth web, usuarios de prueba) y el proveedor Google y las Redirect URLs en Supabase (2026-11-09)",
+      "creada": "2026-11-07",
+      "terminada": "2026-11-09"
     },
     {
       "id": "T-04",
@@ -163,9 +164,10 @@
         "T-01",
         "T-03"
       ],
-      "estado": "pendiente",
-      "notas": "",
-      "creada": "2026-11-07"
+      "estado": "hecha",
+      "notas": "[2026-11-09 claude] Commit 58eefab: cliente Supabase (src/services/supabase.ts) con anon key, config validada con Zod (src/lib/config.ts), AuthProvider y contexto de sesion (src/features/auth), BotonAuth con textos de auth.* del i18n. Dependencias @supabase/supabase-js@2.45.4 y zod@3.23.8. El usuario verifico login y logout con Google en el navegador (2026-11-09). lint 0, 2/2 pruebas, build ok",
+      "creada": "2026-11-07",
+      "terminada": "2026-11-09"
     },
     {
       "id": "T-06",
@@ -192,9 +194,10 @@
       "dependencias": [
         "T-02"
       ],
-      "estado": "pendiente",
-      "notas": "plan.md secciones 5.1 y 5.3",
-      "creada": "2026-11-07"
+      "estado": "hecha",
+      "notas": "plan.md secciones 5.1 y 5.3\n[2026-11-09 claude] Migracion supabase/migrations/20261109210000_catalogo.sql (commit c48fe44): todas las tablas del catalogo (plan.md 5.1) con RLS de solo lectura (5.3), politica unica FOR SELECT y revoke de insert/update/delete/truncate a anon y authenticated. El tablero la tenia como pendiente; se reconcilia con el repo. Pendiente del usuario: aplicarla en el proyecto Supabase (SQL Editor o supabase db push)\n[2026-11-09 claude] El usuario aplico la migracion del catalogo en el proyecto Supabase (2026-11-09). T-07 completa: codigo en el repo (c48fe44) y esquema con RLS aplicado en la base",
+      "creada": "2026-11-07",
+      "terminada": "2026-11-09"
     },
     {
       "id": "T-08",
@@ -462,9 +465,10 @@
         "T-01",
         "T-02"
       ],
-      "estado": "en_curso",
-      "notas": "[2026-11-09 claude] ci.yml y supabase-actividad.yml creados (diario, no semanal: Supabase pide actividad varios dias por semana). Falta: push y ver CI en verde; tras T-07 el usuario crea la variable SUPABASE_URL y el secreto SUPABASE_ANON_KEY en GitHub\n[2026-11-09 claude] Push hecho el 2026-11-09; falta confirmar que la CI salió en verde en GitHub Actions. Frecuencia diaria aprobada por el usuario y aplicada en plan.md\n[2026-11-09 claude] CI en verde en GitHub Actions (confirmado por el usuario el 2026-11-09). Solo falta activar la consulta diaria tras T-07",
-      "creada": "2026-11-07"
+      "estado": "hecha",
+      "notas": "[2026-11-09 claude] ci.yml y supabase-actividad.yml creados (diario, no semanal: Supabase pide actividad varios dias por semana). Falta: push y ver CI en verde; tras T-07 el usuario crea la variable SUPABASE_URL y el secreto SUPABASE_ANON_KEY en GitHub\n[2026-11-09 claude] Push hecho el 2026-11-09; falta confirmar que la CI salió en verde en GitHub Actions. Frecuencia diaria aprobada por el usuario y aplicada en plan.md\n[2026-11-09 claude] CI en verde en GitHub Actions (confirmado por el usuario el 2026-11-09). Solo falta activar la consulta diaria tras T-07\n[2026-11-09 claude] CI en verde en GitHub Actions. La consulta diaria a Supabase se salta sola mientras no exista la variable SUPABASE_URL en GitHub; se activa cuando el usuario cree esa variable y el secreto SUPABASE_ANON_KEY tras aplicar T-07. Se da por hecha la parte de CI; la activacion de la consulta queda cubierta por T-23 (verificacion antes de la sustentacion)",
+      "creada": "2026-11-07",
+      "terminada": "2026-11-09"
     },
     {
       "id": "T-25",
@@ -764,6 +768,69 @@
       "op": "nota",
       "id": "T-29",
       "detalle": "El usuario decidio dejarla para mas adelante (2026-11-09)"
+    },
+    {
+      "fecha": "2026-11-09T21:25:34",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-07",
+      "detalle": "estado: 'pendiente' -> 'hecha'"
+    },
+    {
+      "fecha": "2026-11-09T21:25:34",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-07",
+      "detalle": "Migracion supabase/migrations/20261109210000_catalogo.sql (commit c48fe44): todas las tablas del catalogo (plan.md 5.1) con RLS de solo lectura (5.3), politica unica FOR SELECT y revoke de insert/update/delete/truncate a anon y authenticated. El tablero la tenia como pendiente; se reconcilia con el repo. Pendiente del usuario: aplicarla en el proyecto Supabase (SQL Editor o supabase db push)"
+    },
+    {
+      "fecha": "2026-11-09T21:25:34",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-03",
+      "detalle": "estado: 'pendiente' -> 'hecha'"
+    },
+    {
+      "fecha": "2026-11-09T21:25:34",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-03",
+      "detalle": "El usuario configuro Google Cloud (pantalla de consentimiento en Testing, credenciales OAuth web, usuarios de prueba) y el proveedor Google y las Redirect URLs en Supabase (2026-11-09)"
+    },
+    {
+      "fecha": "2026-11-09T21:25:34",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-05",
+      "detalle": "estado: 'pendiente' -> 'hecha'"
+    },
+    {
+      "fecha": "2026-11-09T21:25:34",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-05",
+      "detalle": "Commit 58eefab: cliente Supabase (src/services/supabase.ts) con anon key, config validada con Zod (src/lib/config.ts), AuthProvider y contexto de sesion (src/features/auth), BotonAuth con textos de auth.* del i18n. Dependencias @supabase/supabase-js@2.45.4 y zod@3.23.8. El usuario verifico login y logout con Google en el navegador (2026-11-09). lint 0, 2/2 pruebas, build ok"
+    },
+    {
+      "fecha": "2026-11-09T21:25:34",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-24",
+      "detalle": "estado: 'en_curso' -> 'hecha'"
+    },
+    {
+      "fecha": "2026-11-09T21:25:34",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-24",
+      "detalle": "CI en verde en GitHub Actions. La consulta diaria a Supabase se salta sola mientras no exista la variable SUPABASE_URL en GitHub; se activa cuando el usuario cree esa variable y el secreto SUPABASE_ANON_KEY tras aplicar T-07. Se da por hecha la parte de CI; la activacion de la consulta queda cubierta por T-23 (verificacion antes de la sustentacion)"
+    },
+    {
+      "fecha": "2026-11-09T21:29:46",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-07",
+      "detalle": "El usuario aplico la migracion del catalogo en el proyecto Supabase (2026-11-09). T-07 completa: codigo en el repo (c48fe44) y esquema con RLS aplicado en la base"
     }
   ]
 }
