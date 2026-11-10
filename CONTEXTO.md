@@ -49,6 +49,9 @@ Entorno y herramientas (2026-11-09, ver `HISTORIA.md`):
   herramientas de desarrollo.
 - `tablero.py` funciona en Windows: usa `fcntl` si existe y, si no, un archivo de
   bloqueo exclusivo.
+- La skill `orquestador-proyecto` usa siempre Claude Sonnet 5.5
+  (`model: claude-sonnet-5-5` en su frontmatter), sin importar el modelo de la
+  sesión (2026-11-09, pedido del usuario).
 
 ## Decisiones reemplazadas
 - Internacionalización con react-i18next: reemplazada por el archivo tipado
@@ -91,8 +94,6 @@ Entorno y herramientas (2026-11-09, ver `HISTORIA.md`):
    `/orquestador-proyecto retomar`.
 
 ## Pendientes de decisión del usuario
-- Si la skill `orquestador-proyecto` debe usar un modelo fijo (campo `model`
-  del frontmatter, por ejemplo `opus`) o el de la sesión.
 - Si se cambia `python3` por `python` en la skill para Windows, o se deja como
   está y se invoca a mano.
 - Sobre el diseño del producto no hay preguntas abiertas (`plan.md`, sección 10).

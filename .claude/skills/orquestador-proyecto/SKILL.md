@@ -3,6 +3,7 @@ name: orquestador-proyecto
 description: Mantiene la memoria del proyecto Planificador de viajes del Eje Cafetero y actúa como su gestor (tablero de prioridades, dependencias, bloqueos y riesgos por fase del plan). Usar al cerrar una fase o sesión (registra historia, actualiza contexto y tablero), al iniciar una sesión nueva (resume dónde vamos y qué sigue), cuando el usuario pida ver el estado u ordenar prioridades, y cuando comparta decisiones tomadas fuera de Claude Code.
 when_to_use: Frases como "cerremos la sesión", "terminamos la fase", "¿dónde íbamos?", "retomemos", "¿cómo va el proyecto?", "muéstrame el tablero", "ordena las prioridades", "decidimos con el profesor que...".
 argument-hint: "[cierre | retomar | tablero | priorizar]"
+model: claude-sonnet-5-5
 allowed-tools: Read Grep Glob Bash(python3 .claude/skills/orquestador-proyecto/scripts/tablero.py *) Bash(git log *) Bash(git status *) Bash(git show *) Bash(git diff *)
 ---
 
