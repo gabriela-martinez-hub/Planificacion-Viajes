@@ -1,0 +1,34 @@
+# Consulta real a Supabase para que el plan gratuito no pause el proyecto por
+# inactividad (https://supabase.com/docs/guides/platform/pausing). Supabase
+# recomienda algunas consultas al día, por eso corre a diario.
+#
+# Configuración en GitHub (Settings > Secrets and variables > Actions):
+# - Variable SUPABASE_URL: https://<reference-id>.supabase.co
+# - Secreto SUPABASE_ANON_KEY: la clave pública anon (nunca la service_role).
+# Mientras la variable no exista el job se salta. Activarla después de T-07,
+# cuando exista la tabla departamentos con su política de lectura pública.
+
+name: Actividad de Supabase
+
+on:
+  schedule:
+    - cron: '17 13 * * *' # 08:17 en Bogotá
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  consultar:
+    if: ${{ vars.SUPABASE_URL != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Leer una fila del catálogo
+        env:
+          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          curl --fail-with-body --silent --show-error --retry 3 --retry-all-errors \
+            "$SUPABASE_URL/rest/v1/departamentos?select=id&limit=1" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY"
