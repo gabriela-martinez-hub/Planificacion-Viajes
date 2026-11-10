@@ -1,7 +1,7 @@
 {
   "proyecto": "Planificador de viajes del Eje Cafetero",
-  "revision": 1,
-  "actualizado": "2026-11-07T17:43:44",
+  "revision": 2,
+  "actualizado": "2026-11-09T19:28:01",
   "responsables": [
     "usuario",
     "claude",
@@ -101,9 +101,10 @@
       "responsable": "claude",
       "prioridad": "P1",
       "dependencias": [],
-      "estado": "pendiente",
+      "estado": "hecha",
       "notas": "plan.md sección 9, fase 0",
-      "creada": "2026-11-07"
+      "creada": "2026-11-07",
+      "terminada": "2026-11-09"
     },
     {
       "id": "T-02",
@@ -626,6 +627,13 @@
       "op": "tarea_agregar",
       "id": "T-29",
       "detalle": "Verificar en una sesión de Claude Code que CLAUDE.md y las skills cargan (/context all y /orquestador-proyecto retomar)"
+    },
+    {
+      "fecha": "2026-11-09T19:28:01",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-01",
+      "detalle": "estado: 'pendiente' -> 'hecha'"
     }
   ]
 }

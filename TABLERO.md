@@ -2,13 +2,13 @@
 
 > Vista generada desde `control/tablero.json` con `python3 .claude/skills/orquestador-proyecto/scripts/tablero.py render`. No se edita a mano.
 
-Revisión 1, actualizado 2026-11-07T17:43:44. Avance: 0/29 tareas (0 %).
+Revisión 2, actualizado 2026-11-09T19:28:01. Avance: 1/29 tareas (3 %).
 
 ## Avance por frente
 
 | Frente | Hechas | Total |
 |---|---|---|
-| Fase 0: Preparación | 0 | 8 |
+| Fase 0: Preparación | 1 | 8 |
 | Fase (a): Catálogo + mapa | 0 | 5 |
 | Fase (b): Planificador de itinerarios | 0 | 5 |
 | Fase (c): Presupuesto | 0 | 2 |
@@ -18,13 +18,13 @@ Revisión 1, actualizado 2026-11-07T17:43:44. Avance: 0/29 tareas (0 %).
 
 ## Próxima tarea
 
-**T-01** Crear proyecto Vite + React + TS con Tailwind, ESLint/Prettier y Vitest (claude)
+**T-02** Crear el proyecto en Supabase y .env.example sin secretos (usuario)
 
 ## Ruta crítica
 
 | # | Id | Tarea | Frente | Resp. | Prio. | Estado | Depende de |
 |---|---|---|---|---|---|---|---|
-| 1 | T-01 | Crear proyecto Vite + React + TS con Tailwind, ESLint/Prettier y Vitest | F-0 | claude | P1 | pendiente | - |
+| 1 | T-01 | ~~Crear proyecto Vite + React + TS con Tailwind, ESLint/Prettier y Vitest~~ | F-0 | claude | P1 | hecha | - |
 | 2 | T-02 | Crear el proyecto en Supabase y .env.example sin secretos | F-0 | usuario | P1 | pendiente | - |
 | 3 | T-03 | Configurar OAuth de Google (Google Cloud Console + proveedor y Redirect URLs en Supabase; usuarios de prueba) | F-0 | usuario | P1 | pendiente | T-02 |
 | 4 | T-04 | Crear src/i18n/es-CO.ts y la función t(clave) | F-0 | claude | P2 | pendiente | T-01 |
@@ -85,5 +85,6 @@ Ninguna.
 
 | Fecha | Por | Operación | Id | Detalle |
 |---|---|---|---|---|
+| 2026-11-09T19:28:01 | claude | campo | T-01 | estado: 'pendiente' -> 'hecha' |
 | 2026-11-07T17:43:44 | claude | tarea_agregar | T-29 | Verificar en una sesión de Claude Code que CLAUDE.md y las skills cargan (/context all y /orquestador-proyecto retomar) |
 | 2026-11-07T00:00:00 | claude | crear |  | Tablero inicial a partir de plan.md (secciones 2.3, 9 y riesgos de las secciones 6 y 7) |

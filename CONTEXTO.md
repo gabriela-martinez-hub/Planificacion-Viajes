@@ -41,6 +41,15 @@ Herramientas de trabajo (2026-11-07, ver `HISTORIA.md`):
 - Las pautas de `karpathy-guidelines` aplican en todas las sesiones mediante el
   import de `CLAUDE.md`.
 
+Entorno y herramientas (2026-11-09, ver `HISTORIA.md`):
+- Versiones estables: Vite 5, React 18, TypeScript 5.5, Tailwind 3, ESLint 8
+  (`.eslintrc.cjs`) con Prettier, Vitest 1 con Testing Library y jsdom.
+- Node 22 fijado en `.nvmrc`.
+- No se aplica `npm audit fix --force` mientras las vulnerabilidades sean solo de
+  herramientas de desarrollo.
+- `tablero.py` funciona en Windows: usa `fcntl` si existe y, si no, un archivo de
+  bloqueo exclusivo.
+
 ## Decisiones reemplazadas
 - Internacionalización con react-i18next: reemplazada por el archivo tipado
   `src/i18n/es-CO.ts` (2026-11-07, segunda ronda).
@@ -52,26 +61,38 @@ Herramientas de trabajo (2026-11-07, ver `HISTORIA.md`):
   (2026-11-07, cuarta ronda).
 
 ## Estado actual
-- Plan aprobado (`plan.md`); no hay código de la aplicación todavía.
-- Configuración de Claude Code lista y versionada en el commit `634ff88`:
-  `CLAUDE.md`, `.claude/skills/orquestador-proyecto/` y
-  `.claude/skills/karpathy-guidelines/`. Falta verificar que cargan en una
-  sesión de Claude Code (T-29).
-- Tablero inicial en `control/tablero.json`: 29 tareas (0 hechas), 6 riesgos
+- Fase 0 en curso: 1/8 tareas. Tablero: 1/29 tareas hechas (T-01), 6 riesgos
   activos y 2 ideas.
-- Trabajo en la rama `docs/claude-skills`, sin publicar en el remoto.
+- Proyecto base listo en la raíz (T-01): `npm run build`, `npm run lint` y
+  `npm test` pasan, y `npm run dev` arranca. La pantalla inicial toma sus textos
+  de `src/i18n/es-CO.ts` (versión mínima). Carpetas de `plan.md` sección 8 creadas
+  y vacías (`.gitkeep`).
+- Configuración de Claude Code (`CLAUDE.md` y las dos skills) integrada en `dev`
+  con el commit `68dff1d` (PR #1). Falta verificar que carga en una sesión de
+  Claude Code (T-29).
+- Trabajo en la rama `dev`.
+- Entorno local: el Node global es v14. Hay que activar Node 22 con
+  `nvm use 22` en una terminal con permisos de administrador, o anteponer
+  `C:\Users\User\AppData\Roaming\nvm\v22.16.0` al PATH. Python 3.12 instalado en
+  `%LOCALAPPDATA%\Programs\Python\Python312` (en terminales nuevas queda en el
+  PATH como `python`; el comando `python3` de la skill no existe en Windows).
 
 ## Próximos pasos
-1. T-29: abrir una sesión de Claude Code, ejecutar `/context all` y
-   `/orquestador-proyecto retomar` para confirmar que todo carga.
-2. T-01: crear el proyecto Vite + React + TS con Tailwind, ESLint/Prettier y Vitest.
-3. T-02: el usuario crea el proyecto en Supabase.
-4. T-03: el usuario configura OAuth de Google en Google Cloud Console y Supabase.
-5. T-04 y T-05: archivo de textos `es-CO.ts` e inicio de sesión con Google.
-6. T-06: verificar el conteo de municipios con la DIVIPOLA (puede ir en paralelo).
+1. T-02 (usuario): crear el proyecto en Supabase y anotar la URL, la clave
+   pública (anon) y la clave secreta (service_role).
+2. T-03 (usuario): cliente OAuth en Google Cloud Console, proveedor Google y
+   Redirect URLs en Supabase, usuarios de prueba.
+3. T-04: archivo `es-CO.ts` completo y función `t(clave)`.
+4. T-06: verificar el conteo de municipios con la DIVIPOLA (puede ir en paralelo).
+5. T-05: inicio y cierre de sesión con Google, con `.env.example` sin secretos
+   (cuando T-03 esté lista).
+6. T-24: CI con lint y tests (necesita T-02 para el workflow semanal).
+7. T-29 (usuario): abrir Claude Code y ejecutar `/context all` y
+   `/orquestador-proyecto retomar`.
 
 ## Pendientes de decisión del usuario
 - Si la skill `orquestador-proyecto` debe usar un modelo fijo (campo `model`
   del frontmatter, por ejemplo `opus`) o el de la sesión.
-- Cuándo integrar la rama `docs/claude-skills` en `dev`.
+- Si se cambia `python3` por `python` en la skill para Windows, o se deja como
+  está y se invoca a mano.
 - Sobre el diseño del producto no hay preguntas abiertas (`plan.md`, sección 10).
