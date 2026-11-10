@@ -394,3 +394,55 @@
 - Cambios del tablero: T-11 pasa a hecha. Sin tareas, riesgos ni ideas nuevos. La próxima
   tarea de la ruta crítica es T-12 (migraciones de datos de usuario con RLS).
 - Origen: sesión de Kiro con el usuario
+
+### 2026-11-10 — T-12: migraciones de datos de usuario con RLS
+- Cierre anterior: a44cdf9 (memoria: cierre de T-11)
+- Commits: 5df9b68 (migración + prueba RLS); este cierre agrega el commit de memoria
+- Qué se hizo:
+  - T-12 terminada. Migración `supabase/migrations/20261110120000_datos_usuario.sql`
+    con las tablas de datos de usuario de plan.md 5.2 y sus RLS por propietario (5.3):
+    `perfiles` (PK = auth.users.id ON DELETE CASCADE), `viajes` (con CHECKs de
+    fecha_fin >= fecha_inicio y viajeros >= 1, FK de origen a `nodos`, enums de nivel,
+    modo_presupuesto y estado, arrays de estilos/municipios/atracciones, umbral_lluvia
+    jsonb, version_catalogo), `viaje_dias` (PK viaje_id+dia), `viaje_items` (UNIQUE
+    viaje_id+dia+orden; atraccion_id solo en tipo 'actividad'), `metas_ahorro`
+    (PK viaje_id) y `aportes_ahorro` (monto > 0). Todas con ON DELETE CASCADE hacia
+    auth.users (directa o vía viajes) para que "eliminar cuenta" (T-21) borre todo.
+  - RLS: `perfiles` y `viajes` comparan auth.uid() directo; las tablas hijas usan
+    EXISTS sobre viajes. Políticas `for all to authenticated` con using + with check.
+    Se concede select/insert/update/delete a authenticated y se revoca todo a anon
+    (los datos de usuario requieren sesión).
+  - Prueba de aislamiento RLS en `supabase/tests/datos_usuario_rls.sql`: crea dos
+    usuarios, simula sesión con `set local role authenticated` y
+    `set local request.jwt.claims` (sub = uuid), y comprueba con ASSERT que un usuario
+    solo ve/modifica sus filas, que no puede crear viajes a nombre de otro (with check)
+    ni ver/alterar/borrar los ajenos (ni sus ítems). Toda la prueba va en una
+    transacción con ROLLBACK: no deja nada en la base.
+- Decisiones:
+  - Alcance de T-12 = solo la capa SQL (migración), como fue T-07. Los esquemas Zod de
+    los tipos de usuario se harán en T-13/T-14, cuando se consuman (recomendación de
+    Claude, avalada por el usuario).
+  - Se añadió una prueba RLS (opción b elegida por el usuario) para no dejar nada
+    pendiente en la tarea y adelantar evidencia que la fase (e) exigirá.
+  - `viaje_items.atraccion_id` solo puede ser no nulo cuando tipo = 'actividad' (CHECK),
+    para que traslados, comidas y alojamientos no referencien atracciones.
+- Hallazgos:
+  - No hay CLI de Supabase, psql ni docker en el entorno local; la migración la aplicó
+    el usuario en el SQL Editor y devolvió "Success. No rows returned" (lo esperado para
+    DDL).
+  - El SQL Editor marca la prueba como "operación destructiva" por detectar
+    insert/update/delete; es seguro porque todo se revierte con ROLLBACK. Se documentó y
+    el usuario la corrió sobre el archivo completo.
+  - "Success. No rows returned" de la prueba no confirma por sí solo que los ASSERT
+    corran. Se verificó con dos comprobaciones del usuario: (1) 0 usuarios de prueba
+    tras el rollback (la base queda limpia) y (2) un `assert false` de control que sí
+    lanzó error, confirmando que los ASSERT se evalúan. Como el script real no lanzó
+    error, todas sus aserciones pasaron: aislamiento RLS verificado.
+  - Git avisa LF->CRLF al indexar los .sql nuevos (Windows); la CI en Ubuntu los ve con
+    LF y pasa.
+- Criterios de aceptación: T-12 es una tarea de la fase (b) y no tiene criterios de
+  aceptación propios en el tablero; los de RLS directa son de la fase (e). La evidencia
+  de aislamiento queda adelantada con la prueba de `supabase/tests/datos_usuario_rls.sql`.
+- Cambios del tablero: T-12 pasa a hecha. Sin tareas, riesgos ni ideas nuevos. La
+  próxima tarea de la ruta crítica es T-13 (formulario del viaje y vista día por día).
+- Origen: sesión de Kiro con el usuario

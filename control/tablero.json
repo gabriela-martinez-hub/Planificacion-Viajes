@@ -1,7 +1,7 @@
 {
   "proyecto": "Planificador de viajes del Eje Cafetero",
-  "revision": 18,
-  "actualizado": "2026-11-10T11:29:06",
+  "revision": 19,
+  "actualizado": "2026-11-10T11:49:41",
   "responsables": [
     "usuario",
     "claude",
@@ -276,9 +276,10 @@
       "dependencias": [
         "T-07"
       ],
-      "estado": "pendiente",
+      "estado": "hecha",
       "notas": "plan.md secciones 5.2 y 5.3",
-      "creada": "2026-11-07"
+      "creada": "2026-11-07",
+      "terminada": "2026-11-10"
     },
     {
       "id": "T-13",
@@ -926,6 +927,13 @@
       "por": "claude",
       "op": "campo",
       "id": "T-11",
+      "detalle": "estado: 'pendiente' -> 'hecha'"
+    },
+    {
+      "fecha": "2026-11-10T11:49:41",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-12",
       "detalle": "estado: 'pendiente' -> 'hecha'"
     }
   ]

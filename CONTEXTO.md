@@ -128,10 +128,10 @@ Catálogo y exploración (2026-11-10, ver `HISTORIA.md`):
 ## Estado actual
 - **Fase 0 cerrada** (7/8 tareas; T-29 es una verificación opcional que el
   usuario pospuso). Los 5 criterios de aceptación están verificados.
-- Tablero en revisión 18: 13/30 tareas hechas, 6 riesgos activos y 3 ideas. La
+- Tablero en revisión 19: 14/30 tareas hechas, 6 riesgos activos y 3 ideas. La
   fase (a) va 5/5 tareas, pero **sigue formalmente abierta** por un criterio de
-  aceptación sin evidencia (ver abajo). La **fase (b) está iniciada** con T-11
-  hecha (1/4 tareas de la fase).
+  aceptación sin evidencia (ver abajo). La **fase (b) avanza** con T-11 y T-12
+  hechas (2/4 tareas de la fase).
 - **Generador de itinerario listo (T-11, 2026-11-10):** lógica pura en
   `src/domain/itinerario/` (commit f751373). Módulos: `tipos.ts` (entrada,
   salida y resultado ok/no-ok), `grafo-buses.ts` (Dijkstra con penalización de
@@ -144,6 +144,17 @@ Catálogo y exploración (2026-11-10, ver `HISTORIA.md`):
   las 20-30 instancias de evaluación son T-27. El clima entra como `ClimaDia[]`
   por parámetro (servicio en T-17). Verificado: tsc 0, lint 0, build ok, 41/41
   pruebas en total.
+- **Datos de usuario en la base (T-12, 2026-11-10):** migración
+  `supabase/migrations/20261110120000_datos_usuario.sql` con las tablas de
+  plan.md 5.2 (`perfiles`, `viajes`, `viaje_dias`, `viaje_items`, `metas_ahorro`,
+  `aportes_ahorro`) y RLS por propietario (5.3): perfiles/viajes comparan
+  auth.uid() directo y las hijas con EXISTS sobre viajes; todo cuelga de
+  auth.users con ON DELETE CASCADE. El usuario la aplicó en Supabase. El
+  aislamiento se verificó con `supabase/tests/datos_usuario_rls.sql` (ASSERT en
+  una transacción con ROLLBACK): un usuario no ve ni modifica los datos de otro,
+  confirmado con las comprobaciones de limpieza (0 filas) y del arnés de ASSERT.
+  Los esquemas Zod de estos tipos se harán en T-13/T-14. checkins e
+  insignias_usuario son T-19.
 - **Catálogo completo y explorable:** el seed está en Supabase (T-08) y la vista
   lo lee con TanStack Query. Tres pestañas: Municipios, Atracciones y Mapa
   (Leaflet con los 53 municipios agrupados). El usuario verificó la vista y el
@@ -182,18 +193,18 @@ Catálogo y exploración (2026-11-10, ver `HISTORIA.md`):
   pendiente: `.gitattributes` con `* text=auto eol=lf`.
 
 ## Próximos pasos
-1. T-12: migraciones de datos de usuario (perfiles, viajes, viaje_dias,
-   viaje_items, metas_ahorro, aportes_ahorro) con RLS (`plan.md` 5.2 y 5.3).
-   Próxima tarea de la ruta crítica. Depende de T-07 (hecha). El usuario aplica
-   la migración en Supabase (no hay CLI local).
-2. T-13: formulario del viaje y vista día por día (usa el generador de T-11).
-   Depende de T-11 (hecha) y T-09 (hecha).
-3. T-15: presupuesto, paso 8 del generador (modo fijo con ajuste). Depende de
+1. T-13: formulario del viaje y vista día por día con edición, subir/bajar e
+   ítems fijados. Próxima tarea de la ruta crítica. Depende de T-11 (hecha) y
+   T-09 (hecha). Usa el generador de T-11 y las tablas de T-12. Aquí se crean los
+   esquemas Zod de los tipos de usuario (pospuestos en T-12).
+2. T-15: presupuesto, paso 8 del generador (modo fijo con ajuste). Depende de
    T-11 (hecha).
+3. T-14: guardar y listar viajes, lectura offline (PWA) e itinerarios sin cuenta
+   en IndexedDB. Depende de T-13, T-12 (hecha) y T-05 (hecha).
 4. En paralelo, disponibles: T-17 (servicio Open-Meteo, depende de T-01),
    T-25 (script de clima mensual, depende de T-06), T-27 (instancias de
-   evaluación del generador, depende de T-11 —ahora desbloqueada—) y T-30
-   (verificar el criterio RLS de la fase a).
+   evaluación del generador, depende de T-11) y T-30 (verificar el criterio RLS
+   de la fase a).
 5. Criterio de F-b pendiente de medir: cobertura >= 80 % en domain/itinerario.
    Falta el provider `@vitest/coverage-v8` (no instalado por no estar acordado);
    medirlo al abordar T-27 o instalando ese provider.
