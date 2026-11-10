@@ -144,10 +144,25 @@ Planificador (2026-11-10, ver `HISTORIA.md`):
 ## Estado actual
 - **Fase 0 cerrada** (7/8 tareas; T-29 es una verificación opcional que el
   usuario pospuso). Los 5 criterios de aceptación están verificados.
-- Tablero en revisión 20: 15/30 tareas hechas, 6 riesgos activos y 3 ideas. La
-  fase (a) va 5/5 tareas, pero **sigue formalmente abierta** por un criterio de
-  aceptación sin evidencia (ver abajo). La **fase (b) avanza** con T-11, T-12 y
-  T-13 hechas (3/4 tareas de la fase; falta T-14).
+- Tablero en revisión 22: 15/30 tareas hechas, 1 en curso (T-14), 6 riesgos
+  activos y 4 ideas. La fase (a) va 5/5 tareas pero sigue formalmente abierta por
+  el criterio RLS sin evidencia (T-30). La **fase (b) está casi completa**: T-11,
+  T-12 y T-13 hechas; **T-14 en curso** (piezas A y B en código, falta
+  verificarlas y hacer la pieza C/PWA).
+- **T-14 en curso (2026-11-10), piezas A y B (commit a3e888e):**
+  - Pieza A (guardar/listar con cuenta): `src/services/viajes.ts`
+    (guardarViaje/listarViajes/obtenerDetalleViaje/eliminarViaje),
+    `persistir.ts` (serializa y reconstruye, puro y probado), hooks
+    `use-viajes.ts`, botón "Guardar viaje" en el planificador y vista
+    "Mis viajes" (`MisViajes.tsx`, ruta /mis-viajes, solo lectura al abrir).
+  - Pieza B (sin cuenta, IndexedDB con `idb@8.0.0`): `borrador-local.ts`,
+    `use-borrador.ts`; botón "Guardar en este dispositivo" y banner para subir el
+    borrador al iniciar sesión. Pruebas con `fake-indexeddb@6.0.0` (dev).
+  - Bugs corregidos esta sesión: guardarViaje ahora envía `usuario_id` (la RLS lo
+    exige); el login vuelve a `/planificar` y guarda el borrador antes de
+    redirigir, con enlaces de login dentro del planificador.
+  - FALTA: verificar A y B en el navegador (requiere acción en Supabase, ver
+    Pendientes) y hacer la pieza C (PWA).
 - **Planificador funcionando (T-13, 2026-11-10):** `src/features/planificador/`
   con `Planificador.tsx` (formulario validado con Zod, botón "Todos" en estilos,
   sin fechas en el pasado), `SelectorMunicipios.tsx` (combobox buscable) y
@@ -219,24 +234,40 @@ Planificador (2026-11-10, ver `HISTORIA.md`):
   pendiente: `.gitattributes` con `* text=auto eol=lf`.
 
 ## Próximos pasos
-1. T-14: guardar y listar viajes, lectura offline (PWA) e itinerarios sin cuenta
-   en IndexedDB. Próxima tarea de la ruta crítica. Depende de T-13 (hecha),
-   T-12 (hecha) y T-05 (hecha). Cierra la fase (b) junto con el resto.
+1. Terminar T-14 (en curso). En la próxima sesión:
+   a. **Acción del usuario en Supabase (bloquea la re-prueba):** agregar la
+      Redirect URL `http://localhost:5173/planificar` o el comodín
+      `http://localhost:5173/**` en Authentication → URL Configuration, dejando
+      también `http://localhost:5173`.
+   b. Re-probar en el navegador: con cuenta, guardar/listar/abrir/recargar/
+      eliminar (1.3-1.6); sin cuenta, generar → enlace de login en el
+      planificador → vuelve a /planificar → banner "Subir a mi cuenta" → aparece
+      en Mis viajes y persiste tras recargar (2.8).
+   c. Hacer la pieza C: PWA con `vite-plugin-pwa` (Workbox): lectura offline del
+      itinerario y caché de teselas OSM en runtime (CacheFirst, plan.md 6.5),
+      manifest con iconos placeholder (opción a, elegida por el usuario). Probar
+      con `npm run build && npm run preview`, instalar y cortar la red.
+   d. Mejora menor: aclarar en la UI que guardar sin cuenta es local y no aparece
+      en "Mis viajes" hasta subirlo.
 2. T-15: presupuesto, paso 8 del generador (modo fijo con ajuste). Depende de
    T-11 (hecha).
-3. En paralelo, disponibles: T-17 (servicio Open-Meteo, depende de T-01),
-   T-25 (script de clima mensual, depende de T-06), T-27 (instancias de
-   evaluación del generador, depende de T-11) y T-30 (verificar el criterio RLS
-   de la fase a).
-4. Criterio de F-b pendiente de medir: cobertura >= 80 % en domain/itinerario.
-   Falta el provider `@vitest/coverage-v8` (no instalado por no estar acordado);
-   medirlo al abordar T-27 o instalando ese provider.
-5. Usuario (cuando quiera): crear la variable `SUPABASE_URL` y el secreto
-   `SUPABASE_ANON_KEY` en GitHub para activar la consulta diaria contra la pausa.
-6. Antes de la sustentación: revisar costos, tarifas y tiempos de bus del seed
-   (marcados aproximados, R-04) y el acceso al Nevado del Ruiz (R-03).
+3. En paralelo: T-17 (Open-Meteo), T-25 (clima mensual), T-27 (evaluación del
+   generador) y T-30 (criterio RLS de la fase a).
+4. Evaluar la idea I-04 (recomendar municipios cuando el usuario no los conoce):
+   decidir si se vuelve tarea del planificador.
+5. Criterio de F-b pendiente de medir: cobertura >= 80 % en domain/itinerario
+   (falta el provider `@vitest/coverage-v8`).
+6. Usuario (cuando quiera): crear `SUPABASE_URL` y `SUPABASE_ANON_KEY` en GitHub
+   para la consulta diaria contra la pausa.
+7. Antes de la sustentación: revisar costos/tarifas/tiempos del seed (R-04) y el
+   acceso al Nevado del Ruiz (R-03).
 
 ## Pendientes de decisión del usuario
+- **Acción en Supabase (bloquea la re-prueba de T-14):** agregar la Redirect URL
+  `http://localhost:5173/planificar` o el comodín `http://localhost:5173/**` en
+  Authentication → URL Configuration (dejar también `http://localhost:5173`).
+- Decidir si la idea I-04 (recomendar municipios cuando el usuario no los conoce)
+  se vuelve tarea del planificador.
 - Si se cambia `python3` por `python` en la skill para Windows y se automatiza
   el paso del JSON en PowerShell, o se sigue aplicando con un runner.
 - Si se agrega un `.gitattributes` para normalizar los finales de línea a LF.

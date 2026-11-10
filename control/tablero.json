@@ -1,7 +1,7 @@
 {
   "proyecto": "Planificador de viajes del Eje Cafetero",
-  "revision": 20,
-  "actualizado": "2026-11-10T15:28:07",
+  "revision": 21,
+  "actualizado": "2026-11-10T16:46:23",
   "responsables": [
     "usuario",
     "claude",
@@ -311,8 +311,8 @@
         "T-12",
         "T-05"
       ],
-      "estado": "pendiente",
-      "notas": "",
+      "estado": "en_curso",
+      "notas": "[2026-11-10 claude] Piezas A (guardar/listar con cuenta) y B (sin cuenta en IndexedDB con idb) en codigo y verificadas por tests (persistir, borrador con fake-indexeddb). Commit a3e888e. Bugs corregidos: guardarViaje no enviaba usuario_id (RLS lo exige); flujo de login a cuenta (ahora guarda borrador antes de redirigir y vuelve a /planificar). PENDIENTE del usuario en Supabase: agregar Redirect URL http://localhost:5173/planificar o comodin http://localhost:5173/** . Falta: re-verificar A y B en el navegador y hacer la pieza C (PWA offline + cache de teselas, iconos placeholder). Idea I-04 (recomendar municipios) para despues.",
       "creada": "2026-11-07"
     },
     {
@@ -647,6 +647,13 @@
       "estado": "nueva",
       "id": "I-03",
       "creada": "2026-11-10"
+    },
+    {
+      "descripcion": "Modo no-conozco-los-municipios: recomendar destinos a partir de estilos de viaje y tiempos de bus, preguntando cuantos municipios o dias quiere el usuario, y proponer un itinerario factible. Funcionalidad nueva del planificador, surgida al verificar T-14 (observacion 1.2 del usuario).",
+      "origen": "Observacion del usuario al verificar T-14 (2026-11-10)",
+      "estado": "nueva",
+      "id": "I-04",
+      "creada": "2026-11-10"
     }
   ],
   "historial": [
@@ -950,6 +957,27 @@
       "op": "nota",
       "id": "T-13",
       "detalle": "Planificador en src/features/planificador (Planificador, SelectorMunicipios, VistaItinerario) y esquemas Zod de viaje en src/domain/viaje. React Router instalado (react-router-dom@6.26.2): rutas /explorar y /planificar. Formulario con validacion Zod (sin fechas en el pasado), boton Todos en estilos, generacion con el dominio T-11, vista dia por dia editable (subir/bajar y fijar actividades; traslados fijos con candado), reorden de destinos con aviso de orden no optimo (EntradaItinerario.ordenMunicipios). Bug de reparto del generador corregido: reparte atracciones entre dias con la misma base (caso Parque del Cafe). Todo en memoria; persistir es T-14. tsc 0, lint 0, build ok, 60/60 pruebas. El usuario verifico la pantalla en el navegador (2026-11-10)."
+    },
+    {
+      "fecha": "2026-11-10T16:46:23",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-14",
+      "detalle": "estado: 'pendiente' -> 'en_curso'"
+    },
+    {
+      "fecha": "2026-11-10T16:46:23",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-14",
+      "detalle": "Piezas A (guardar/listar con cuenta) y B (sin cuenta en IndexedDB con idb) en codigo y verificadas por tests (persistir, borrador con fake-indexeddb). Commit a3e888e. Bugs corregidos: guardarViaje no enviaba usuario_id (RLS lo exige); flujo de login a cuenta (ahora guarda borrador antes de redirigir y vuelve a /planificar). PENDIENTE del usuario en Supabase: agregar Redirect URL http://localhost:5173/planificar o comodin http://localhost:5173/** . Falta: re-verificar A y B en el navegador y hacer la pieza C (PWA offline + cache de teselas, iconos placeholder). Idea I-04 (recomendar municipios) para despues."
+    },
+    {
+      "fecha": "2026-11-10T16:46:23",
+      "por": "claude",
+      "op": "idea_agregar",
+      "id": "I-04",
+      "detalle": "Modo no-conozco-los-municipios: recomendar destinos a partir de estilos de viaje y tiempos de bus, preguntando cuantos municipios o dias quiere el usuario, y proponer un itinerario factible. Funcionalidad nueva del planificador, surgida al verificar T-14 (observacion 1.2 del usuario)."
     }
   ]
 }

@@ -2,7 +2,7 @@
 
 > Vista generada desde `control/tablero.json` con `python3 .claude/skills/orquestador-proyecto/scripts/tablero.py render`. No se edita a mano.
 
-Revisión 20, actualizado 2026-11-10T15:28:07. Avance: 15/30 tareas (50 %).
+Revisión 21, actualizado 2026-11-10T16:46:23. Avance: 15/30 tareas (50 %).
 
 ## Avance por frente
 
@@ -37,7 +37,7 @@ Revisión 20, actualizado 2026-11-10T15:28:07. Avance: 15/30 tareas (50 %).
 | 11 | T-11 | ~~Generador de itinerario (6.1 pasos 1-7) con pruebas unitarias de los casos límite~~ | F-b | claude | P1 | hecha | T-08 |
 | 12 | T-12 | ~~Migraciones de datos de usuario (perfiles, viajes, viaje_dias, viaje_items, metas, aportes) con RLS~~ | F-b | claude | P2 | hecha | T-07 |
 | 13 | T-13 | ~~Formulario del viaje y vista día por día con edición, subir/bajar e ítems fijados~~ | F-b | claude | P2 | hecha | T-11, T-09 |
-| 14 | T-14 | Guardar y listar viajes, lectura offline (PWA) e itinerarios sin cuenta en IndexedDB | F-b | claude | P2 | pendiente | T-13, T-12, T-05 |
+| 14 | T-14 | Guardar y listar viajes, lectura offline (PWA) e itinerarios sin cuenta en IndexedDB | F-b | claude | P2 | en_curso | T-13, T-12, T-05 |
 | 15 | T-15 | Presupuesto: desglose (6.2) y modo fijo con ajuste automático (paso 8) | F-c | claude | P2 | pendiente | T-11 |
 | 16 | T-16 | Modo viaje soñado: meta de ahorro, aportes y barra de progreso | F-c | claude | P3 | pendiente | T-15, T-14 |
 | 17 | T-17 | Servicio Open-Meteo con Zod, caché de 3 h y respaldo a promedios | F-d | claude | P2 | pendiente | T-01 |
@@ -78,6 +78,7 @@ Revisión 20, actualizado 2026-11-10T15:28:07. Avance: 15/30 tareas (50 %).
 | I-01 | Versión posterior: municipios del Valle del Cauca con área en el PCC | plan.md sección 2.3 | nueva |
 | I-02 | Itinerarios compartidos o colaborativos | plan.md sección 2.2 | nueva |
 | I-03 | Modelo de tarifas por edad y categoria (adulto, nino, adulto mayor, extranjero) y pasaportes por nivel en atracciones como el Parque del Cafe o PANACA. Hoy el esquema usa un unico costo_entrada_cop (tarifa general de adulto) mas tarifa_extranjero_cop, acorde a plan.md 6.2. Implicaria una tabla de tarifas por atraccion y categoria y que el planificador pregunte las edades del grupo; afecta presupuesto (T-15). | Observacion del usuario en T-09 (2026-11-10): el precio del Parque del Cafe depende de la edad | nueva |
+| I-04 | Modo no-conozco-los-municipios: recomendar destinos a partir de estilos de viaje y tiempos de bus, preguntando cuantos municipios o dias quiere el usuario, y proponer un itinerario factible. Funcionalidad nueva del planificador, surgida al verificar T-14 (observacion 1.2 del usuario). | Observacion del usuario al verificar T-14 (2026-11-10) | nueva |
 
 ## Alertas
 
@@ -87,6 +88,9 @@ Ninguna.
 
 | Fecha | Por | Operación | Id | Detalle |
 |---|---|---|---|---|
+| 2026-11-10T16:46:23 | claude | idea_agregar | I-04 | Modo no-conozco-los-municipios: recomendar destinos a partir de estilos de viaje y tiempos de bus, preguntando cuantos municipios o dias quiere el usuario, y proponer un itinerario factible. Funcionalidad nueva del planificador, surgida al verificar T-14 (observacion 1.2 del usuario). |
+| 2026-11-10T16:46:23 | claude | nota | T-14 | Piezas A (guardar/listar con cuenta) y B (sin cuenta en IndexedDB con idb) en codigo y verificadas por tests (persistir, borrador con fake-indexeddb). Commit a3e888e. Bugs corregidos: guardarViaje no enviaba usuario_id (RLS lo exige); flujo de login a cuenta (ahora guarda borrador antes de redirigir y vuelve a /planificar). PENDIENTE del usuario en Supabase: agregar Redirect URL http://localhost:5173/planificar o comodin http://localhost:5173/** . Falta: re-verificar A y B en el navegador y hacer la pieza C (PWA offline + cache de teselas, iconos placeholder). Idea I-04 (recomendar municipios) para despues. |
+| 2026-11-10T16:46:23 | claude | campo | T-14 | estado: 'pendiente' -> 'en_curso' |
 | 2026-11-10T15:28:07 | claude | nota | T-13 | Planificador en src/features/planificador (Planificador, SelectorMunicipios, VistaItinerario) y esquemas Zod de viaje en src/domain/viaje. React Router instalado (react-router-dom@6.26.2): rutas /explorar y /planificar. Formulario con validacion Zod (sin fechas en el pasado), boton Todos en estilos, generacion con el dominio T-11, vista dia por dia editable (subir/bajar y fijar actividades; traslados fijos con candado), reorden de destinos con aviso de orden no optimo (EntradaItinerario.ordenMunicipios). Bug de reparto del generador corregido: reparte atracciones entre dias con la misma base (caso Parque del Cafe). Todo en memoria; persistir es T-14. tsc 0, lint 0, build ok, 60/60 pruebas. El usuario verifico la pantalla en el navegador (2026-11-10). |
 | 2026-11-10T15:28:07 | claude | campo | T-13 | estado: 'pendiente' -> 'hecha' |
 | 2026-11-10T11:49:41 | claude | campo | T-12 | estado: 'pendiente' -> 'hecha' |
@@ -99,6 +103,3 @@ Ninguna.
 | 2026-11-10T10:36:50 | claude | idea_agregar | I-03 | Modelo de tarifas por edad y categoria (adulto, nino, adulto mayor, extranjero) y pasaportes por nivel en atracciones como el Parque del Cafe o PANACA. Hoy el esquema usa un unico costo_entrada_cop (tarifa general de adulto) mas tarifa_extranjero_cop, acorde a plan.md 6.2. Implicaria una tabla de tarifas por atraccion y categoria y que el planificador pregunte las edades del grupo; afecta presupuesto (T-15). |
 | 2026-11-10T10:00:06 | claude | nota | T-08 | Seed en supabase/seed/datos/ (modulos TS tipados y validados con Zod en src/domain/catalogo/esquemas.ts). Script scripts/cargar-seed.ts carga con la service_role key, valida Zod + integridad referencial + conectividad del grafo antes de escribir, carga idempotente con upsert. npm run seed y npm run seed:dry-run. Contenido: 3 departamentos, 53 municipios, 70 atracciones (53 cascos + 17 reales con fuente y fecha), 142 rutas de bus (0 municipios aislados), 6 tarifas regionales, 3 rutas tematicas con items, 7 insignias. clima_mensual vacio (lo llena T-25). Pruebas en src/domain/catalogo/seed.test.ts (8, verifican los criterios de F-a). lint 0, tsc 0, build ok, 10/10 tests. El usuario ejecuto npm run seed y cargo los datos en Supabase sin error (2026-11-10). Costos/tarifas/tiempos marcados costo_aproximado=true (R-04); revisar antes de la sustentacion. |
 | 2026-11-10T10:00:06 | claude | campo | T-08 | estado: 'en_curso' -> 'hecha' |
-| 2026-11-10T09:31:25 | claude | campo | T-08 | estado: 'pendiente' -> 'en_curso' |
-| 2026-11-09T21:29:46 | claude | nota | T-07 | El usuario aplico la migracion del catalogo en el proyecto Supabase (2026-11-09). T-07 completa: codigo en el repo (c48fe44) y esquema con RLS aplicado en la base |
-| 2026-11-09T21:25:34 | claude | nota | T-24 | CI en verde en GitHub Actions. La consulta diaria a Supabase se salta sola mientras no exista la variable SUPABASE_URL en GitHub; se activa cuando el usuario cree esa variable y el secreto SUPABASE_ANON_KEY tras aplicar T-07. Se da por hecha la parte de CI; la activacion de la consulta queda cubierta por T-23 (verificacion antes de la sustentacion) |

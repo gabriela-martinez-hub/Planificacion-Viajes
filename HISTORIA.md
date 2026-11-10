@@ -535,3 +535,86 @@
   Sin riesgos ni ideas nuevos. La próxima tarea de la ruta crítica es T-14
   (guardar y listar viajes, PWA offline, itinerarios sin cuenta en IndexedDB).
 - Origen: sesión de Kiro con el usuario
+
+### 2026-11-10 — T-14 (en curso): guardar viajes con cuenta y sin cuenta (piezas A y B)
+- Cierre anterior: 14dd351 (memoria: cierre de T-13)
+- Commits: a3e888e (feat piezas A y B, en curso); este cierre agrega el commit de memoria
+- Qué se hizo (T-14 NO terminada; fase (b) sigue abierta):
+  - T-14 se abordó en tres piezas acordadas con el usuario: A) guardar y listar
+    con cuenta (Supabase); B) itinerarios sin cuenta (IndexedDB); C) PWA offline.
+    En esta sesión se hicieron A y B (código) y quedaron en verificación. C no se
+    empezó.
+  - Pieza A: serialización pura `src/features/planificador/persistir.ts`
+    (formulario + itinerario -> filas de viajes/viaje_dias/viaje_items, y la
+    inversa para mostrar; conserva fijado y costos). Servicio
+    `src/services/viajes.ts` (guardarViaje con limpieza si falla un paso,
+    listarViajes, obtenerDetalleViaje, eliminarViaje). Hooks en
+    `use-viajes.ts` (TanStack Query). Botón "Guardar viaje" en el planificador
+    (solo con sesión). Vista "Mis viajes" (`MisViajes.tsx`, ruta /mis-viajes +
+    nav) que lista, abre en solo lectura y elimina. `VistaItinerario` acepta
+    `soloLectura`.
+  - Pieza B: `idb@8.0.0` (pinned). `borrador-local.ts` guarda/lee/borra un
+    borrador (formulario + itinerario) en IndexedDB (un borrador, clave
+    'actual'). Hook `use-borrador.ts`. Sin sesión, el botón pasa a "Guardar en
+    este dispositivo"; con sesión y borrador pendiente, banner para subirlo a la
+    cuenta o descartarlo. Pruebas con `fake-indexeddb@6.0.0` (devDependency,
+    pinned).
+  - Esquemas Zod de viaje de T-13 ampliados: se exportó el tipo `Nivel`.
+- Verificación del usuario en el navegador (parcial):
+  - 1.1 login OK. 1.3 guardar con cuenta: FALLABA, corregido (ver abajo); tras el
+    arreglo el usuario confirmó 1.3 OK. 1.4 "Mis viajes": el usuario guardó SIN
+    sesión y no apareció en Mis viajes (es esperado: sin cuenta se guarda solo en
+    el dispositivo; el mensaje de la UI era confuso). 2.1-2.3, 2.6, 2.7 OK.
+    2.8 (subir el borrador tras iniciar sesión): FALLABA.
+- Bugs encontrados y corregidos en esta sesión:
+  1. guardarViaje no enviaba `usuario_id`. La tabla `viajes` lo exige (NOT NULL y
+     RLS `usuario_id = auth.uid()`), así que el INSERT se rechazaba ("No se pudo
+     guardar el viaje"). Arreglado: el servicio toma el id de `auth.getUser()` y
+     lo incluye. El mensaje de error del planificador ahora muestra el detalle
+     real entre paréntesis.
+  2. Flujo de login rompía el guardado sin cuenta -> cuenta (2.8): el login con
+     Google hace una redirección completa que borra el itinerario en memoria, y
+     Supabase devolvía a `/explorar` (no a `/planificar`), donde no se ve el
+     banner para subir el borrador. Arreglos: a) `iniciarSesionGoogle(destino?)`
+     acepta la ruta de retorno y el planificador pide volver a `/planificar`;
+     b) al iniciar sesión desde el planificador con un itinerario generado, se
+     guarda el borrador en IndexedDB ANTES de redirigir; c) enlaces de inicio de
+     sesión dentro del planificador (en el aviso y en el mensaje de guardado
+     local), para no subir al botón de la cabecera.
+- Decisiones:
+  - "Mis viajes" lista solo viajes de la cuenta (Supabase). Sin sesión, guardar
+    es local (IndexedDB) y aparece como borrador para subir al iniciar sesión; no
+    va a "Mis viajes". Hay que dejarlo más claro en la UI (pendiente menor).
+  - Para preservar el viaje a través del login (que recarga la página), la vía es
+    el borrador en IndexedDB: guardarlo antes de redirigir y ofrecer subirlo al
+    volver. Es el mecanismo de la pieza B.
+  - Dependencias nuevas: idb@8.0.0 (runtime), fake-indexeddb@6.0.0 (dev).
+- Hallazgos / pendientes para RETOMAR:
+  - PENDIENTE DEL USUARIO EN SUPABASE (bloquea la re-prueba de 2.8): agregar la
+    Redirect URL `http://localhost:5173/planificar` (o el comodín
+    `http://localhost:5173/**`) en Authentication -> URL Configuration, dejando
+    también `http://localhost:5173`. Sin esto, el login que vuelve a /planificar
+    falla por redirección no permitida.
+  - No se pudo verificar en el navegador desde la sesión del agente (no arranca
+    el dev server). Las piezas A y B quedan verificadas por tests en lo puro
+    (persistir, borrador con fake-indexeddb) y por tsc/lint/build; el flujo real
+    con Supabase lo prueba el usuario en la próxima sesión.
+  - En la próxima sesión, re-probar: (1.3-1.6) guardar/listar/abrir/recargar/
+    eliminar con cuenta; (2.8) sin sesión -> enlace de login en el planificador
+    -> vuelve a /planificar -> banner -> "Subir a mi cuenta" -> aparece en Mis
+    viajes y persiste tras recargar.
+  - Queda sin hacer la pieza C (PWA: vite-plugin-pwa/Workbox, lectura offline del
+    itinerario y caché de teselas OSM en runtime). Iconos: el usuario eligió
+    placeholder (opción a).
+  - Idea del usuario (1.2): modo "no conozco los municipios" que recomiende
+    destinos a partir de estilos y tiempos de bus, preguntando cuántos municipios
+    o días. Es una FUNCIONALIDAD NUEVA, no un bug. Se registra como idea I-04
+    para evaluar después de T-14 (el usuario aún no decidió si se vuelve tarea).
+  - Mejora menor pendiente: aclarar en la UI que "guardar sin cuenta" es local y
+    no aparece en "Mis viajes" hasta subirlo.
+- Verificación técnica: tsc 0, lint 0, format limpio, build ok, 69/69 pruebas
+  (9 nuevas: 5 de persistir, 4 de borrador local).
+- Cambios del tablero: T-14 pasa a en_curso. Nueva idea I-04 (recomendar
+  municipios). Sin riesgos nuevos. La tarea en curso de la ruta crítica es T-14
+  (faltan: verificar A y B con la Redirect URL, y hacer la pieza C/PWA).
+- Origen: sesión de Kiro con el usuario
