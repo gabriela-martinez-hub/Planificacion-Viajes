@@ -88,5 +88,15 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: './src/test/setup.ts',
     css: true,
+    // Variables de entorno ficticias para las pruebas. src/lib/config.ts valida
+    // y LANZA al importarse, así que cualquier prueba que importe (aun de forma
+    // transitiva) src/services/supabase.ts fallaría en CI, donde no hay .env.
+    // No son credenciales reales: solo satisfacen la validación Zod. Las pruebas
+    // no tocan Supabase (usan fetch inyectado o mocks); la prueba de integración
+    // real (rls-catalogo.int.test.ts) lee el .env del disco por su cuenta.
+    env: {
+      VITE_SUPABASE_URL: 'https://pruebas.supabase.co',
+      VITE_SUPABASE_ANON_KEY: 'anon-de-pruebas',
+    },
   },
 });

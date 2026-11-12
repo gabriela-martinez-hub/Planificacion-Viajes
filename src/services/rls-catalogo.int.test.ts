@@ -62,6 +62,11 @@ function leerCredenciales(): { url: string; anonKey: string } | null {
   const anonKey =
     env.VITE_SUPABASE_ANON_KEY ?? process.env.VITE_SUPABASE_ANON_KEY ?? '';
   if (!url || !anonKey) return null;
+  // Las credenciales ficticias de las pruebas unitarias (vite.config.ts
+  // test.env) llegan por process.env y NO sirven para esta prueba de red real:
+  // la suite solo debe correr contra un Supabase real, nunca contra el host de
+  // pruebas. Si las vemos, nos saltamos la suite igual que si no hubiera .env.
+  if (url.includes('pruebas.supabase.co')) return null;
   return { url, anonKey };
 }
 
