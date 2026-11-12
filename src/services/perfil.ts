@@ -49,3 +49,13 @@ export async function guardarConsentimiento(): Promise<string> {
     throw new Error(`No se pudo guardar el consentimiento: ${error.message}`);
   return ahora;
 }
+
+/**
+ * Elimina la cuenta del usuario actual y todos sus datos (plan.md 6.4). Llama a
+ * la RPC eliminar_mi_cuenta (SECURITY DEFINER), que borra de auth.users; el
+ * CASCADE arrastra perfiles, viajes y sus hijos, check-ins e insignias.
+ */
+export async function eliminarMiCuenta(): Promise<void> {
+  const { error } = await supabase.rpc('eliminar_mi_cuenta');
+  if (error) throw new Error(`No se pudo eliminar la cuenta: ${error.message}`);
+}

@@ -49,6 +49,15 @@ export function esClave(clave: string): clave is Clave {
 }
 
 /**
+ * Resuelve una clave que llega como texto (p. ej. `clave_texto` del catálogo),
+ * sin exigir parámetros en tiempo de tipos. Devuelve el texto, o la propia
+ * cadena si no es una clave conocida. Para textos con marcadores usa `t`.
+ */
+export function tTexto(clave: string): string {
+  return buscar(clave) ?? clave;
+}
+
+/**
  * Devuelve el texto de la clave con los marcadores reemplazados.
  * TypeScript exige los parámetros que el texto necesita.
  */

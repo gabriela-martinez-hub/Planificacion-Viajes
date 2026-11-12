@@ -4,6 +4,7 @@ import { BotonAuth } from '@/features/auth/BotonAuth';
 import { ExplorarCatalogo } from '@/features/catalogo/ExplorarCatalogo';
 import { Planificador } from '@/features/planificador/Planificador';
 import { MisViajes } from '@/features/planificador/MisViajes';
+import { Perfil } from '@/features/insignias/Perfil';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <EnlaceNav to="/explorar">{t('nav.explorar')}</EnlaceNav>
           <EnlaceNav to="/planificar">{t('nav.planificar')}</EnlaceNav>
           <EnlaceNav to="/mis-viajes">{t('nav.misViajes')}</EnlaceNav>
+          <EnlaceNav to="/perfil">{t('nav.perfil')}</EnlaceNav>
         </nav>
       </header>
       <main>
@@ -29,6 +31,7 @@ function App() {
           <Route path="/explorar" element={<ExplorarCatalogo />} />
           <Route path="/planificar" element={<Planificador />} />
           <Route path="/mis-viajes" element={<MisViajes />} />
+          <Route path="/perfil" element={<Perfil />} />
           <Route path="*" element={<Navigate to="/explorar" replace />} />
         </Routes>
       </main>

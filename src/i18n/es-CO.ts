@@ -253,9 +253,21 @@ export const textos = {
 
   perfil: {
     titulo: 'Mi perfil',
+    iniciaParaVerPerfil:
+      'Inicia sesión con Google para ver tu perfil y tu progreso.',
     municipiosVisitados: 'Municipios visitados',
+    municipioVisitado: 'Visitado',
+    municipioPendiente: 'Aún no visitado',
+    mapaTitulo: 'Tu mapa del Eje Cafetero',
+    progresoDepartamentos: 'Progreso por departamento',
+    progresoRutas: 'Progreso por ruta',
+    insigniasTitulo: 'Tus insignias',
+    sinInsignias:
+      'Aún no tienes insignias. Haz check-in en los lugares que visites.',
     progreso: '{visitados} de {total}',
+    cargandoMapa: 'Cargando el mapa…',
     eliminarCuenta: 'Eliminar mi cuenta y mis datos',
+    eliminarConfirmar: 'Sí, eliminar todo',
     confirmarEliminar:
       'Se borrarán tus viajes, check-ins e insignias. Esta acción no se puede deshacer.',
   },

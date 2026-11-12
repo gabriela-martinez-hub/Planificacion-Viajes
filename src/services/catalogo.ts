@@ -14,12 +14,16 @@ import {
   origenExternoSchema,
   rutaBusSchema,
   tarifaReferenciaSchema,
+  rutaTematicaSchema,
+  rutaItemSchema,
   type Municipio,
   type Atraccion,
   type Departamento,
   type OrigenExterno,
   type RutaBus,
   type TarifaReferencia,
+  type RutaTematica,
+  type RutaItem,
 } from '@/domain/catalogo/esquemas';
 
 /** Convierte null de la base en undefined para que Zod aplique opcionales. */
@@ -150,4 +154,29 @@ export async function obtenerTarifas(): Promise<TarifaReferencia[]> {
     sinNulos(tf as unknown as Record<string, unknown>),
   );
   return z.array(tarifaReferenciaSchema).parse(filas);
+}
+
+/** Rutas temáticas (café, termales, pueblos patrimonio). */
+export async function obtenerRutasTematicas(): Promise<RutaTematica[]> {
+  const { data, error } = await supabase
+    .from('rutas_tematicas')
+    .select('id, clave_texto, fuente');
+  if (error)
+    throw new Error(
+      `No se pudieron leer las rutas temáticas: ${error.message}`,
+    );
+  return z.array(rutaTematicaSchema).parse(data ?? []);
+}
+
+/** Ítems de las rutas temáticas (cada uno es un municipio o una atracción). */
+export async function obtenerRutaItems(): Promise<RutaItem[]> {
+  const { data, error } = await supabase
+    .from('ruta_items')
+    .select('ruta_id, municipio_id, atraccion_id');
+  if (error)
+    throw new Error(`No se pudieron leer los ítems de ruta: ${error.message}`);
+  const filas = (data ?? []).map((ri) =>
+    sinNulos(ri as unknown as Record<string, unknown>),
+  );
+  return z.array(rutaItemSchema).parse(filas);
 }

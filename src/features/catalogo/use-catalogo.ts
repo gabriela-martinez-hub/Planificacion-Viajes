@@ -8,6 +8,8 @@ import {
   obtenerOrigenesExternos,
   obtenerRutasBus,
   obtenerTarifas,
+  obtenerRutasTematicas,
+  obtenerRutaItems,
 } from '@/services/catalogo';
 
 export const clavesCatalogo = {
@@ -17,6 +19,8 @@ export const clavesCatalogo = {
   origenesExternos: ['catalogo', 'origenes-externos'] as const,
   rutasBus: ['catalogo', 'rutas-bus'] as const,
   tarifas: ['catalogo', 'tarifas'] as const,
+  rutasTematicas: ['catalogo', 'rutas-tematicas'] as const,
+  rutaItems: ['catalogo', 'ruta-items'] as const,
 };
 
 export function useDepartamentos() {
@@ -58,5 +62,19 @@ export function useTarifas() {
   return useQuery({
     queryKey: clavesCatalogo.tarifas,
     queryFn: obtenerTarifas,
+  });
+}
+
+export function useRutasTematicas() {
+  return useQuery({
+    queryKey: clavesCatalogo.rutasTematicas,
+    queryFn: obtenerRutasTematicas,
+  });
+}
+
+export function useRutaItems() {
+  return useQuery({
+    queryKey: clavesCatalogo.rutaItems,
+    queryFn: obtenerRutaItems,
   });
 }
