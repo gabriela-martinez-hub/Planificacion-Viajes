@@ -1046,3 +1046,31 @@
   tareas (93 %). Sin tareas, riesgos ni ideas nuevos. La próxima tarea de la ruta
   crítica es T-22 (prueba end-to-end en Playwright).
 - Origen: sesión de Kiro con el usuario
+
+
+### 2026-11-12 — Fase final: e2e (T-22), arreglo de CI, R-03/R-04 verificados y preparación de T-23
+
+- Cierre anterior: 68e3925 ("memoria: cierre de la fase (e) (T-19, T-20, T-21) y pulido T-28")
+- Commits: ab65f1d (fix CI), 5345888 (R-03 seed), 08bc429 (T-22 e2e), 3489c1b (config de despliegue T-23); más el commit de memoria de este cierre.
+- Qué se hizo:
+  - **Arreglo de CI (ab65f1d).** El usuario detectó que los últimos commits del día fallaban en `npm run test` dentro de CI: `src/services/clima.test.ts` importa (transitivamente) `src/services/supabase.ts`, y `src/lib/config.ts` valida y **lanza** al importarse si faltan `VITE_SUPABASE_URL`/`VITE_SUPABASE_ANON_KEY`. En CI no hay `.env`, así que el import reventaba y Vitest marcaba la suite como *Failed Suite*. En local no se veía porque hay `.env`. Solución: variables ficticias en `vite.config.ts` (`test.env`: `https://pruebas.supabase.co` / `anon-de-pruebas`) que satisfacen el Zod de `config.ts`; y `rls-catalogo.int.test.ts` (prueba de integración real) ahora **descarta el host de pruebas** para seguir saltándose en CI como antes. Verificado reproduciendo CI (sin `.env`): 148 passed / 4 skipped; con `.env`: 152 passed.
+  - **T-22 — prueba e2e con Playwright (08bc429).** Instalado `@playwright/test@1.65.0` + chromium. Un único flujo (`e2e/flujo-principal.spec.ts`, decisión de `plan.md` 1.3): explorar -> planificar y generar itinerario -> ajustar presupuesto -> ver clima y reorganizar por clima -> guardar viaje -> check-in por geolocalización. Toda la red se intercepta con `page.route` (`e2e/mocks.ts`): Supabase REST/RPC y Open-Meteo, usando el **seed real** (`construirSeed`) remodelado al formato PostgREST; la sesión se siembra en `localStorage` (clave derivada de la URL por supabase-js: `sb-pruebas-auth-token`) con `expires_at` futuro, sin OAuth. `context.setGeolocation` para el check-in (coords del Valle de Cocora). Open-Meteo mockeado con un día lluvioso dentro del viaje para habilitar "Reorganizar por clima". Presupuesto ajustado al 75 % del total real leído del DOM (fuerza un ajuste determinista). Config `playwright.config.ts` con `webServer` (`build` + `preview` en :4173) y env ficticias. Integración: Vitest excluye `e2e/**`; scripts `e2e`/`e2e:ui`; job `e2e` nuevo en `ci.yml` (instala solo chromium, sube el reporte); `.gitignore` con artefactos de Playwright; README documentado. La prueba pasa estable (3 corridas, una en modo CI).
+  - **R-03 verificado (5345888).** El usuario consultó el SGC: Nevado del Ruiz en **nivel de actividad Amarillo** y el PNN Los Nevados sin cambios de apertura. Se actualizó la atracción `nevado-del-ruiz` en `supabase/seed/datos/atracciones.ts` (`nota_acceso` con el nivel y la fecha, `fecha_actualizacion: 2026-11-12`; `estado_acceso: restringida` y `requiere_guia: true` se mantienen). Seed recargado en Supabase (`npm run seed`) y verificado con la clave anon.
+  - **R-04 verificado.** El usuario revisó los rangos de precios (alojamiento, comida, buses, entradas) y los considera razonables; sin cambios en los datos.
+  - **T-23 preparada (3489c1b).** Se creó `vercel.json` con la cabecera `Referrer-Policy: strict-origin-when-cross-origin` (requisito de OSM, `plan.md` 6.5), SPA fallback (rewrite de rutas sin extensión a `index.html`) y `no-cache` para `sw.js`. README con sección de despliegue. **El despliegue en sí NO se hizo:** al intentar conectar el repo en Vercel no aparece porque el repositorio es de otra cuenta/organización y el usuario es solo *collaborator* (la GitHub App de Vercel/Netlify necesita que el dueño del repo la autorice, o rol admin). Mismo bloqueo en Netlify.
+- Decisiones:
+  - Arreglo de CI con `test.env` (no mockear Supabase en cada prueba): resuelve la clase entera de fallos y conserva el fail-fast de producción (build y runtime siguen exigiendo credenciales reales). Razón: menos frágil que mockear por archivo.
+  - R-03 y R-04 pasan a estado `mitigado` en el tablero con la evidencia de la verificación del usuario; **no se le recordarán como pendientes** en próximas sesiones (petición del usuario).
+  - Ideas **I-03, I-04 e I-05** confirmadas como **trabajo futuro**, fuera de esta primera versión (decisión del usuario).
+  - Despliegue en **Vercel** (no Netlify): se mantiene porque ya hay `vercel.json`; migrar no resolvería el bloqueo de permisos (ambos dependen de la GitHub App del dueño del repo).
+- Hallazgos:
+  - La clave de `localStorage` de supabase-js la deriva `SupabaseClient` de la URL: `sb-<primer-segmento-del-host>-auth-token` (no la `supabase.auth.token` por defecto de auth-js). `_isValidSession` exige `access_token`, `refresh_token` y `expires_at`; con `expires_at` futuro `getSession()` no refresca (sin red de auth).
+  - Los campos del formulario del planificador usan `<label><span>texto</span><control/></label>` sin `htmlFor`, así que `getByLabel` es ambiguo para selects (incluye el texto de las opciones); en la prueba se localiza el control dentro del `<label>` que contiene su texto.
+  - `obtenerConsentimiento` usa `.maybeSingle()`: el mock debe devolver un objeto (o null), no un arreglo, o aparece el modal de consentimiento.
+  - Suite unitaria estable en 152/152; e2e 1/1.
+- Criterios de aceptación — **Fase final (pulido): 2/3 tareas hechas; la fase sigue ABIERTA por T-23.**
+  - "Accesibilidad revisada (contraste, foco, etiquetas)": **verificado** (T-28, cierre anterior).
+  - "Prueba end-to-end en Playwright del flujo principal": **verificado** (T-22; `e2e/flujo-principal.spec.ts`, pasa en local y en modo CI).
+  - "Despliegue con Referrer-Policy correcta y Supabase activo antes de la sustentación": **PENDIENTE** (T-23). La config (`vercel.json`) está lista y commiteada, pero el despliegue real no se pudo hacer por permisos de GitHub sobre el repo. Falta ejecutarlo y verificar en producción.
+- Cambios del tablero: T-22 pasa a hecha. R-03 y R-04 a `mitigado`. T-23 queda **pendiente** y es la próxima (y única) tarea de la ruta crítica; responsable: usuario. Nota en T-23 con el bloqueo de permisos y la vía CLI como alternativa. Revisión del tablero: 29/30 tareas.
+- Origen: sesión de Kiro con el usuario

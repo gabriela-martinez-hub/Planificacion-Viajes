@@ -1,7 +1,7 @@
 {
   "proyecto": "Planificador de viajes del Eje Cafetero",
-  "revision": 27,
-  "actualizado": "2026-11-12T14:21:08",
+  "revision": 29,
+  "actualizado": "2026-11-12T17:11:30",
   "responsables": [
     "usuario",
     "claude",
@@ -448,9 +448,10 @@
         "T-18",
         "T-16"
       ],
-      "estado": "pendiente",
-      "notas": "crear viaje -> ajustar presupuesto -> ver clima -> check-in",
-      "creada": "2026-11-07"
+      "estado": "hecha",
+      "notas": "crear viaje -> ajustar presupuesto -> ver clima -> check-in\n[2026-11-12 claude] Prueba e2e con Playwright 1.65 (chromium). Un unico flujo (e2e/flujo-principal.spec.ts): explorar, planificar y generar, ajustar presupuesto, clima y reorganizar, guardar viaje, check-in geo. Toda la red interceptada con page.route (Supabase REST/RPC y Open-Meteo) usando el seed real; sesion sembrada en localStorage (sb-pruebas-auth-token); context.setGeolocation. playwright.config.ts con webServer build+preview. Vitest excluye e2e; scripts e2e/e2e:ui; job e2e en ci.yml; gitignore y README actualizados. Pasa estable en local y en modo CI. Commit 08bc429.",
+      "creada": "2026-11-07",
+      "terminada": "2026-11-12"
     },
     {
       "id": "T-23",
@@ -464,7 +465,7 @@
         "T-22"
       ],
       "estado": "pendiente",
-      "notas": "",
+      "notas": "[2026-11-12 claude] BLOQUEADA DE HECHO por permisos: el repo es de otra cuenta/organizacion y el usuario es solo collaborator; la GitHub App de Vercel (y de Netlify) no lista el repo hasta que el dueno la autorice o le den rol admin. Config lista y commiteada (vercel.json: Referrer-Policy strict-origin-when-cross-origin, SPA fallback, no-cache de sw.js; commit 3489c1b). Alternativa sin GitHub: Vercel CLI (vercel / vercel --prod) subiendo el build local. PASOS para desplegar (Vercel): 1) git push origin dev. 2) Importar el repo en Vercel (o usar la CLI); framework Vite, build npm run build, salida dist. 3) Variables VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY (clave anon). 4) En Supabase Auth URL Configuration: Site URL y Redirect URLs con la URL de Vercel (dejar localhost). 5) En Google Cloud: agregar la URL a origenes JS autorizados; el callback de Supabase no cambia (R-05: usuarios de prueba o publicar la pantalla). 6) Confirmar Supabase Active (no pausado) y el cron Actividad de Supabase en verde. CRITERIOS para dar por finalizada T-23: (a) URL publica carga y redirige a /explorar leyendo el catalogo; (b) curl -sI <url> | grep referrer-policy devuelve strict-origin-when-cross-origin; (c) recargar en /planificar NO da 404 (SPA fallback); (d) el mapa (teselas OSM) carga en produccion; (e) login con Google funciona en produccion; (f) Supabase Active. El usuario debe pasar la URL y la salida del curl como evidencia.",
       "creada": "2026-11-07"
     },
     {
@@ -603,9 +604,9 @@
       "descripcion": "El acceso al PNN Los Nevados y al Nevado del Ruiz cambia con el nivel de alerta del SGC",
       "impacto": "medio",
       "probabilidad": "alta",
-      "mitigacion": "Campos requiere_guia y estado_acceso; revisar antes de cada entrega",
+      "mitigacion": "Campos requiere_guia y estado_acceso en el seed. Verificado por el usuario el 2026-11-12: Nevado del Ruiz en nivel Amarillo (SGC) y PNN Los Nevados sin cambios de apertura; atraccion nevado-del-ruiz con estado_acceso restringida, requiere_guia true y nota_acceso con nivel y fecha, cargada en Supabase. Verificado para esta entrega.",
       "responsable": "usuario",
-      "estado": "activo",
+      "estado": "mitigado",
       "creado": "2026-11-07"
     },
     {
@@ -613,9 +614,9 @@
       "descripcion": "Tarifas y rutas de bus sin fuente verificable o desactualizadas",
       "impacto": "medio",
       "probabilidad": "alta",
-      "mitigacion": "Solo tramos directos reales con fecha_actualizacion y fuente; costo_aproximado = true",
+      "mitigacion": "Solo tramos directos reales con fecha_actualizacion y fuente; costo_aproximado true. Verificado por el usuario el 2026-11-12: rangos de alojamiento, comida, buses y entradas razonables; sin cambios. Verificado para esta entrega.",
       "responsable": "claude",
-      "estado": "activo",
+      "estado": "mitigado",
       "creado": "2026-11-07"
     },
     {
@@ -1194,6 +1195,55 @@
       "op": "nota",
       "id": "T-28",
       "detalle": "Accesibilidad, rendimiento y textos. eslint-plugin-jsx-a11y (recommended) en el lint, 0 avisos. Foco visible (:focus-visible color de marca) y prefers-reduced-motion en index.css. Skip link, nav con nombre accesible (nav.principal) y main con id destino. Modales (consentimiento y eliminar cuenta) con hook use-modal-accesible (Escape, foco al abrir, restaurar al cerrar). Contraste: texto informativo slate-400 -> slate-500. Rendimiento: confirmado el code-splitting de Leaflet y la carga diferida de los mapas. Textos es-CO revisados. Prueba de landmarks en App.test. Dep nueva de desarrollo eslint-plugin-jsx-a11y@6.9.0. Commit 28232b8."
+    },
+    {
+      "fecha": "2026-11-12T15:01:52",
+      "por": "claude",
+      "op": "campo",
+      "id": "R-03",
+      "detalle": "estado: 'activo' -> 'mitigado'"
+    },
+    {
+      "fecha": "2026-11-12T15:01:52",
+      "por": "claude",
+      "op": "campo",
+      "id": "R-03",
+      "detalle": "mitigacion: 'Campos requiere_guia y estado_acceso; revisar antes de cada entrega' -> 'Campos requiere_guia y estado_acceso en el seed. Verificado por el usuario el 2026-11-12: Nevado del Ruiz en nivel Amarillo (SGC) y PNN Los Nevados sin cambios de apertura; atraccion nevado-del-ruiz con estado_acceso restringida, requiere_guia true y nota_acceso con nivel y fecha, cargada en Supabase. Verificado para esta entrega.'"
+    },
+    {
+      "fecha": "2026-11-12T15:01:52",
+      "por": "claude",
+      "op": "campo",
+      "id": "R-04",
+      "detalle": "estado: 'activo' -> 'mitigado'"
+    },
+    {
+      "fecha": "2026-11-12T15:01:52",
+      "por": "claude",
+      "op": "campo",
+      "id": "R-04",
+      "detalle": "mitigacion: 'Solo tramos directos reales con fecha_actualizacion y fuente; costo_aproximado = true' -> 'Solo tramos directos reales con fecha_actualizacion y fuente; costo_aproximado true. Verificado por el usuario el 2026-11-12: rangos de alojamiento, comida, buses y entradas razonables; sin cambios. Verificado para esta entrega.'"
+    },
+    {
+      "fecha": "2026-11-12T17:11:30",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-22",
+      "detalle": "estado: 'pendiente' -> 'hecha'"
+    },
+    {
+      "fecha": "2026-11-12T17:11:30",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-22",
+      "detalle": "Prueba e2e con Playwright 1.65 (chromium). Un unico flujo (e2e/flujo-principal.spec.ts): explorar, planificar y generar, ajustar presupuesto, clima y reorganizar, guardar viaje, check-in geo. Toda la red interceptada con page.route (Supabase REST/RPC y Open-Meteo) usando el seed real; sesion sembrada en localStorage (sb-pruebas-auth-token); context.setGeolocation. playwright.config.ts con webServer build+preview. Vitest excluye e2e; scripts e2e/e2e:ui; job e2e en ci.yml; gitignore y README actualizados. Pasa estable en local y en modo CI. Commit 08bc429."
+    },
+    {
+      "fecha": "2026-11-12T17:11:30",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-23",
+      "detalle": "BLOQUEADA DE HECHO por permisos: el repo es de otra cuenta/organizacion y el usuario es solo collaborator; la GitHub App de Vercel (y de Netlify) no lista el repo hasta que el dueno la autorice o le den rol admin. Config lista y commiteada (vercel.json: Referrer-Policy strict-origin-when-cross-origin, SPA fallback, no-cache de sw.js; commit 3489c1b). Alternativa sin GitHub: Vercel CLI (vercel / vercel --prod) subiendo el build local. PASOS para desplegar (Vercel): 1) git push origin dev. 2) Importar el repo en Vercel (o usar la CLI); framework Vite, build npm run build, salida dist. 3) Variables VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY (clave anon). 4) En Supabase Auth URL Configuration: Site URL y Redirect URLs con la URL de Vercel (dejar localhost). 5) En Google Cloud: agregar la URL a origenes JS autorizados; el callback de Supabase no cambia (R-05: usuarios de prueba o publicar la pantalla). 6) Confirmar Supabase Active (no pausado) y el cron Actividad de Supabase en verde. CRITERIOS para dar por finalizada T-23: (a) URL publica carga y redirige a /explorar leyendo el catalogo; (b) curl -sI <url> | grep referrer-policy devuelve strict-origin-when-cross-origin; (c) recargar en /planificar NO da 404 (SPA fallback); (d) el mapa (teselas OSM) carga en produccion; (e) login con Google funciona en produccion; (f) Supabase Active. El usuario debe pasar la URL y la salida del curl como evidencia."
     }
   ]
 }

@@ -237,6 +237,28 @@ Accesibilidad y pulido (2026-11-12, T-28, ver `HISTORIA.md`):
   al cerrar). Contraste de texto informativo subido de `slate-400` a `slate-500`.
   Rendimiento: Leaflet en chunk aparte y mapas diferidos (confirmado).
 
+Pruebas e2e, CI y despliegue (2026-11-12, T-22 y T-23, ver `HISTORIA.md`):
+- **Prueba e2e (T-22):** `@playwright/test@1.65` con chromium. Un único flujo en
+  `e2e/flujo-principal.spec.ts` (decisión de `plan.md` 1.3). Toda la red se
+  intercepta con `page.route` en `e2e/mocks.ts` (Supabase REST/RPC y Open-Meteo),
+  usando el **seed real** (`construirSeed`) remodelado al formato PostgREST; la
+  sesión se siembra en `localStorage` (clave `sb-<host>-auth-token` que deriva
+  supabase-js de la URL) con `expires_at` futuro; `context.setGeolocation` para el
+  check-in. `playwright.config.ts` con `webServer` (`build` + `preview`, :4173) y
+  env `VITE_SUPABASE_*` ficticias. Vitest excluye `e2e/**`. Scripts `e2e` y
+  `e2e:ui`. Job `e2e` en `ci.yml` (instala solo chromium, sube el reporte).
+- **Arreglo de CI:** `vite.config.ts` provee `VITE_SUPABASE_*` ficticias en
+  `test.env` (config.ts valida y lanza al importar; CI corre sin `.env`). La
+  prueba de integración real (`rls-catalogo.int.test.ts`) descarta el host de
+  pruebas y se sigue saltando en CI.
+- **Despliegue (T-23): Vercel.** `vercel.json` fija
+  `Referrer-Policy: strict-origin-when-cross-origin` (requisito de OSM, 6.5), el
+  SPA fallback (rewrite de rutas sin extensión a `index.html`) y `no-cache` para
+  `sw.js`. El despliegue real lo hace el **usuario** (requiere sus cuentas). Si la
+  integración Git no lista el repo (el usuario es solo collaborator de un repo
+  ajeno), la alternativa es la Vercel CLI. Migrar a Netlify no resuelve el bloqueo
+  (misma dependencia de la GitHub App del dueño).
+
 ## Decisiones reemplazadas
 - Internacionalización con react-i18next: reemplazada por el archivo tipado
   `src/i18n/es-CO.ts` (2026-11-07, segunda ronda).
@@ -266,29 +288,40 @@ Accesibilidad y pulido (2026-11-12, T-28, ver `HISTORIA.md`):
   cambio` recibe el JSON completo y los finales de línea son LF.
 
 ## Estado actual
-- Tablero en **revisión 27: 28/30 tareas (93 %)**, 6 riesgos activos y 5 ideas.
-- **Fases cerradas: 0, (a), (b), (c), (d) y (e).** Solo queda abierta la **fase
-  final (pulido), 1/3**. Próxima tarea de la ruta crítica: **T-22** (prueba
-  end-to-end en Playwright).
-- **Fase (e) cerrada (3/3 tareas, 8/8 criterios)** con T-19, T-20 y T-21. Todos
-  los criterios de servidor verificados contra la base con pruebas SQL
-  (`checkins_insignias_rls.sql` y `eliminar_cuenta.sql`, ambas verdes con
-  ROLLBACK): check-in por radio/precisión, RLS sin escritura directa,
-  idempotencia, insignia de departamento, umbral 80 % (79 vs 80, Quindío 12→10),
-  insignias manuales distinguibles, borrado en cascada; más las pruebas de
-  `domain/geo`.
-- **Fase final: T-28 hecha (1/3).** Quedan T-22 (e2e Playwright, claude) y T-23
-  (despliegue, usuario).
-- Verificación global al cerrar: tsc 0, lint 0 (con jsx-a11y), format limpio,
-  **152/152 pruebas**, build ok con PWA.
-- `dev` está **9 commits por delante de `origin/dev`** sin publicar: los 5 del
-  cierre anterior más `0dd89d3` (T-19), `01a3ed7` (T-20), `20c7576` (T-21),
-  `28232b8` (T-28) y el commit de memoria de este cierre.
+- Tablero en **revisión 29: 29/30 tareas (97 %)**, con R-03 y R-04 ya
+  **mitigados** (verificados por el usuario); riesgos activos: R-01, R-02, R-05,
+  R-06. 5 ideas.
+- **Fases cerradas: 0, (a), (b), (c), (d) y (e).** Queda abierta solo la **fase
+  final (pulido), 2/3**. Próxima (y única) tarea de la ruta crítica: **T-23**
+  (despliegue, responsable **usuario**).
+- **Fase final: T-28 y T-22 hechas (2/3).** Falta **T-23**: desplegar con
+  `Referrer-Policy` correcta y verificar que Supabase no esté pausado antes de la
+  sustentación.
+  - **T-22 (e2e Playwright) hecha:** un único flujo en `e2e/flujo-principal.spec.ts`
+    con toda la red interceptada (Supabase y Open-Meteo) y sesión sembrada en
+    `localStorage`; pasa en local y en modo CI.
+  - **T-23 NO se pudo ejecutar:** la config de Vercel está lista y commiteada
+    (`vercel.json`), pero el despliegue real está **bloqueado por permisos**: el
+    repositorio es de otra cuenta/organización y el usuario es solo *collaborator*,
+    así que la GitHub App de Vercel (y de Netlify) no lista el repo hasta que el
+    dueño la autorice o le den rol admin. Alternativa sin GitHub: Vercel CLI
+    (`vercel` / `vercel --prod`). Pasos y criterios de cierre completos en la
+    **nota de T-23** del tablero.
+- **Arreglo de CI aplicado:** `vite.config.ts` provee `VITE_SUPABASE_*` ficticias
+  en `test.env` para que las pruebas que importan el cliente de Supabase no
+  fallen en CI (que corre sin `.env`); la prueba de integración real descarta ese
+  host de pruebas y se sigue saltando en CI.
+- Verificación global al cerrar: lint 0 (con jsx-a11y), format limpio,
+  **152/152 pruebas unitarias**, **e2e 1/1** (local y modo CI), build ok con PWA.
+  `vercel.json` validado como JSON.
+- Al terminar la sesión, `dev` tiene commits sin publicar: `ab65f1d` (fix CI),
+  `5345888` (R-03), `08bc429` (T-22), `3489c1b` (config de despliegue T-23) y el
+  commit de memoria de este cierre. (El usuario suele publicar entre sesiones.)
 - Entorno: **Linux (Pop!_OS 24.04), zsh.** Hay Node, `python3`, **Supabase CLI
-  v2.122.1 y `psql` 16**; el agente aplica migraciones y pruebas SQL contra la
-  base vía `--db-url` (contraseña en `.env`). El agente no arranca `npm run dev`
-  ni ve el navegador: las pruebas visuales y la eliminación de cuenta real las
-  hace el usuario.
+  v2.122.1 y `psql` 16**, y **Playwright 1.65 con chromium**; el agente aplica
+  migraciones y pruebas SQL vía `--db-url` (contraseña en `.env`) y corre la e2e.
+  El agente no arranca `npm run dev` ni ve el navegador: las pruebas visuales, la
+  eliminación de cuenta real y **el despliegue** los hace el usuario.
 
 <!-- Histórico detallado por tarea en HISTORIA.md. -->
 
@@ -413,24 +446,27 @@ Accesibilidad y pulido (2026-11-12, T-28, ver `HISTORIA.md`):
   pendiente: `.gitattributes` con `* text=auto eol=lf`.
 
 ## Próximos pasos
-1. **T-22 (siguiente en la ruta crítica):** prueba end-to-end en Playwright del
-   flujo principal (crear viaje → ajustar presupuesto → ver clima → check-in,
-   con `context.setGeolocation`). Depende de T-21, T-18, T-16 (hechas). Habrá que
-   instalar y configurar Playwright (no está en el proyecto).
-2. **T-23 (usuario):** despliegue con `Referrer-Policy` correcta y verificación
-   de que Supabase no está pausado antes de la sustentación. Depende de T-22.
-3. **Verificación pendiente del usuario en el navegador** (no bloquea el código):
-   check-in geo (en Firefox o móvil; en Chromium/Linux usar el registro manual) y
-   **eliminar cuenta con una cuenta de prueba desechable** (es destructiva).
-4. Usuario (cuando quiera): crear `SUPABASE_URL` y `SUPABASE_ANON_KEY` en GitHub
-   para la consulta diaria contra la pausa; publicar los commits con `git push`.
-5. Antes de la sustentación: reemplazar los iconos placeholder de la PWA por el
-   diseño real; revisar costos/tarifas/tiempos del seed (R-04) y el acceso al
-   Nevado del Ruiz (R-03).
+1. **T-23 (siguiente y única en la ruta crítica; responsable: usuario) —
+   DESPLIEGUE EN VERCEL.** La config ya está lista (`vercel.json`: Referrer-Policy,
+   SPA fallback, no-cache de `sw.js`). **Bloqueo actual:** el repo es de otra
+   cuenta/organización y el usuario es solo *collaborator*, así que Vercel/Netlify
+   no listan el repo hasta que el dueño autorice su GitHub App o le den rol admin.
+   Caminos: (a) que el dueño autorice la app o cree el proyecto y agregue al
+   usuario como miembro; (b) **Vercel CLI** sin GitHub (`npm i -g vercel`,
+   `vercel`, `vercel --prod`). Pasos detallados y criterios de cierre en la **nota
+   de T-23** del tablero. **Al RETOMAR, indicar que T-23 es lo siguiente; cuando
+   el usuario pida proceder, listar de una los pasos y los criterios de cierre.**
+2. **Verificación del usuario en el navegador ya hecha** (2026-11-12): check-in
+   geo en Firefox y eliminar cuenta real. No queda pendiente.
+3. Usuario (cuando quiera): publicar los commits con `git push` (hay varios sin
+   publicar en `dev`).
+4. Antes de la sustentación: reemplazar los iconos placeholder de la PWA por el
+   diseño real.
 
 ## Pendientes de decisión del usuario
-- Decidir si las ideas I-04 (recomendar municipios) e I-05 (guardado local sin
-  cuenta, diferido) se vuelven tareas en una entrega futura.
+- **Resuelto:** las ideas I-03, I-04 e I-05 quedan como **trabajo futuro**, fuera
+  de esta primera versión (decisión del usuario, 2026-11-12). Se evaluarán en una
+  entrega posterior.
 - Si se agrega un `.gitattributes` para normalizar los finales de línea a LF
   (mejora opcional; hoy todo está en LF).
 - Sobre el diseño del producto no hay preguntas abiertas (`plan.md`, sección 10).
