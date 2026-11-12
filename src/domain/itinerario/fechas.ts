@@ -40,3 +40,26 @@ export function fechasDelViaje(inicio: string, cantidad: number): string[] {
 export function diaSemana(fecha: string): number {
   return new Date(aDias(fecha) * 86_400_000).getUTCDay();
 }
+
+/**
+ * Semanas completas entre dos fechas 'AAAA-MM-DD' (de `desde` a `hasta`).
+ * Cuenta periodos de 7 días completos; devuelve 0 si `hasta <= desde`.
+ */
+export function semanasEntre(desde: string, hasta: string): number {
+  const dias = aDias(hasta) - aDias(desde);
+  return dias <= 0 ? 0 : Math.floor(dias / 7);
+}
+
+/**
+ * Meses completos de calendario entre dos fechas 'AAAA-MM-DD'. Un mes se cuenta
+ * solo si el día de `hasta` alcanzó el mismo día del mes que `desde`. Devuelve 0
+ * si `hasta <= desde`.
+ */
+export function mesesEntre(desde: string, hasta: string): number {
+  if (aDias(hasta) <= aDias(desde)) return 0;
+  const [ay, am, ad] = desde.split('-').map(Number);
+  const [by, bm, bd] = hasta.split('-').map(Number);
+  let meses = (by - ay) * 12 + (bm - am);
+  if (bd < ad) meses -= 1; // el día del mes aún no se completó
+  return Math.max(0, meses);
+}

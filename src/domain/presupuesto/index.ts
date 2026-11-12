@@ -6,3 +6,12 @@
 export * from './tipos';
 export { desglosar } from './desglose';
 export { ajustarAPresupuesto } from './ajustar';
+export {
+  calcularAhorro,
+  totalAportado,
+  type Aporte,
+  type EntradaAhorro,
+  type EstadoMeta,
+  type FrecuenciaAhorro,
+  type ResultadoAhorro,
+} from './ahorro';

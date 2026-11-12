@@ -9,13 +9,15 @@ import {
 } from '@/features/catalogo/use-catalogo';
 import { useViajes, useDetalleViaje, useEliminarViaje } from './use-viajes';
 import { reconstruirItinerario, type ViajeItemFila } from './persistir';
+import { PanelMetaAhorro } from './PanelMetaAhorro';
 import { VistaItinerario } from './VistaItinerario';
+import type { ViajeResumen } from '@/services/viajes';
 
 export function MisViajes() {
   const { usuario } = useAuth();
   const viajes = useViajes(usuario !== null);
   const eliminar = useEliminarViaje();
-  const [abierto, setAbierto] = useState<string | null>(null);
+  const [abierto, setAbierto] = useState<ViajeResumen | null>(null);
 
   if (!usuario) {
     return (
@@ -24,7 +26,7 @@ export function MisViajes() {
   }
 
   if (abierto) {
-    return <DetalleViaje viajeId={abierto} alVolver={() => setAbierto(null)} />;
+    return <DetalleViaje viaje={abierto} alVolver={() => setAbierto(null)} />;
   }
 
   return (
@@ -56,7 +58,7 @@ export function MisViajes() {
           >
             <button
               type="button"
-              onClick={() => setAbierto(v.id)}
+              onClick={() => setAbierto(v)}
               className="flex-1 text-left"
             >
               <span className="block font-medium text-slate-800">
@@ -83,11 +85,12 @@ export function MisViajes() {
 }
 
 interface DetalleProps {
-  viajeId: string;
+  viaje: ViajeResumen;
   alVolver: () => void;
 }
 
-function DetalleViaje({ viajeId, alVolver }: DetalleProps) {
+function DetalleViaje({ viaje, alVolver }: DetalleProps) {
+  const viajeId = viaje.id;
   const detalle = useDetalleViaje(viajeId);
   const municipios = useMunicipios();
   const atracciones = useAtracciones();
@@ -147,6 +150,14 @@ function DetalleViaje({ viajeId, alVolver }: DetalleProps) {
           alBajar={() => {}}
           alFijar={() => {}}
           alMoverDestino={() => {}}
+        />
+      )}
+
+      {itinerario && (
+        <PanelMetaAhorro
+          viajeId={viajeId}
+          fechaInicio={viaje.fecha_inicio}
+          totalSugeridoCop={itinerario.costos.total}
         />
       )}
     </section>
