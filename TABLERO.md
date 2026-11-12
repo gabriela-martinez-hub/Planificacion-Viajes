@@ -2,7 +2,7 @@
 
 > Vista generada desde `control/tablero.json` con `python3 .claude/skills/orquestador-proyecto/scripts/tablero.py render`. No se edita a mano.
 
-Revisión 21, actualizado 2026-11-10T16:46:23. Avance: 15/30 tareas (50 %).
+Revisión 22, actualizado 2026-11-11T20:17:56. Avance: 16/30 tareas (53 %).
 
 ## Avance por frente
 
@@ -10,7 +10,7 @@ Revisión 21, actualizado 2026-11-10T16:46:23. Avance: 15/30 tareas (50 %).
 |---|---|---|
 | Fase 0: Preparación | 7 | 8 |
 | Fase (a): Catálogo + mapa | 5 | 6 |
-| Fase (b): Planificador de itinerarios | 3 | 5 |
+| Fase (b): Planificador de itinerarios | 4 | 5 |
 | Fase (c): Presupuesto | 0 | 2 |
 | Fase (d): Clima | 0 | 3 |
 | Fase (e): Insignias y perfil | 0 | 3 |
@@ -18,7 +18,7 @@ Revisión 21, actualizado 2026-11-10T16:46:23. Avance: 15/30 tareas (50 %).
 
 ## Próxima tarea
 
-**T-14** Guardar y listar viajes, lectura offline (PWA) e itinerarios sin cuenta en IndexedDB (claude)
+**T-15** Presupuesto: desglose (6.2) y modo fijo con ajuste automático (paso 8) (claude)
 
 ## Ruta crítica
 
@@ -37,7 +37,7 @@ Revisión 21, actualizado 2026-11-10T16:46:23. Avance: 15/30 tareas (50 %).
 | 11 | T-11 | ~~Generador de itinerario (6.1 pasos 1-7) con pruebas unitarias de los casos límite~~ | F-b | claude | P1 | hecha | T-08 |
 | 12 | T-12 | ~~Migraciones de datos de usuario (perfiles, viajes, viaje_dias, viaje_items, metas, aportes) con RLS~~ | F-b | claude | P2 | hecha | T-07 |
 | 13 | T-13 | ~~Formulario del viaje y vista día por día con edición, subir/bajar e ítems fijados~~ | F-b | claude | P2 | hecha | T-11, T-09 |
-| 14 | T-14 | Guardar y listar viajes, lectura offline (PWA) e itinerarios sin cuenta en IndexedDB | F-b | claude | P2 | en_curso | T-13, T-12, T-05 |
+| 14 | T-14 | ~~Guardar y listar viajes del usuario (con cuenta) y lectura offline (PWA). El guardado sin cuenta en IndexedDB se difirio (plan.md 1.3, idea I-05)~~ | F-b | claude | P2 | hecha | T-13, T-12, T-05 |
 | 15 | T-15 | Presupuesto: desglose (6.2) y modo fijo con ajuste automático (paso 8) | F-c | claude | P2 | pendiente | T-11 |
 | 16 | T-16 | Modo viaje soñado: meta de ahorro, aportes y barra de progreso | F-c | claude | P3 | pendiente | T-15, T-14 |
 | 17 | T-17 | Servicio Open-Meteo con Zod, caché de 3 h y respaldo a promedios | F-d | claude | P2 | pendiente | T-01 |
@@ -79,6 +79,7 @@ Revisión 21, actualizado 2026-11-10T16:46:23. Avance: 15/30 tareas (50 %).
 | I-02 | Itinerarios compartidos o colaborativos | plan.md sección 2.2 | nueva |
 | I-03 | Modelo de tarifas por edad y categoria (adulto, nino, adulto mayor, extranjero) y pasaportes por nivel en atracciones como el Parque del Cafe o PANACA. Hoy el esquema usa un unico costo_entrada_cop (tarifa general de adulto) mas tarifa_extranjero_cop, acorde a plan.md 6.2. Implicaria una tabla de tarifas por atraccion y categoria y que el planificador pregunte las edades del grupo; afecta presupuesto (T-15). | Observacion del usuario en T-09 (2026-11-10): el precio del Parque del Cafe depende de la edad | nueva |
 | I-04 | Modo no-conozco-los-municipios: recomendar destinos a partir de estilos de viaje y tiempos de bus, preguntando cuantos municipios o dias quiere el usuario, y proponer un itinerario factible. Funcionalidad nueva del planificador, surgida al verificar T-14 (observacion 1.2 del usuario). | Observacion del usuario al verificar T-14 (2026-11-10) | nueva |
+| I-05 | Guardado local sin cuenta: generar un itinerario sin iniciar sesion y guardarlo en el dispositivo (IndexedDB), con opcion de subirlo a la cuenta al iniciar sesion (supuesto 1.2.3 original de plan.md). Diferido del MVP en T-14 por alcance: el flujo sin sesion no quedo confiable y se retiro para no retrasar la fase (b). Guardar requiere iniciar sesion con Google. Registrado en plan.md 1.3 y 2.2. | Decision del usuario al cerrar T-14 (2026-11-11) | nueva |
 
 ## Alertas
 
@@ -88,6 +89,10 @@ Ninguna.
 
 | Fecha | Por | Operación | Id | Detalle |
 |---|---|---|---|---|
+| 2026-11-11T20:17:56 | claude | idea_agregar | I-05 | Guardado local sin cuenta: generar un itinerario sin iniciar sesion y guardarlo en el dispositivo (IndexedDB), con opcion de subirlo a la cuenta al iniciar sesion (supuesto 1.2.3 original de plan.md). Diferido del MVP en T-14 por alcance: el flujo sin sesion no quedo confiable y se retiro para no retrasar la fase (b). Guardar requiere iniciar sesion con Google. Registrado en plan.md 1.3 y 2.2. |
+| 2026-11-11T20:17:56 | claude | nota | T-14 | T-14 cerrada con alcance ajustado. Pieza A (guardar/listar con cuenta) y pieza C (PWA offline) hechas y verificadas por el usuario en el navegador. Pieza B (guardado local sin cuenta en IndexedDB) retirada del MVP y diferida a futuras entregas por alcance (plan.md 1.3 y 2.2; idea I-05). Se intento y el flujo sin sesion no quedo confiable. Bug encontrado: el itinerario se perdia al iniciar sesion (el login OAuth recarga la pagina); resuelto con viaje-pendiente.ts (sessionStorage) como puente efimero durante el login, no IndexedDB. PWA con vite-plugin-pwa 0.20.5: manifest con iconos placeholder, SW autoUpdate, runtimeCaching de teselas OSM (CacheFirst) y REST de Supabase (NetworkFirst), navigateFallback al shell. Eliminados borrador-local.ts/.test.ts y use-borrador.ts; quitadas deps idb y fake-indexeddb. lint 0, format ok, 65/65 pruebas, build genera sw.js. plan.md actualizado en esta sesion. |
+| 2026-11-11T20:17:56 | claude | campo | T-14 | titulo: 'Guardar y listar viajes, lectura offline (PWA) e itinerarios sin cuenta en IndexedDB' -> 'Guardar y listar viajes del usuario (con cuenta) y lectura offline (PWA). El guardado sin cuenta en IndexedDB se difirio (plan.md 1.3, idea I-05)' |
+| 2026-11-11T20:17:56 | claude | campo | T-14 | estado: 'en_curso' -> 'hecha' |
 | 2026-11-10T16:46:23 | claude | idea_agregar | I-04 | Modo no-conozco-los-municipios: recomendar destinos a partir de estilos de viaje y tiempos de bus, preguntando cuantos municipios o dias quiere el usuario, y proponer un itinerario factible. Funcionalidad nueva del planificador, surgida al verificar T-14 (observacion 1.2 del usuario). |
 | 2026-11-10T16:46:23 | claude | nota | T-14 | Piezas A (guardar/listar con cuenta) y B (sin cuenta en IndexedDB con idb) en codigo y verificadas por tests (persistir, borrador con fake-indexeddb). Commit a3e888e. Bugs corregidos: guardarViaje no enviaba usuario_id (RLS lo exige); flujo de login a cuenta (ahora guarda borrador antes de redirigir y vuelve a /planificar). PENDIENTE del usuario en Supabase: agregar Redirect URL http://localhost:5173/planificar o comodin http://localhost:5173/** . Falta: re-verificar A y B en el navegador y hacer la pieza C (PWA offline + cache de teselas, iconos placeholder). Idea I-04 (recomendar municipios) para despues. |
 | 2026-11-10T16:46:23 | claude | campo | T-14 | estado: 'pendiente' -> 'en_curso' |
@@ -99,7 +104,3 @@ Ninguna.
 | 2026-11-10T10:53:19 | claude | nota | T-10 | Mapa Leaflet en src/features/catalogo/MapaCatalogo.tsx: los 53 municipios como marcadores agrupados (react-leaflet-cluster), teselas de OpenStreetMap con atribucion visible (c OpenStreetMap contributors), popups con el municipio, su etiqueta de pueblo patrimonio y enlaces a sus atracciones. icono-leaflet.ts arregla el icono por defecto con Vite. Tercera pestana Mapa en ExplorarCatalogo con carga diferida (React.lazy): Leaflet queda en un chunk aparte (~206 kB) que solo se descarga al abrir el mapa; el bundle inicial se mantiene en ~366 kB. Zoom con rueda desactivado a proposito (molesto en movil y con scroll), aprobado por el usuario. scrollWheelZoom off. La cache de teselas en runtime (Workbox) es de la PWA (T-14). Dependencias fijadas: leaflet@1.9.4, react-leaflet@4.2.1, react-leaflet-cluster@2.1.0, @types/leaflet@1.9.12. lint 0, tsc 0, build ok con code splitting, 22/22 tests. El usuario verifico el mapa en el navegador (2026-11-10). |
 | 2026-11-10T10:53:19 | claude | campo | T-10 | estado: 'pendiente' -> 'hecha' |
 | 2026-11-10T10:43:54 | claude | nota | T-09 | Vista de exploracion del catalogo en src/features/catalogo/ con TanStack Query (dependencia @tanstack/react-query@5.59.0; QueryClient en src/app/query-client.ts con cache larga). Servicio de lectura src/services/catalogo.ts (clave anon, solo lectura, respuestas validadas con Zod); hooks en use-catalogo.ts. UI ExplorarCatalogo.tsx con dos pestanas Municipios \| Atracciones, buscador (ignora tildes), filtro por departamento y por estilo, y mensajes claros cuando no hay resultados (incluido el de municipio no encontrado, pedido del usuario). FichaAtraccion.tsx muestra detalle con nota de tarifa general de adulto (el precio por edad quedo como idea I-03). Logica pura en filtrar.ts y formato.ts. Pruebas en filtrar.test.ts (10, con el seed real). App.tsx monta la vista; main.tsx envuelve con QueryClientProvider; App.test.tsx actualizado. El combobox de seleccion de destinos se hara en T-13 (planificador). lint 0, tsc 0, build ok, 22/22 tests. El usuario verifico la vista en el navegador (2026-11-10). |
-| 2026-11-10T10:43:54 | claude | campo | T-09 | estado: 'pendiente' -> 'hecha' |
-| 2026-11-10T10:36:50 | claude | idea_agregar | I-03 | Modelo de tarifas por edad y categoria (adulto, nino, adulto mayor, extranjero) y pasaportes por nivel en atracciones como el Parque del Cafe o PANACA. Hoy el esquema usa un unico costo_entrada_cop (tarifa general de adulto) mas tarifa_extranjero_cop, acorde a plan.md 6.2. Implicaria una tabla de tarifas por atraccion y categoria y que el planificador pregunte las edades del grupo; afecta presupuesto (T-15). |
-| 2026-11-10T10:00:06 | claude | nota | T-08 | Seed en supabase/seed/datos/ (modulos TS tipados y validados con Zod en src/domain/catalogo/esquemas.ts). Script scripts/cargar-seed.ts carga con la service_role key, valida Zod + integridad referencial + conectividad del grafo antes de escribir, carga idempotente con upsert. npm run seed y npm run seed:dry-run. Contenido: 3 departamentos, 53 municipios, 70 atracciones (53 cascos + 17 reales con fuente y fecha), 142 rutas de bus (0 municipios aislados), 6 tarifas regionales, 3 rutas tematicas con items, 7 insignias. clima_mensual vacio (lo llena T-25). Pruebas en src/domain/catalogo/seed.test.ts (8, verifican los criterios de F-a). lint 0, tsc 0, build ok, 10/10 tests. El usuario ejecuto npm run seed y cargo los datos en Supabase sin error (2026-11-10). Costos/tarifas/tiempos marcados costo_aproximado=true (R-04); revisar antes de la sustentacion. |
-| 2026-11-10T10:00:06 | claude | campo | T-08 | estado: 'en_curso' -> 'hecha' |

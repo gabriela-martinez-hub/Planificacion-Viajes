@@ -124,6 +124,20 @@ Planificador (2026-11-10, ver `HISTORIA.md`):
   (atributo `min`) y en Zod, pasando la fecha de hoy (America/Bogota) como dato
   al dominio.
 
+Guardado de viajes y PWA (2026-11-11, ver `HISTORIA.md`):
+- Para guardar un viaje hace falta iniciar sesión con Google. El guardado local
+  sin cuenta (itinerario en IndexedDB con subida al iniciar sesión, supuesto
+  1.2.3 original) se difirió a futuras entregas por alcance (idea I-05; `plan.md`
+  1.3 y 2.2).
+- El itinerario se preserva durante el login con `sessionStorage`
+  (`viaje-pendiente.ts`), no con IndexedDB: es un puente efímero que dura lo que la
+  pestaña, no persistencia local.
+- PWA con `vite-plugin-pwa@0.20.5`: lectura offline del itinerario y del shell,
+  caché de teselas OSM (CacheFirst, sin precarga) y de la REST de Supabase
+  (NetworkFirst). Los iconos son placeholder hasta el pulido (fase final). El SW
+  no corre con `npm run dev` (`devOptions.enabled = false`); se prueba con
+  `npm run build && npm run preview`.
+
 ## Decisiones reemplazadas
 - Internacionalización con react-i18next: reemplazada por el archivo tipado
   `src/i18n/es-CO.ts` (2026-11-07, segunda ronda).
@@ -140,29 +154,41 @@ Planificador (2026-11-10, ver `HISTORIA.md`):
 - Política de tratamiento de datos: aprobada en versión académica (sin usuarios
   públicos; solo equipo y evaluadores). Si la app se abre al público se
   reemplaza por una política completa según la Ley 1581 de 2012 (2026-11-09).
+- Uso sin cuenta con guardado local en IndexedDB (supuesto 1.2.3 original):
+  reemplazado por "guardar requiere iniciar sesión". El guardado local sin cuenta
+  se difiere a futuras entregas por alcance (2026-11-11, idea I-05).
 
 ## Estado actual
 - **Fase 0 cerrada** (7/8 tareas; T-29 es una verificación opcional que el
   usuario pospuso). Los 5 criterios de aceptación están verificados.
-- Tablero en revisión 22: 15/30 tareas hechas, 1 en curso (T-14), 6 riesgos
-  activos y 4 ideas. La fase (a) va 5/5 tareas pero sigue formalmente abierta por
-  el criterio RLS sin evidencia (T-30). La **fase (b) está casi completa**: T-11,
-  T-12 y T-13 hechas; **T-14 en curso** (piezas A y B en código, falta
-  verificarlas y hacer la pieza C/PWA).
-- **T-14 en curso (2026-11-10), piezas A y B (commit a3e888e):**
-  - Pieza A (guardar/listar con cuenta): `src/services/viajes.ts`
-    (guardarViaje/listarViajes/obtenerDetalleViaje/eliminarViaje),
-    `persistir.ts` (serializa y reconstruye, puro y probado), hooks
-    `use-viajes.ts`, botón "Guardar viaje" en el planificador y vista
-    "Mis viajes" (`MisViajes.tsx`, ruta /mis-viajes, solo lectura al abrir).
-  - Pieza B (sin cuenta, IndexedDB con `idb@8.0.0`): `borrador-local.ts`,
-    `use-borrador.ts`; botón "Guardar en este dispositivo" y banner para subir el
-    borrador al iniciar sesión. Pruebas con `fake-indexeddb@6.0.0` (dev).
-  - Bugs corregidos esta sesión: guardarViaje ahora envía `usuario_id` (la RLS lo
-    exige); el login vuelve a `/planificar` y guarda el borrador antes de
-    redirigir, con enlaces de login dentro del planificador.
-  - FALTA: verificar A y B en el navegador (requiere acción en Supabase, ver
-    Pendientes) y hacer la pieza C (PWA).
+- Tablero en revisión 22: 16/30 tareas hechas, 6 riesgos activos y 5 ideas. La
+  fase (a) va 5/5 tareas pero sigue formalmente abierta por el criterio RLS sin
+  evidencia (T-30). La **fase (b) va 4/5**: T-11, T-12, T-13 y **T-14 hechas**;
+  falta T-15 (presupuesto).
+- **T-14 cerrada con alcance ajustado (2026-11-11):** guardar/listar viajes con
+  cuenta (pieza A) y PWA offline (pieza C), ambas verificadas por el usuario en el
+  navegador. El guardado local sin cuenta en IndexedDB (pieza B) se **retiró del
+  MVP** y se difirió a futuras entregas por alcance (idea I-05; `plan.md` 1.3 y
+  2.2).
+  - Pieza A: `src/services/viajes.ts` (guardar/listar/detalle/eliminar, envía
+    `usuario_id` que la RLS exige), `persistir.ts` (serializa/reconstruye, puro y
+    probado), hooks `use-viajes.ts`, botón "Guardar viaje" en el planificador y
+    vista "Mis viajes" (`MisViajes.tsx`, ruta `/mis-viajes`, solo lectura).
+  - Puente del login: `viaje-pendiente.ts` guarda el `{formulario, itinerario}` en
+    `sessionStorage` antes de iniciar sesión y lo restaura al volver con sesión
+    (el login OAuth recarga la página). No es IndexedDB ni persistencia local; es
+    efímero y dura lo que la pestaña. Corrige el bug de perder el itinerario al
+    iniciar sesión.
+  - Pieza C (PWA): `vite-plugin-pwa@0.20.5` en `vite.config.ts` con manifest
+    (iconos placeholder en `public/`), SW `autoUpdate`, `runtimeCaching` de teselas
+    OSM (CacheFirst, sin precarga) y REST de Supabase (NetworkFirst), precache del
+    shell y `navigateFallback` a `/index.html`. `registerSW` en `main.tsx`.
+    `devOptions.enabled = false` (el SW no corre con `npm run dev`; se prueba con
+    `build` + `preview`).
+  - Eliminados `borrador-local.ts`, `use-borrador.ts` y su prueba; quitadas las
+    dependencias `idb` y `fake-indexeddb`. La UI sin sesión solo invita a iniciar
+    sesión. Verificación: tsc 0, lint 0, format limpio, 65/65 pruebas, build
+    genera `sw.js`.
 - **Planificador funcionando (T-13, 2026-11-10):** `src/features/planificador/`
   con `Planificador.tsx` (formulario validado con Zod, botón "Todos" en estilos,
   sin fechas en el pasado), `SelectorMunicipios.tsx` (combobox buscable) y
@@ -234,40 +260,24 @@ Planificador (2026-11-10, ver `HISTORIA.md`):
   pendiente: `.gitattributes` con `* text=auto eol=lf`.
 
 ## Próximos pasos
-1. Terminar T-14 (en curso). En la próxima sesión:
-   a. **Acción del usuario en Supabase (bloquea la re-prueba):** agregar la
-      Redirect URL `http://localhost:5173/planificar` o el comodín
-      `http://localhost:5173/**` en Authentication → URL Configuration, dejando
-      también `http://localhost:5173`.
-   b. Re-probar en el navegador: con cuenta, guardar/listar/abrir/recargar/
-      eliminar (1.3-1.6); sin cuenta, generar → enlace de login en el
-      planificador → vuelve a /planificar → banner "Subir a mi cuenta" → aparece
-      en Mis viajes y persiste tras recargar (2.8).
-   c. Hacer la pieza C: PWA con `vite-plugin-pwa` (Workbox): lectura offline del
-      itinerario y caché de teselas OSM en runtime (CacheFirst, plan.md 6.5),
-      manifest con iconos placeholder (opción a, elegida por el usuario). Probar
-      con `npm run build && npm run preview`, instalar y cortar la red.
-   d. Mejora menor: aclarar en la UI que guardar sin cuenta es local y no aparece
-      en "Mis viajes" hasta subirlo.
-2. T-15: presupuesto, paso 8 del generador (modo fijo con ajuste). Depende de
-   T-11 (hecha).
-3. En paralelo: T-17 (Open-Meteo), T-25 (clima mensual), T-27 (evaluación del
+1. **T-15 (siguiente en la ruta crítica):** presupuesto, paso 8 del generador
+   (desglose 6.2 y modo fijo con ajuste automático). Depende de T-11 (hecha).
+2. En paralelo: T-17 (Open-Meteo), T-25 (clima mensual), T-27 (evaluación del
    generador) y T-30 (criterio RLS de la fase a).
-4. Evaluar la idea I-04 (recomendar municipios cuando el usuario no los conoce):
-   decidir si se vuelve tarea del planificador.
-5. Criterio de F-b pendiente de medir: cobertura >= 80 % en domain/itinerario
-   (falta el provider `@vitest/coverage-v8`).
-6. Usuario (cuando quiera): crear `SUPABASE_URL` y `SUPABASE_ANON_KEY` en GitHub
+3. Evaluar las ideas I-04 (recomendar municipios cuando el usuario no los conoce)
+   e I-05 (guardado local sin cuenta, diferido): decidir si entran en una entrega
+   futura.
+4. Criterios de F-b pendientes de medir: cobertura >= 80 % en domain/itinerario
+   (falta el provider `@vitest/coverage-v8`) y generación < 500 ms en móvil.
+5. Usuario (cuando quiera): crear `SUPABASE_URL` y `SUPABASE_ANON_KEY` en GitHub
    para la consulta diaria contra la pausa.
-7. Antes de la sustentación: revisar costos/tarifas/tiempos del seed (R-04) y el
+6. Antes de la sustentación: reemplazar los iconos placeholder de la PWA por el
+   diseño real (fase final); revisar costos/tarifas/tiempos del seed (R-04) y el
    acceso al Nevado del Ruiz (R-03).
 
 ## Pendientes de decisión del usuario
-- **Acción en Supabase (bloquea la re-prueba de T-14):** agregar la Redirect URL
-  `http://localhost:5173/planificar` o el comodín `http://localhost:5173/**` en
-  Authentication → URL Configuration (dejar también `http://localhost:5173`).
-- Decidir si la idea I-04 (recomendar municipios cuando el usuario no los conoce)
-  se vuelve tarea del planificador.
+- Decidir si las ideas I-04 (recomendar municipios) e I-05 (guardado local sin
+  cuenta, diferido) se vuelven tareas en una entrega futura.
 - Si se cambia `python3` por `python` en la skill para Windows y se automatiza
   el paso del JSON en PowerShell, o se sigue aplicando con un runner.
 - Si se agrega un `.gitattributes` para normalizar los finales de línea a LF.

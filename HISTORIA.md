@@ -618,3 +618,76 @@
   municipios). Sin riesgos nuevos. La tarea en curso de la ruta crítica es T-14
   (faltan: verificar A y B con la Redirect URL, y hacer la pieza C/PWA).
 - Origen: sesión de Kiro con el usuario
+
+### 2026-11-11 — T-14: guardar viajes con cuenta y PWA offline (cierre con recorte de alcance)
+- Cierre anterior: 5690d24 (memoria: cierre de sesion 2026-11-10, T-14 en curso)
+- Commits: (este cierre agrega el commit de codigo y el de memoria)
+- Qué se hizo:
+  - **T-14 terminada con el alcance ajustado.** Quedan la pieza A (guardar/listar
+    con cuenta) y la pieza C (PWA offline), ambas verificadas por el usuario en el
+    navegador. La pieza B (guardado local sin cuenta en IndexedDB) se retiró.
+  - **Recorte de alcance (decisión del usuario):** el guardado local sin cuenta
+    (itinerario en IndexedDB con subida al iniciar sesión, supuesto 1.2.3 de
+    `plan.md`) se difiere a futuras entregas. Guardar requiere iniciar sesión con
+    Google. Se registró en `plan.md` (secciones 1.2.3, 1.3, 2.2, arquitectura y
+    fase b) y como idea I-05 en el tablero.
+  - Se eliminaron `borrador-local.ts`, `borrador-local.test.ts` y `use-borrador.ts`;
+    se quitaron las dependencias `idb` y `fake-indexeddb`; se limpiaron los textos
+    i18n del borrador local. La UI sin sesión ahora solo invita a iniciar sesión.
+  - **Bug corregido (pieza A):** el itinerario se perdía al iniciar sesión, porque
+    el login OAuth recarga la página y el itinerario vivía solo en el estado de
+    React (antes lo cubría el borrador local eliminado). Se resolvió con
+    `viaje-pendiente.ts`, que guarda el `{formulario, itinerario}` en
+    `sessionStorage` antes del login y lo restaura al volver con sesión, ofreciendo
+    guardarlo. No es IndexedDB ni el guardado sin cuenta diferido: es un puente
+    efímero que dura lo que la pestaña.
+  - **Antes del recorte** se halló y corrigió otro bug: la función del borrador
+    local estaba declarada como `zguardarBorrador` (una `z` sobrante de una edición
+    accidental), lo que rompía el import `guardarBorrador`.
+  - **Pieza C (PWA) con `vite-plugin-pwa@0.20.5`** (devDependency pinada, compatible
+    con Vite 5): `registerType: 'autoUpdate'`, `manifest` con iconos placeholder
+    (rectángulos emerald en `public/`), `runtimeCaching` con teselas de OSM en
+    `CacheFirst` (500 entradas, 30 días; sin precarga, plan.md 6.5) y REST de
+    Supabase en `NetworkFirst` (respaldo a caché para leer offline), precache del
+    shell y `navigateFallback` a `/index.html`. `registerSW` en `main.tsx`,
+    `vite-plugin-pwa/client` en `vite-env.d.ts`, meta `theme-color` y
+    `apple-touch-icon` en `index.html`, `dev-dist` en `.gitignore`.
+    `devOptions.enabled = false` (el SW no corre en `npm run dev`).
+- Decisiones:
+  - Diferir el guardado sin cuenta en vez de seguir depurándolo: el flujo sin
+    sesión no quedó confiable y se priorizó avanzar la fase (b) (pedido del usuario;
+    se registró en `plan.md` como recorte por alcance).
+  - Preservar el itinerario durante el login con `sessionStorage` y no con
+    IndexedDB: es un puente efímero del login, no persistencia local, así que no
+    reintroduce la pieza B diferida (propuesta de Claude).
+  - `vite-plugin-pwa` 0.20.x en lugar de 1.x: la línea 0.20 es estable con Vite 5,
+    que es la versión del proyecto (propuesta de Claude).
+  - Iconos placeholder (opción a, ya elegida por el usuario): se reemplazan por el
+    diseño real en el pulido (fase final).
+- Hallazgos:
+  - El entorno del agente no arranca el servidor; las pruebas visuales de A
+    (guardar tras login) y C (offline, manifest) las hizo el usuario.
+  - El SW se genera bien (`dist/sw.js`, `manifest.webmanifest`, 19 entradas de
+    precache). La lectura offline exige una primera carga online completa antes de
+    cortar la red.
+  - En PowerShell 5.1, `tablero.py cambio` con JSON se sigue aplicando con un runner
+    Python que llama a `cambio()` leyendo el JSON de un archivo (ya borrado). La
+    operación `nota` usa el campo `texto` (no `detalle`) y antepone sola la fecha y
+    el autor; `idea_agregar` usa `{"idea": {...}}` y autogenera el id.
+  - El bundle principal quedó en ~429 kB (126 kB gzip); salió `idb` y entró
+    `workbox-window` (~5,7 kB). El mapa sigue en su chunk aparte (~206 kB).
+- Criterios de aceptación (F-b, ahora 4/5 tareas; falta T-15):
+  - "Los cambios persisten tras recargar": **verificado** (guardar con cuenta,
+    abrir y recargar; el usuario lo probó).
+  - "Misma entrada y mismo clima producen el mismo itinerario", "el día 1 parte del
+    origen", "ningún día supera el límite salvo traslados", "0 violaciones en las
+    instancias": verificados en T-11 (dominio).
+  - "Generación en < 500 ms en móvil de gama media": pendiente de medir.
+  - "Cobertura >= 80 % en domain/itinerario": pendiente (falta el provider
+    `@vitest/coverage-v8`).
+  - Lectura offline del itinerario (PWA): **verificado** por el usuario (recarga sin
+    red carga el shell y el itinerario visto).
+- Cambios del tablero: T-14 pasa a hecha; su título se ajustó para reflejar el
+  recorte. Nueva idea I-05 (guardado sin cuenta, diferido). Revisión 22. La próxima
+  tarea de la ruta crítica es T-15 (presupuesto, paso 8).
+- Origen: sesión de Kiro con el usuario
