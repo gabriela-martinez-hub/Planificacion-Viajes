@@ -270,11 +270,11 @@ const reales: AtraccionSeed[] = [
     requiere_guia: true,
     estado_acceso: 'restringida',
     nota_acceso:
-      'El acceso depende del nivel de alerta del volcán (SGC). Verificar antes de viajar; puede estar cerrado.',
+      'Verificado el 2026-11-12: volcan en nivel de actividad Amarillo (SGC); el sector permanece con acceso restringido, solo con operador autorizado. Confirmar el estado antes de viajar, puede cerrarse.',
     radio_checkin_m: 3000,
     descripcion:
       'Alta montaña y páramo del Parque Nacional Natural Los Nevados. Entrada regulada, con operador autorizado.',
-    fecha_actualizacion: REV,
+    fecha_actualizacion: '2026-11-12',
     fuente: 'https://www.parquesnacionales.gov.co (PNN Los Nevados)',
   },
   {
