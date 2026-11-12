@@ -15,7 +15,8 @@
     "test:watch": "vitest",
     "seed": "tsx scripts/cargar-seed.ts",
     "seed:dry-run": "tsx scripts/cargar-seed.ts --dry-run",
-    "evaluar": "tsx scripts/evaluar-generador.ts"
+    "evaluar": "tsx scripts/evaluar-generador.ts",
+    "clima:generar": "tsx scripts/generar-clima-mensual.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.45.4",

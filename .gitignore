@@ -2,6 +2,9 @@
 control/.tablero.lock
 control/.tablero.*.tmp
 
+# Progreso reanudable del generador de clima (T-25); se regenera solo
+supabase/seed/.clima-progreso.json
+
 # Dependencias
 node_modules
 
