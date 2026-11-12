@@ -159,6 +159,13 @@ export const textos = {
     montoTotal: 'Presupuesto total del grupo',
     total: 'Total estimado',
     porPersona: 'Por persona',
+    aproximado:
+      'Los costos son aproximados (tarifas de referencia con fuente).',
+    calcular: 'Ajustar a mi presupuesto',
+    nivelFinal:
+      'Nivel tras el ajuste: alojamiento {alojamiento}, comida {comida}',
+    actividadesQuitadas:
+      'Se quitaron {n} actividad(es) no obligatoria(s) para ajustar el presupuesto.',
     noAlcanza:
       'El presupuesto no alcanza. El mínimo para este viaje es {minimo}. Prueba acortar el viaje o cambiar de nivel.',
     ajustado: 'Itinerario ajustado a tu presupuesto',

@@ -37,12 +37,15 @@ export function catalogoItinerario(datos: DatosCatalogo): CatalogoItinerario {
 
 /**
  * Construye la entrada del generador. El clima se pasa aparte (lo provee T-17);
- * por defecto todos los días se tratan como secos.
+ * por defecto todos los días se tratan como secos. `extra` permite fijar el
+ * orden de municipios elegido por el usuario (para que el ajuste de presupuesto
+ * regenere con la misma ruta).
  */
 export function armarEntrada(
   formulario: FormularioViaje,
   datos: DatosCatalogo,
   climaPorDia: ClimaDia[] = [],
+  extra: { ordenMunicipios?: string[] } = {},
 ): EntradaItinerario {
   return {
     catalogo: catalogoItinerario(datos),
@@ -57,5 +60,6 @@ export function armarEntrada(
     atraccionesObligatorias: formulario.atraccionesObligatorias,
     limiteJornadaMin: formulario.limiteJornadaMin,
     climaPorDia,
+    ordenMunicipios: extra.ordenMunicipios,
   };
 }

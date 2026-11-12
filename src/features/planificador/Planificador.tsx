@@ -29,6 +29,7 @@ import {
   moverDestino,
 } from './editar-itinerario';
 import { serializarViaje } from './persistir';
+import { PanelPresupuesto } from './PanelPresupuesto';
 import { useGuardarViaje } from './use-viajes';
 import {
   guardarPendiente,
@@ -439,6 +440,16 @@ export function Planificador() {
               </p>
             )}
           </div>
+
+          {formValido && (
+            <PanelPresupuesto
+              itinerario={itinerario}
+              entrada={armarEntrada(formValido, datosCatalogo(), [], {
+                ordenMunicipios: ordenMunicipios ?? undefined,
+              })}
+              alAjustar={(nuevo) => setItinerario(nuevo)}
+            />
+          )}
 
           <VistaItinerario
             itinerario={itinerario}
