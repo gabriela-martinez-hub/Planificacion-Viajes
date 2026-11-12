@@ -31,6 +31,18 @@ con `npx playwright install chromium`.
 
 React + TypeScript + Vite, Tailwind CSS, ESLint + Prettier, Vitest + Testing Library. Backend con Supabase (se configura en fases posteriores; ver `plan.md` sección 9). Los textos de interfaz viven en `src/i18n/es-CO.ts`.
 
+## Despliegue
+
+El frontend se despliega en Vercel (`vercel.json`): build `npm run build`, salida
+`dist`. La config fija la cabecera `Referrer-Policy: strict-origin-when-cross-origin`
+(la política de teselas de OpenStreetMap exige un referer válido; `plan.md` 6.5) y
+el _fallback_ de SPA (todas las rutas sin extensión se reescriben a `index.html`
+para que React Router las maneje). El `sw.js` de la PWA se sirve con `no-cache`
+para que las actualizaciones lleguen. En Vercel hay que definir las variables
+`VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` (clave anon). Tras desplegar, la URL
+pública debe añadirse en Supabase (Authentication → URL Configuration) y en Google
+Cloud (orígenes autorizados) para que el login con Google funcione.
+
 ## Estructura
 
 La organización de carpetas sigue la sección 8 de `plan.md`: `src/domain` (lógica pura), `src/services`, `src/features`, `src/components`, `src/i18n`, `src/lib`, `src/types`, además de `supabase/` y `scripts/`.
