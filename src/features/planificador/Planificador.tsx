@@ -2,7 +2,7 @@
 // itinerario con el dominio (T-11) y vista día por día editable. Todo en
 // memoria; guardar es T-14, el presupuesto con ajuste es T-15 y el clima real
 // T-17/T-18.
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { t } from '@/i18n';
 import { ESTILOS } from '@/domain/catalogo/esquemas';
 import type { Estilo } from '@/domain/itinerario';
@@ -30,7 +30,11 @@ import {
 } from './editar-itinerario';
 import { serializarViaje } from './persistir';
 import { useGuardarViaje } from './use-viajes';
-import { useBorradorLocal } from './use-borrador';
+import {
+  guardarPendiente,
+  leerPendiente,
+  borrarPendiente,
+} from './viaje-pendiente';
 import { useAuth } from '@/features/auth/use-auth';
 import { hoyBogota } from './hoy';
 import { SelectorMunicipios } from './SelectorMunicipios';
@@ -47,7 +51,6 @@ export function Planificador() {
 
   const { usuario, iniciarSesionGoogle } = useAuth();
   const guardar = useGuardarViaje();
-  const borradorLocal = useBorradorLocal();
 
   const cargando =
     municipios.isLoading ||
@@ -172,35 +175,34 @@ export function Planificador() {
 
   const alGuardar = () => {
     if (!formValido || !itinerario) return;
-    guardar.mutate(serializarViaje(formValido, itinerario));
-  };
-
-  const [guardadoLocal, setGuardadoLocal] = useState(false);
-
-  const alGuardarLocal = async () => {
-    if (!formValido || !itinerario) return;
-    await borradorLocal.guardar(formValido, itinerario);
-    setGuardadoLocal(true);
-  };
-
-  /** Guarda el borrador local y luego inicia sesión, volviendo al planificador
-   *  para ofrecer subirlo (el login recarga la página y borra el estado). */
-  const alIniciarParaGuardar = async () => {
-    if (formValido && itinerario) {
-      await borradorLocal.guardar(formValido, itinerario);
-    }
-    await iniciarSesionGoogle('/planificar');
-  };
-
-  const alSubirBorrador = () => {
-    if (!borradorLocal.borrador) return;
-    const { formulario, itinerario: it } = borradorLocal.borrador;
-    guardar.mutate(serializarViaje(formulario, it), {
+    guardar.mutate(serializarViaje(formValido, itinerario), {
       onSuccess: () => {
-        void borradorLocal.descartar();
+        borrarPendiente();
       },
     });
   };
+
+  /** Guarda el itinerario en sessionStorage e inicia sesión. El login recarga
+   *  la página; al volver, el useEffect de abajo lo restaura. */
+  const alIniciarParaGuardar = () => {
+    if (formValido && itinerario) {
+      guardarPendiente({ formulario: formValido, itinerario });
+    }
+    void iniciarSesionGoogle('/planificar');
+  };
+
+  // Al volver del login con sesión, restaura el itinerario que se estaba
+  // preparando (si lo hay) para poder guardarlo sin regenerarlo.
+  const [restaurado, setRestaurado] = useState(false);
+  useEffect(() => {
+    if (!usuario || itinerario) return;
+    const pendiente = leerPendiente();
+    if (!pendiente) return;
+    setFormValido(pendiente.formulario);
+    setItinerario(pendiente.itinerario);
+    setOrdenMunicipios(null);
+    setRestaurado(true);
+  }, [usuario, itinerario]);
 
   // Municipios del catálogo + orígenes externos como posibles puntos de partida.
   const opcionesOrigen = useMemo(() => {
@@ -237,29 +239,6 @@ export function Planificador() {
           {t('planificador.titulo')}
         </h2>
       </header>
-
-      {usuario && borradorLocal.borrador && (
-        <div className="flex flex-col gap-2 rounded-md bg-amber-50 p-3 text-sm text-amber-900">
-          <p>{t('planificador.borradorPendiente')}</p>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={alSubirBorrador}
-              disabled={guardar.isPending}
-              className="rounded-md bg-emerald-600 px-3 py-1 font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
-            >
-              {t('planificador.subirBorrador')}
-            </button>
-            <button
-              type="button"
-              onClick={() => void borradorLocal.descartar()}
-              className="rounded-md border border-slate-300 px-3 py-1 text-slate-700 hover:bg-slate-100"
-            >
-              {t('planificador.descartarBorrador')}
-            </button>
-          </div>
-        </div>
-      )}
 
       <form
         className="flex flex-col gap-4"
@@ -418,6 +397,11 @@ export function Planificador() {
           <div className="flex flex-col gap-2">
             {usuario ? (
               <>
+                {restaurado && !guardar.isSuccess && (
+                  <p className="text-sm text-emerald-700" role="status">
+                    {t('planificador.viajeRestaurado')}
+                  </p>
+                )}
                 <button
                   type="button"
                   onClick={alGuardar}
@@ -443,37 +427,16 @@ export function Planificador() {
                 )}
               </>
             ) : (
-              <>
+              <p className="text-sm text-slate-500">
+                {t('planificador.iniciaParaGuardar')}{' '}
                 <button
                   type="button"
-                  onClick={() => void alGuardarLocal()}
-                  className="rounded-md border border-emerald-600 px-4 py-2 font-medium text-emerald-700 hover:bg-emerald-50"
+                  onClick={alIniciarParaGuardar}
+                  className="text-emerald-700 underline hover:text-emerald-800"
                 >
-                  {t('planificador.guardarLocal')}
+                  {t('auth.iniciarSesion')}
                 </button>
-                <p className="text-sm text-slate-500">
-                  {t('planificador.iniciaParaGuardar')}{' '}
-                  <button
-                    type="button"
-                    onClick={() => void alIniciarParaGuardar()}
-                    className="text-emerald-700 underline hover:text-emerald-800"
-                  >
-                    {t('auth.iniciarSesion')}
-                  </button>
-                </p>
-                {guardadoLocal && (
-                  <p className="text-sm text-emerald-700" role="status">
-                    {t('planificador.guardadoLocal')}{' '}
-                    <button
-                      type="button"
-                      onClick={() => void iniciarSesionGoogle('/planificar')}
-                      className="underline hover:text-emerald-800"
-                    >
-                      {t('auth.iniciarSesion')}
-                    </button>
-                  </p>
-                )}
-              </>
+              </p>
             )}
           </div>
 

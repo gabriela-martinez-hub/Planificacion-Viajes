@@ -115,14 +115,9 @@ export const textos = {
     incluyeRegreso: 'Incluir el regreso al punto de partida',
     generar: 'Generar itinerario',
     guardarViaje: 'Guardar viaje',
-    guardarLocal: 'Guardar en este dispositivo',
-    guardadoLocal:
-      'Guardado en este dispositivo. Inicia sesión para subirlo a tu cuenta.',
-    borradorPendiente:
-      'Tienes un viaje guardado en este dispositivo. ¿Quieres subirlo a tu cuenta?',
-    subirBorrador: 'Subir a mi cuenta',
-    descartarBorrador: 'Descartar',
     viajeGuardado: 'Viaje guardado en tu cuenta.',
+    viajeRestaurado:
+      'Recuperamos el viaje que preparaste. Pulsa Guardar viaje para conservarlo en tu cuenta.',
     errorGuardar: 'No se pudo guardar el viaje. Intenta de nuevo.',
     iniciaParaGuardar: 'Inicia sesión con Google para guardar este viaje.',
     iniciaParaVerViajes: 'Inicia sesión con Google para ver tus viajes.',

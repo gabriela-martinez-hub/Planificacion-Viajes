@@ -48,7 +48,12 @@ resueltos en este plan (el prompt revisado completo está en el Anexo A).
 
 1. **Origen:** el usuario elige como origen cualquier municipio del catálogo o una ciudad externa principal (Bogotá, Medellín, Cali) con tiempo y tarifa de bus aproximados.
 2. **Regreso:** el itinerario incluye el traslado de vuelta al origen el último día, y su costo entra en el presupuesto.
-3. **Uso sin cuenta:** se puede explorar el catálogo y generar un itinerario sin iniciar sesión. Ese itinerario se guarda en IndexedDB y, al iniciar sesión, se ofrece subirlo a la cuenta. Se pide iniciar sesión con Google solo para guardar en la nube, registrar aportes y hacer check-in.
+3. **Uso sin cuenta:** se puede explorar el catálogo y generar un itinerario sin
+   iniciar sesión, pero para guardarlo hace falta iniciar sesión con Google. El
+   guardado local sin cuenta (itinerario en IndexedDB con opción de subirlo al
+   iniciar sesión) se difiere a futuras entregas por alcance (sección 1.3). Se
+   pide iniciar sesión con Google para guardar, registrar aportes y hacer
+   check-in.
 4. **Insignia "Eje Cafetero":** se otorga al visitar los 53 municipios de Caldas, Quindío y Risaralda. Es un reto de largo plazo: municipios como Norcasia, Samaná o Marulanda quedan a varias horas de Manizales.
 
 ### 1.3 Recortes de alcance
@@ -66,8 +71,13 @@ Aplicados (decisiones del 7 de noviembre de 2026, segunda y cuarta ronda):
 | Se quita la cola offline de check-ins: el check-in requiere conexión y offline solo se lee el itinerario (cuarta ronda). | Sincronización diferida y validación de marcas de tiempo del cliente. |
 | Un único flujo end-to-end en Playwright (cuarta ronda). | Mantenimiento de pruebas e2e. |
 
+Diferido a futuras entregas por alcance (decisión del 11 de noviembre de 2026):
+
+| Recorte | Motivo |
+|---|---|
+| El guardado local sin cuenta (itinerario en IndexedDB y su subida a la cuenta al iniciar sesión, supuesto 1.2.3) se difiere a una entrega posterior. Guardar requiere iniciar sesión con Google. | Se intentó implementar en T-14 (pieza B) y el flujo sin sesión no quedó funcionando de forma confiable. Para no retrasar el resto de la fase (b), se retira del MVP y queda como idea para futuras entregas (I-05). El guardado con cuenta (pieza A) y la lectura offline del itinerario (PWA, pieza C) se mantienen. |
+
 Las rutas temáticas se mantienen, incluida "Pueblos patrimonio" con 2 municipios.
-No quedan recortes pendientes.
 
 Lo que no se recorta: generador con evaluación (6.0), presupuesto y clima.
 
@@ -121,6 +131,7 @@ pruebas faltantes) quedan aplicados en las secciones 5 a 9.
 - Panel de administración: el catálogo se mantiene con archivos seed versionados.
 - Mapa base sin conexión (no lo permite la política de teselas de OSM).
 - Check-in sin conexión: requiere red para validarse en el servidor.
+- Guardado local sin cuenta (itinerario en IndexedDB y su subida al iniciar sesión): diferido a futuras entregas por alcance (sección 1.3). Guardar requiere iniciar sesión con Google.
 - Detección de GPS falseado: una PWA no puede detectarlo; se acepta como limitación.
 
 ### 2.3 Versión posterior: municipios del Valle del Cauca (PCC)
@@ -184,7 +195,7 @@ react-i18next por el archivo de textos tipado. En la cuarta ronda se quitó dnd-
   ├─ Servicios:
   │    supabase      → auth, viajes, RPC de check-in, lectura de insignias
   │    clima         → Open-Meteo (forecast) + promedios del seed
-  └─ Caché offline (IndexedDB vía TanStack Query persister)
+  └─ Caché offline (lectura del itinerario guardado; PWA con TanStack Query persister)
 
 [Supabase]  Postgres + RLS + Auth + RPC registrar_checkin + trigger de insignias
 [Open-Meteo] api.open-meteo.com/v1/forecast
@@ -522,7 +533,7 @@ Cada fase termina con: qué se hizo, cómo probarlo y qué sigue.
 - Generador de la sección 6.1 (pasos 1–7) con pruebas unitarias, incluidos los casos de 1 día, origen igual a destino, municipio inalcanzable y traslado largo desde Bogotá.
 - Evaluación de 6.0 con las instancias de prueba y un informe de resultados.
 - Vista día por día con traslados en bus y costos; editar, reordenar con botones "subir" y "bajar", agregar y quitar; los ítems editados quedan fijados.
-- Guardar y listar viajes del usuario; lectura offline; itinerarios sin cuenta en IndexedDB.
+- Guardar y listar viajes del usuario (requiere iniciar sesión); lectura offline del itinerario. El guardado local sin cuenta se difiere (sección 1.3).
 - **Aceptación:** misma entrada y mismo clima producen el mismo itinerario; el día 1 parte del origen elegido; ningún día supera el límite de jornada salvo los días de solo traslado marcados; 0 violaciones de restricciones en las instancias de prueba; generación en < 500 ms en un móvil de gama media; cobertura ≥ 80 % en `domain/itinerario`; los cambios persisten tras recargar.
 
 ### Fase (c): Presupuesto

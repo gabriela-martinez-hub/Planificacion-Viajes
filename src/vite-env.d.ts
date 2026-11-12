@@ -1,4 +1,5 @@
 /// <reference types="vite/client" />
+/// <reference types="vite-plugin-pwa/client" />
 
 interface ImportMetaEnv {
   /** URL del proyecto de Supabase (https://<ref>.supabase.co). */
