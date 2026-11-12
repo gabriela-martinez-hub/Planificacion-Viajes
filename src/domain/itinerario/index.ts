@@ -16,6 +16,11 @@ import type {
 export * from './tipos';
 export { GrafoBuses } from './grafo-buses';
 export { puntuar, costoAtraccion, compararAtracciones } from './puntuacion';
+export { reorganizarPorClima } from './reorganizar-clima';
+export type {
+  OpcionesReorganizar,
+  ResultadoReorganizar,
+} from './reorganizar-clima';
 
 /**
  * Genera un itinerario: construcción voraz + búsqueda local. Nunca lanza por

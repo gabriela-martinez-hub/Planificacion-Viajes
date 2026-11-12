@@ -9,6 +9,7 @@
 import { t } from '@/i18n';
 import { formatearCOP } from '@/features/catalogo/formato';
 import type { DiaItinerario, Itinerario } from '@/domain/itinerario';
+import type { ClimaDiaDetalle } from '@/domain/clima';
 import { ordenDestinos } from './editar-itinerario';
 
 interface Props {
@@ -18,6 +19,8 @@ interface Props {
   ordenManual: boolean;
   /** true para mostrar el itinerario sin controles de edición (viaje guardado). */
   soloLectura?: boolean;
+  /** Detalle de clima por fecha 'AAAA-MM-DD', para el indicador por día (T-18). */
+  climaPorFecha?: Map<string, ClimaDiaDetalle>;
   alSubir: (dia: number, orden: number) => void;
   alBajar: (dia: number, orden: number) => void;
   alFijar: (dia: number, orden: number) => void;
@@ -29,6 +32,7 @@ export function VistaItinerario({
   nombreMunicipio,
   ordenManual,
   soloLectura = false,
+  climaPorFecha,
   alSubir,
   alBajar,
   alFijar,
@@ -64,6 +68,7 @@ export function VistaItinerario({
           dia={dia}
           nombreMunicipio={nombreMunicipio}
           soloLectura={soloLectura}
+          clima={climaPorFecha?.get(dia.fecha)}
           alSubir={alSubir}
           alBajar={alBajar}
           alFijar={alFijar}
@@ -144,10 +149,42 @@ function OrdenDestinos({
 
 // ------------------------------------------------------------ día
 
+// ------------------------------------------------------------ indicador de clima
+
+/** Insignia de clima de un día: fuente (pronóstico/tendencia/estimación),
+ *  probabilidad de lluvia y, si hay, el rango de temperatura. */
+function IndicadorClima({ clima }: { clima: ClimaDiaDetalle }) {
+  const prob = Math.round(clima.probabilidadLluvia * 100);
+  const etiquetaFuente =
+    clima.fuente === 'promedio'
+      ? t('clima.estimacion')
+      : clima.fuente === 'tendencia'
+        ? t('clima.tendencia')
+        : t('clima.pronostico');
+  const temp =
+    clima.tempMin !== undefined && clima.tempMax !== undefined
+      ? ` · ${Math.round(clima.tempMin)}–${Math.round(clima.tempMax)}°C`
+      : '';
+  return (
+    <span
+      className={`rounded-full px-2 py-0.5 text-xs ${
+        clima.lluvioso
+          ? 'bg-sky-100 text-sky-800'
+          : 'bg-amber-100 text-amber-800'
+      }`}
+      title={`${etiquetaFuente}${temp}`}
+    >
+      {clima.lluvioso ? '🌧️' : '☀️'}{' '}
+      {t('clima.lluvia', { probabilidad: `${prob}%` })}
+    </span>
+  );
+}
+
 interface DiaProps {
   dia: DiaItinerario;
   nombreMunicipio: (id: string) => string;
   soloLectura: boolean;
+  clima?: ClimaDiaDetalle;
   alSubir: (dia: number, orden: number) => void;
   alBajar: (dia: number, orden: number) => void;
   alFijar: (dia: number, orden: number) => void;
@@ -157,6 +194,7 @@ function DiaCard({
   dia,
   nombreMunicipio,
   soloLectura,
+  clima,
   alSubir,
   alBajar,
   alFijar,
@@ -182,6 +220,7 @@ function DiaCard({
           </p>
         </div>
         <div className="flex flex-col items-end gap-1">
+          {clima && <IndicadorClima clima={clima} />}
           {dia.lluvioso && (
             <span className="rounded-full bg-sky-100 px-2 py-0.5 text-xs text-sky-800">
               {t('planificador.diaLluvioso')}

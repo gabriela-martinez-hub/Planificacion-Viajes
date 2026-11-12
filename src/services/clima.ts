@@ -183,3 +183,39 @@ export async function obtenerClimaMensual(
   }
   return { ok: true, datos: parseada.data };
 }
+
+/**
+ * Lee los promedios mensuales de varios municipios en una sola consulta.
+ * Devuelve un mapa id → filas. Útil cuando un viaje tiene varios municipios
+ * base y necesitamos el respaldo histórico de cada uno sin N consultas.
+ */
+export async function obtenerClimaMensualVarios(
+  municipioIds: string[],
+): Promise<ResultadoClima<Map<string, ClimaMensual[]>>> {
+  if (municipioIds.length === 0) return { ok: true, datos: new Map() };
+  const { data, error } = await supabase
+    .from('clima_mensual')
+    .select('*')
+    .in('municipio_id', municipioIds)
+    .order('mes');
+  if (error) {
+    return {
+      ok: false,
+      error: `No se pudo leer clima_mensual: ${error.message}`,
+    };
+  }
+  const parseada = z.array(climaMensualSchema).safeParse(data ?? []);
+  if (!parseada.success) {
+    return {
+      ok: false,
+      error: `clima_mensual inválido: ${parseada.error.message}`,
+    };
+  }
+  const mapa = new Map<string, ClimaMensual[]>();
+  for (const fila of parseada.data) {
+    const lista = mapa.get(fila.municipio_id) ?? [];
+    lista.push(fila);
+    mapa.set(fila.municipio_id, lista);
+  }
+  return { ok: true, datos: mapa };
+}

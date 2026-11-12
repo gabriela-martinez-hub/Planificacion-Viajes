@@ -199,13 +199,19 @@ export const textos = {
 
   clima: {
     pronostico: 'Pronóstico',
+    tendencia: 'Tendencia (8-16 días)',
     estimacion: 'Estimación con promedios históricos',
     avisoSinRed:
       'No se pudo consultar el pronóstico. Se muestra la estimación con promedios históricos.',
     lluvia: 'Probabilidad de lluvia: {probabilidad}',
     reorganizar: 'Reorganizar por clima',
+    reorganizarAyuda:
+      'Mueve las actividades al aire libre a los días secos, sin tocar las que fijaste.',
     vistaPrevia: 'Vista previa de los cambios',
     aplicar: 'Aplicar cambios',
+    descartar: 'Descartar',
+    sinCambios:
+      'No hay nada que reorganizar: las actividades al aire libre ya están en días secos o no caben en otro día.',
     atribucion: 'Datos del clima: Open-Meteo',
   },
 

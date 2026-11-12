@@ -9,6 +9,7 @@
 import { useQuery } from '@tanstack/react-query';
 import {
   obtenerClimaMensual,
+  obtenerClimaMensualVarios,
   obtenerPronostico,
   type Lugar,
   type PronosticoLugar,
@@ -31,6 +32,8 @@ export const clavesClima = {
   pronostico: (lugares: Lugar[]) =>
     ['clima', 'pronostico', claveLugares(lugares)] as const,
   mensual: (municipioId: string) => ['clima', 'mensual', municipioId] as const,
+  mensualVarios: (ids: string[]) =>
+    ['clima', 'mensual-varios', [...ids].sort().join(',')] as const,
 };
 
 /**
@@ -59,6 +62,19 @@ export function useClimaMensual(municipioId: string | undefined) {
     queryFn: () => obtenerClimaMensual(municipioId as string),
     enabled: Boolean(municipioId),
     // Los promedios no cambian; se pueden cachear más tiempo que el pronóstico.
+    staleTime: 1000 * 60 * 60 * 24,
+    gcTime: 1000 * 60 * 60 * 24 * 7,
+    refetchOnWindowFocus: false,
+    retry: 1,
+  });
+}
+
+/** Promedios mensuales de varios municipios (un solo query). */
+export function useClimaMensualVarios(municipioIds: string[]) {
+  return useQuery<ResultadoClima<Map<string, ClimaMensual[]>>>({
+    queryKey: clavesClima.mensualVarios(municipioIds),
+    queryFn: () => obtenerClimaMensualVarios(municipioIds),
+    enabled: municipioIds.length > 0,
     staleTime: 1000 * 60 * 60 * 24,
     gcTime: 1000 * 60 * 60 * 24 * 7,
     refetchOnWindowFocus: false,

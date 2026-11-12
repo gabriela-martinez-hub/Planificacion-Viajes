@@ -3,3 +3,4 @@
 
 export * from './tipos';
 export * from './clasificar';
+export * from './armar-viaje';

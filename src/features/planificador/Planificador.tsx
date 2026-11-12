@@ -30,6 +30,8 @@ import {
 } from './editar-itinerario';
 import { serializarViaje } from './persistir';
 import { PanelPresupuesto } from './PanelPresupuesto';
+import { PanelClima } from './PanelClima';
+import { useClimaViaje } from '@/features/clima/use-clima-viaje';
 import { useGuardarViaje } from './use-viajes';
 import {
   guardarPendiente,
@@ -100,6 +102,24 @@ export function Planificador() {
     );
     return (id: string) => mapa.get(id) ?? id;
   }, [municipios.data, origenes.data]);
+
+  // Mapa de municipios por id (lat/lon/altitud) para el clima por día (T-18).
+  const municipiosPorId = useMemo(
+    () => new Map((municipios.data ?? []).map((m) => [m.id, m])),
+    [municipios.data],
+  );
+
+  // Días del itinerario (fecha + municipio base) para consultar el clima.
+  const diasBase = useMemo(
+    () =>
+      (itinerario?.dias ?? []).map((d) => ({
+        fecha: d.fecha,
+        municipioBaseId: d.municipioBaseId,
+      })),
+    [itinerario],
+  );
+
+  const clima = useClimaViaje(diasBase, municipiosPorId, hoy);
 
   const alternarEstilo = (e: Estilo) => {
     setEstilos((prev) =>
@@ -444,17 +464,35 @@ export function Planificador() {
           {formValido && (
             <PanelPresupuesto
               itinerario={itinerario}
-              entrada={armarEntrada(formValido, datosCatalogo(), [], {
-                ordenMunicipios: ordenMunicipios ?? undefined,
-              })}
+              entrada={armarEntrada(
+                formValido,
+                datosCatalogo(),
+                clima.climaPorDia,
+                {
+                  ordenMunicipios: ordenMunicipios ?? undefined,
+                },
+              )}
               alAjustar={(nuevo) => setItinerario(nuevo)}
             />
           )}
+
+          <PanelClima
+            itinerario={itinerario}
+            detalles={clima.detalles}
+            climaPorDia={clima.climaPorDia}
+            atracciones={atracciones.data ?? []}
+            limiteJornadaMin={formValido?.limiteJornadaMin ?? 540}
+            cargandoClima={clima.cargando}
+            usandoPromedio={clima.usandoPromedio}
+            nombreMunicipio={nombreMunicipio}
+            alAplicar={(nuevo) => setItinerario(nuevo)}
+          />
 
           <VistaItinerario
             itinerario={itinerario}
             nombreMunicipio={nombreMunicipio}
             ordenManual={ordenMunicipios !== null}
+            climaPorFecha={new Map(clima.detalles.map((d) => [d.fecha, d]))}
             alSubir={(dia, orden) =>
               setItinerario((it) => (it ? subirItem(it, dia, orden) : it))
             }
