@@ -59,4 +59,19 @@ describe('App', () => {
       await screen.findByRole('button', { name: textos.auth.iniciarSesion }),
     ).toBeInTheDocument();
   });
+
+  it('tiene landmarks accesibles: navegación principal, main y enlace para saltar', () => {
+    render(envolver(<App />));
+    // Navegación principal con nombre accesible.
+    expect(
+      screen.getByRole('navigation', { name: textos.nav.principal }),
+    ).toBeInTheDocument();
+    // Región principal de contenido.
+    expect(screen.getByRole('main')).toBeInTheDocument();
+    // Enlace "saltar al contenido" apuntando al main.
+    const salto = screen.getByRole('link', {
+      name: textos.nav.saltarContenido,
+    });
+    expect(salto).toHaveAttribute('href', '#contenido');
+  });
 });

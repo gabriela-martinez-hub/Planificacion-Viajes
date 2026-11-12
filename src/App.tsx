@@ -9,6 +9,12 @@ import { Perfil } from '@/features/insignias/Perfil';
 function App() {
   return (
     <div className="mx-auto flex min-h-screen max-w-screen-sm flex-col gap-6 px-4 py-6">
+      <a
+        href="#contenido"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-emerald-800 focus:shadow"
+      >
+        {t('nav.saltarContenido')}
+      </a>
       <header className="flex flex-col items-center gap-3 text-center">
         <h1 className="text-2xl font-bold text-emerald-800">
           {t('app.titulo')}
@@ -17,7 +23,7 @@ function App() {
         <BotonAuth />
         <nav
           className="flex gap-1 rounded-lg bg-slate-100 p-1"
-          aria-label={t('nav.inicio')}
+          aria-label={t('nav.principal')}
         >
           <EnlaceNav to="/explorar">{t('nav.explorar')}</EnlaceNav>
           <EnlaceNav to="/planificar">{t('nav.planificar')}</EnlaceNav>
@@ -25,7 +31,7 @@ function App() {
           <EnlaceNav to="/perfil">{t('nav.perfil')}</EnlaceNav>
         </nav>
       </header>
-      <main>
+      <main id="contenido">
         <Routes>
           <Route path="/" element={<Navigate to="/explorar" replace />} />
           <Route path="/explorar" element={<ExplorarCatalogo />} />

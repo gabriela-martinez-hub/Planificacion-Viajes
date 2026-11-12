@@ -57,7 +57,7 @@ export function FichaAtraccion({
 
       <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div>
-          <dt className="text-xs uppercase text-slate-400">
+          <dt className="text-xs uppercase text-slate-500">
             {t('catalogo.duracion')}
           </dt>
           <dd className="text-slate-700">
@@ -66,7 +66,7 @@ export function FichaAtraccion({
         </div>
 
         <div>
-          <dt className="text-xs uppercase text-slate-400">
+          <dt className="text-xs uppercase text-slate-500">
             {t('catalogo.horario')}
           </dt>
           <dd className="text-slate-700">
@@ -81,7 +81,7 @@ export function FichaAtraccion({
 
         {a.altitud_m !== undefined && (
           <div>
-            <dt className="text-xs uppercase text-slate-400">
+            <dt className="text-xs uppercase text-slate-500">
               {t('catalogo.altitud')}
             </dt>
             <dd className="text-slate-700">
@@ -91,7 +91,7 @@ export function FichaAtraccion({
         )}
 
         <div>
-          <dt className="text-xs uppercase text-slate-400">
+          <dt className="text-xs uppercase text-slate-500">
             {t('catalogo.entrada')}
           </dt>
           <dd className="text-slate-700">

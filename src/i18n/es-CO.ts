@@ -28,6 +28,8 @@ export const textos = {
 
   nav: {
     inicio: 'Inicio',
+    principal: 'Navegación principal',
+    saltarContenido: 'Saltar al contenido',
     explorar: 'Explorar',
     planificar: 'Planificar',
     misViajes: 'Mis viajes',

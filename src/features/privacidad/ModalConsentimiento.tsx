@@ -2,6 +2,7 @@
 // primer check-in. Al aceptar, guarda consentimiento_datos_en en el perfil.
 
 import { t } from '@/i18n';
+import { useModalAccesible } from '@/lib/use-modal-accesible';
 import { useGuardarConsentimiento } from './use-consentimiento';
 
 interface Props {
@@ -13,6 +14,7 @@ interface Props {
 
 export function ModalConsentimiento({ alAceptar, alCancelar }: Props) {
   const guardar = useGuardarConsentimiento();
+  const refDialogo = useModalAccesible(alCancelar);
 
   async function aceptar() {
     try {
@@ -30,7 +32,11 @@ export function ModalConsentimiento({ alAceptar, alCancelar }: Props) {
       aria-modal="true"
       aria-labelledby="consentimiento-titulo"
     >
-      <div className="w-full max-w-md rounded-lg bg-white p-5 shadow-lg">
+      <div
+        ref={refDialogo}
+        tabIndex={-1}
+        className="w-full max-w-md rounded-lg bg-white p-5 shadow-lg"
+      >
         <h2
           id="consentimiento-titulo"
           className="text-lg font-semibold text-slate-800"

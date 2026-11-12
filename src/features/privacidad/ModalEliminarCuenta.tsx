@@ -2,6 +2,7 @@
 // Acción destructiva e irreversible: el botón de confirmar va en rojo.
 
 import { t } from '@/i18n';
+import { useModalAccesible } from '@/lib/use-modal-accesible';
 import { useEliminarCuenta } from './use-eliminar-cuenta';
 
 interface Props {
@@ -12,6 +13,7 @@ interface Props {
 
 export function ModalEliminarCuenta({ alEliminar, alCancelar }: Props) {
   const eliminar = useEliminarCuenta();
+  const refDialogo = useModalAccesible(alCancelar);
 
   async function confirmar() {
     try {
@@ -29,7 +31,11 @@ export function ModalEliminarCuenta({ alEliminar, alCancelar }: Props) {
       aria-modal="true"
       aria-labelledby="eliminar-titulo"
     >
-      <div className="w-full max-w-md rounded-lg bg-white p-5 shadow-lg">
+      <div
+        ref={refDialogo}
+        tabIndex={-1}
+        className="w-full max-w-md rounded-lg bg-white p-5 shadow-lg"
+      >
         <h2
           id="eliminar-titulo"
           className="text-lg font-semibold text-slate-800"

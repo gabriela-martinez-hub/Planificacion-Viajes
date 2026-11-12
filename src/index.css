@@ -1,3 +1,25 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Accesibilidad (T-28): foco visible y consistente para navegación por teclado.
+   Usa :focus-visible para no mostrar el anillo al hacer clic con el ratón. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid #047857; /* emerald-700, color de marca */
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* Respeta a quienes piden menos animación. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

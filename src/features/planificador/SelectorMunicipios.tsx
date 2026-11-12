@@ -57,7 +57,7 @@ export function SelectorMunicipios({
       )}
       <ul className="max-h-48 overflow-y-auto rounded-md border border-slate-200">
         {visibles.length === 0 ? (
-          <li className="px-3 py-2 text-sm text-slate-400">
+          <li className="px-3 py-2 text-sm text-slate-500">
             {t('catalogo.municipioNoEncontrado')}
           </li>
         ) : (

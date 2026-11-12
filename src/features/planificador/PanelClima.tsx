@@ -75,7 +75,7 @@ export function PanelClima({
         <h3 className="font-semibold text-slate-800">
           {t('clima.pronostico')}
         </h3>
-        <span className="text-xs text-slate-400">{t('clima.atribucion')}</span>
+        <span className="text-xs text-slate-500">{t('clima.atribucion')}</span>
       </div>
 
       {usandoPromedio && (

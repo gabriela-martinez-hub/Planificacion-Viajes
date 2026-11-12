@@ -241,7 +241,7 @@ function ListaMunicipios({
   }
   return (
     <>
-      <p className="text-xs text-slate-400">
+      <p className="text-xs text-slate-500">
         {t('catalogo.conteoMunicipios', { n: municipios.length })}
       </p>
       <ul className="flex flex-col gap-3">
@@ -258,7 +258,7 @@ function ListaMunicipios({
             {(() => {
               const lista = porMunicipio.get(m.id) ?? [];
               return lista.length === 0 ? (
-                <p className="mt-2 text-sm text-slate-400">
+                <p className="mt-2 text-sm text-slate-500">
                   {t('catalogo.sinAtracciones')}
                 </p>
               ) : (
@@ -304,7 +304,7 @@ function ListaAtracciones({
   }
   return (
     <>
-      <p className="text-xs text-slate-400">
+      <p className="text-xs text-slate-500">
         {t('catalogo.conteoAtracciones', { n: atracciones.length })}
       </p>
       <ul className="flex flex-col gap-2">

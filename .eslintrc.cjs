@@ -5,11 +5,12 @@ module.exports = {
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
+    'plugin:jsx-a11y/recommended',
     'prettier',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
-  plugins: ['react-hooks', 'react-refresh'],
+  plugins: ['react-hooks', 'react-refresh', 'jsx-a11y'],
   settings: { react: { version: 'detect' } },
   ignorePatterns: ['dist', 'node_modules', '*.cjs', 'vite.config.ts'],
   rules: {
