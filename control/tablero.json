@@ -1,7 +1,7 @@
 {
   "proyecto": "Planificador de viajes del Eje Cafetero",
-  "revision": 22,
-  "actualizado": "2026-11-11T20:17:56",
+  "revision": 23,
+  "actualizado": "2026-11-11T20:44:50",
   "responsables": [
     "usuario",
     "claude",
@@ -327,9 +327,10 @@
       "dependencias": [
         "T-11"
       ],
-      "estado": "pendiente",
-      "notas": "",
-      "creada": "2026-11-07"
+      "estado": "hecha",
+      "notas": "[2026-11-11 claude] T-15 terminada. Dominio puro en src/domain/presupuesto/: tipos.ts, desglose.ts (total y por persona, 6.2), ajustar.ts (paso 8: baja alojamiento y luego comida escalon a escalon, despues poda actividades no obligatorias por puntuacion/costo con desempate por id, parando apenas total <= monto; si ni el economico sin actividades alcanza devuelve ok:false con minimoCop; las obligatorias nunca se quitan), index.ts. Determinista: misma entrada y monto, mismo resultado. UI PanelPresupuesto.tsx conectada al planificador (desglose, campo de monto, boton Ajustar a mi presupuesto, mensajes ajustado/no alcanza), reutiliza formatearCOP. armar-entrada.ts admite ordenMunicipios para que el ajuste regenere con la misma ruta. Pruebas en ajustar.test.ts (9, con el seed real): ya cumple no ajusta, factible nunca supera el monto, baja nivel antes de podar, poda cuando el economico no basta, obligatorias no se quitan, no factible devuelve el minimo sin marcar ajustado, determinismo, desglose por persona, 0 noches sin dividir por cero. tsc 0, lint 0, format limpio, build ok (PWA incluida), 74/74 pruebas. El modo sonado (meta de ahorro y aportes) es T-16 y se apoya en estos calculos. Falta verificar el panel en el navegador.",
+      "creada": "2026-11-07",
+      "terminada": "2026-11-11"
     },
     {
       "id": "T-16",
@@ -1014,6 +1015,20 @@
       "op": "idea_agregar",
       "id": "I-05",
       "detalle": "Guardado local sin cuenta: generar un itinerario sin iniciar sesion y guardarlo en el dispositivo (IndexedDB), con opcion de subirlo a la cuenta al iniciar sesion (supuesto 1.2.3 original de plan.md). Diferido del MVP en T-14 por alcance: el flujo sin sesion no quedo confiable y se retiro para no retrasar la fase (b). Guardar requiere iniciar sesion con Google. Registrado en plan.md 1.3 y 2.2."
+    },
+    {
+      "fecha": "2026-11-11T20:44:50",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-15",
+      "detalle": "estado: 'pendiente' -> 'hecha'"
+    },
+    {
+      "fecha": "2026-11-11T20:44:50",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-15",
+      "detalle": "T-15 terminada. Dominio puro en src/domain/presupuesto/: tipos.ts, desglose.ts (total y por persona, 6.2), ajustar.ts (paso 8: baja alojamiento y luego comida escalon a escalon, despues poda actividades no obligatorias por puntuacion/costo con desempate por id, parando apenas total <= monto; si ni el economico sin actividades alcanza devuelve ok:false con minimoCop; las obligatorias nunca se quitan), index.ts. Determinista: misma entrada y monto, mismo resultado. UI PanelPresupuesto.tsx conectada al planificador (desglose, campo de monto, boton Ajustar a mi presupuesto, mensajes ajustado/no alcanza), reutiliza formatearCOP. armar-entrada.ts admite ordenMunicipios para que el ajuste regenere con la misma ruta. Pruebas en ajustar.test.ts (9, con el seed real): ya cumple no ajusta, factible nunca supera el monto, baja nivel antes de podar, poda cuando el economico no basta, obligatorias no se quitan, no factible devuelve el minimo sin marcar ajustado, determinismo, desglose por persona, 0 noches sin dividir por cero. tsc 0, lint 0, format limpio, build ok (PWA incluida), 74/74 pruebas. El modo sonado (meta de ahorro y aportes) es T-16 y se apoya en estos calculos. Falta verificar el panel en el navegador."
     }
   ]
 }

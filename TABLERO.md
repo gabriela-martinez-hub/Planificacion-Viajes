@@ -2,7 +2,7 @@
 
 > Vista generada desde `control/tablero.json` con `python3 .claude/skills/orquestador-proyecto/scripts/tablero.py render`. No se edita a mano.
 
-Revisión 22, actualizado 2026-11-11T20:17:56. Avance: 16/30 tareas (53 %).
+Revisión 23, actualizado 2026-11-11T20:44:50. Avance: 17/30 tareas (57 %).
 
 ## Avance por frente
 
@@ -11,14 +11,14 @@ Revisión 22, actualizado 2026-11-11T20:17:56. Avance: 16/30 tareas (53 %).
 | Fase 0: Preparación | 7 | 8 |
 | Fase (a): Catálogo + mapa | 5 | 6 |
 | Fase (b): Planificador de itinerarios | 4 | 5 |
-| Fase (c): Presupuesto | 0 | 2 |
+| Fase (c): Presupuesto | 1 | 2 |
 | Fase (d): Clima | 0 | 3 |
 | Fase (e): Insignias y perfil | 0 | 3 |
 | Fase final: Pulido | 0 | 3 |
 
 ## Próxima tarea
 
-**T-15** Presupuesto: desglose (6.2) y modo fijo con ajuste automático (paso 8) (claude)
+**T-16** Modo viaje soñado: meta de ahorro, aportes y barra de progreso (claude)
 
 ## Ruta crítica
 
@@ -38,7 +38,7 @@ Revisión 22, actualizado 2026-11-11T20:17:56. Avance: 16/30 tareas (53 %).
 | 12 | T-12 | ~~Migraciones de datos de usuario (perfiles, viajes, viaje_dias, viaje_items, metas, aportes) con RLS~~ | F-b | claude | P2 | hecha | T-07 |
 | 13 | T-13 | ~~Formulario del viaje y vista día por día con edición, subir/bajar e ítems fijados~~ | F-b | claude | P2 | hecha | T-11, T-09 |
 | 14 | T-14 | ~~Guardar y listar viajes del usuario (con cuenta) y lectura offline (PWA). El guardado sin cuenta en IndexedDB se difirio (plan.md 1.3, idea I-05)~~ | F-b | claude | P2 | hecha | T-13, T-12, T-05 |
-| 15 | T-15 | Presupuesto: desglose (6.2) y modo fijo con ajuste automático (paso 8) | F-c | claude | P2 | pendiente | T-11 |
+| 15 | T-15 | ~~Presupuesto: desglose (6.2) y modo fijo con ajuste automático (paso 8)~~ | F-c | claude | P2 | hecha | T-11 |
 | 16 | T-16 | Modo viaje soñado: meta de ahorro, aportes y barra de progreso | F-c | claude | P3 | pendiente | T-15, T-14 |
 | 17 | T-17 | Servicio Open-Meteo con Zod, caché de 3 h y respaldo a promedios | F-d | claude | P2 | pendiente | T-01 |
 | 18 | T-18 | Indicador de clima por día y botón "Reorganizar por clima" con vista previa (paso 9) | F-d | claude | P2 | pendiente | T-17, T-15, T-13, T-25 |
@@ -89,6 +89,8 @@ Ninguna.
 
 | Fecha | Por | Operación | Id | Detalle |
 |---|---|---|---|---|
+| 2026-11-11T20:44:50 | claude | nota | T-15 | T-15 terminada. Dominio puro en src/domain/presupuesto/: tipos.ts, desglose.ts (total y por persona, 6.2), ajustar.ts (paso 8: baja alojamiento y luego comida escalon a escalon, despues poda actividades no obligatorias por puntuacion/costo con desempate por id, parando apenas total <= monto; si ni el economico sin actividades alcanza devuelve ok:false con minimoCop; las obligatorias nunca se quitan), index.ts. Determinista: misma entrada y monto, mismo resultado. UI PanelPresupuesto.tsx conectada al planificador (desglose, campo de monto, boton Ajustar a mi presupuesto, mensajes ajustado/no alcanza), reutiliza formatearCOP. armar-entrada.ts admite ordenMunicipios para que el ajuste regenere con la misma ruta. Pruebas en ajustar.test.ts (9, con el seed real): ya cumple no ajusta, factible nunca supera el monto, baja nivel antes de podar, poda cuando el economico no basta, obligatorias no se quitan, no factible devuelve el minimo sin marcar ajustado, determinismo, desglose por persona, 0 noches sin dividir por cero. tsc 0, lint 0, format limpio, build ok (PWA incluida), 74/74 pruebas. El modo sonado (meta de ahorro y aportes) es T-16 y se apoya en estos calculos. Falta verificar el panel en el navegador. |
+| 2026-11-11T20:44:50 | claude | campo | T-15 | estado: 'pendiente' -> 'hecha' |
 | 2026-11-11T20:17:56 | claude | idea_agregar | I-05 | Guardado local sin cuenta: generar un itinerario sin iniciar sesion y guardarlo en el dispositivo (IndexedDB), con opcion de subirlo a la cuenta al iniciar sesion (supuesto 1.2.3 original de plan.md). Diferido del MVP en T-14 por alcance: el flujo sin sesion no quedo confiable y se retiro para no retrasar la fase (b). Guardar requiere iniciar sesion con Google. Registrado en plan.md 1.3 y 2.2. |
 | 2026-11-11T20:17:56 | claude | nota | T-14 | T-14 cerrada con alcance ajustado. Pieza A (guardar/listar con cuenta) y pieza C (PWA offline) hechas y verificadas por el usuario en el navegador. Pieza B (guardado local sin cuenta en IndexedDB) retirada del MVP y diferida a futuras entregas por alcance (plan.md 1.3 y 2.2; idea I-05). Se intento y el flujo sin sesion no quedo confiable. Bug encontrado: el itinerario se perdia al iniciar sesion (el login OAuth recarga la pagina); resuelto con viaje-pendiente.ts (sessionStorage) como puente efimero durante el login, no IndexedDB. PWA con vite-plugin-pwa 0.20.5: manifest con iconos placeholder, SW autoUpdate, runtimeCaching de teselas OSM (CacheFirst) y REST de Supabase (NetworkFirst), navigateFallback al shell. Eliminados borrador-local.ts/.test.ts y use-borrador.ts; quitadas deps idb y fake-indexeddb. lint 0, format ok, 65/65 pruebas, build genera sw.js. plan.md actualizado en esta sesion. |
 | 2026-11-11T20:17:56 | claude | campo | T-14 | titulo: 'Guardar y listar viajes, lectura offline (PWA) e itinerarios sin cuenta en IndexedDB' -> 'Guardar y listar viajes del usuario (con cuenta) y lectura offline (PWA). El guardado sin cuenta en IndexedDB se difirio (plan.md 1.3, idea I-05)' |
@@ -102,5 +104,3 @@ Ninguna.
 | 2026-11-10T11:29:06 | claude | campo | T-11 | estado: 'pendiente' -> 'hecha' |
 | 2026-11-10T10:53:47 | claude | tarea_agregar | T-30 | Verificar el criterio RLS de la fase (a): un INSERT con la clave publica sobre atracciones falla |
 | 2026-11-10T10:53:19 | claude | nota | T-10 | Mapa Leaflet en src/features/catalogo/MapaCatalogo.tsx: los 53 municipios como marcadores agrupados (react-leaflet-cluster), teselas de OpenStreetMap con atribucion visible (c OpenStreetMap contributors), popups con el municipio, su etiqueta de pueblo patrimonio y enlaces a sus atracciones. icono-leaflet.ts arregla el icono por defecto con Vite. Tercera pestana Mapa en ExplorarCatalogo con carga diferida (React.lazy): Leaflet queda en un chunk aparte (~206 kB) que solo se descarga al abrir el mapa; el bundle inicial se mantiene en ~366 kB. Zoom con rueda desactivado a proposito (molesto en movil y con scroll), aprobado por el usuario. scrollWheelZoom off. La cache de teselas en runtime (Workbox) es de la PWA (T-14). Dependencias fijadas: leaflet@1.9.4, react-leaflet@4.2.1, react-leaflet-cluster@2.1.0, @types/leaflet@1.9.12. lint 0, tsc 0, build ok con code splitting, 22/22 tests. El usuario verifico el mapa en el navegador (2026-11-10). |
-| 2026-11-10T10:53:19 | claude | campo | T-10 | estado: 'pendiente' -> 'hecha' |
-| 2026-11-10T10:43:54 | claude | nota | T-09 | Vista de exploracion del catalogo en src/features/catalogo/ con TanStack Query (dependencia @tanstack/react-query@5.59.0; QueryClient en src/app/query-client.ts con cache larga). Servicio de lectura src/services/catalogo.ts (clave anon, solo lectura, respuestas validadas con Zod); hooks en use-catalogo.ts. UI ExplorarCatalogo.tsx con dos pestanas Municipios \| Atracciones, buscador (ignora tildes), filtro por departamento y por estilo, y mensajes claros cuando no hay resultados (incluido el de municipio no encontrado, pedido del usuario). FichaAtraccion.tsx muestra detalle con nota de tarifa general de adulto (el precio por edad quedo como idea I-03). Logica pura en filtrar.ts y formato.ts. Pruebas en filtrar.test.ts (10, con el seed real). App.tsx monta la vista; main.tsx envuelve con QueryClientProvider; App.test.tsx actualizado. El combobox de seleccion de destinos se hara en T-13 (planificador). lint 0, tsc 0, build ok, 22/22 tests. El usuario verifico la vista en el navegador (2026-11-10). |

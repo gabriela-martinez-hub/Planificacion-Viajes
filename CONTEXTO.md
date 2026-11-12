@@ -138,6 +138,15 @@ Guardado de viajes y PWA (2026-11-11, ver `HISTORIA.md`):
   no corre con `npm run dev` (`devOptions.enabled = false`); se prueba con
   `npm run build && npm run preview`.
 
+Presupuesto (2026-11-11, ver `HISTORIA.md`):
+- El ajuste a monto fijo (plan.md 6.1 paso 8) vive en `src/domain/presupuesto/`
+  y baja niveles **regenerando** el itinerario (bajar un escalón cambia las
+  tarifas de todos los días), no editándolo. Primero alojamiento, luego comida;
+  si no basta, poda actividades no obligatorias por `puntuación/costo` (desempate
+  por id). Las obligatorias nunca se quitan. Es determinista.
+- El desglose por persona divide cada rubro con `Math.ceil` para no subestimar.
+- El modo soñado (meta de ahorro y aportes, T-16) se apoyará en estos cálculos.
+
 ## Decisiones reemplazadas
 - Internacionalización con react-i18next: reemplazada por el archivo tipado
   `src/i18n/es-CO.ts` (2026-11-07, segunda ronda).
@@ -161,10 +170,24 @@ Guardado de viajes y PWA (2026-11-11, ver `HISTORIA.md`):
 ## Estado actual
 - **Fase 0 cerrada** (7/8 tareas; T-29 es una verificación opcional que el
   usuario pospuso). Los 5 criterios de aceptación están verificados.
-- Tablero en revisión 22: 16/30 tareas hechas, 6 riesgos activos y 5 ideas. La
+- Tablero en revisión 23: 17/30 tareas hechas, 6 riesgos activos y 5 ideas. La
   fase (a) va 5/5 tareas pero sigue formalmente abierta por el criterio RLS sin
-  evidencia (T-30). La **fase (b) va 4/5**: T-11, T-12, T-13 y **T-14 hechas**;
-  falta T-15 (presupuesto).
+  evidencia (T-30). La **fase (b) está completa en tareas (5/5)**: T-11, T-12,
+  T-13 y T-14 hechas (quedan por medir cobertura y tiempo de generación). La
+  **fase (c) va 1/2**: T-15 hecha; falta T-16 (modo soñado).
+- **T-15 hecha (2026-11-11): presupuesto, desglose y ajuste a monto fijo.**
+  - Dominio puro `src/domain/presupuesto/`: `tipos.ts`, `desglose.ts` (total y
+    por persona, 6.2), `ajustar.ts` (paso 8 de 6.1: baja alojamiento y luego
+    comida escalón a escalón regenerando, después poda actividades no
+    obligatorias por `puntuación/costo` con desempate por id; si ni el económico
+    sin actividades alcanza devuelve `ok:false` con `minimoCop`; las obligatorias
+    nunca se quitan; determinista), `index.ts`.
+  - UI `PanelPresupuesto.tsx` en el planificador: desglose, campo de monto, botón
+    "Ajustar a mi presupuesto" y mensajes de ajustado / no alcanza. Reutiliza
+    `formatearCOP`. `armar-entrada.ts` admite `ordenMunicipios` para que el ajuste
+    regenere con la misma ruta.
+  - Pruebas `ajustar.test.ts` (9) con el seed real. Verificación: tsc 0, lint 0,
+    format limpio, build ok, 74/74 pruebas. Falta probar el panel en el navegador.
 - **T-14 cerrada con alcance ajustado (2026-11-11):** guardar/listar viajes con
   cuenta (pieza A) y PWA offline (pieza C), ambas verificadas por el usuario en el
   navegador. El guardado local sin cuenta en IndexedDB (pieza B) se **retiró del
@@ -260,8 +283,8 @@ Guardado de viajes y PWA (2026-11-11, ver `HISTORIA.md`):
   pendiente: `.gitattributes` con `* text=auto eol=lf`.
 
 ## Próximos pasos
-1. **T-15 (siguiente en la ruta crítica):** presupuesto, paso 8 del generador
-   (desglose 6.2 y modo fijo con ajuste automático). Depende de T-11 (hecha).
+1. **T-16 (siguiente en la ruta crítica):** modo viaje soñado (meta de ahorro,
+   aportes y barra de progreso, 6.2). Depende de T-15 y T-14 (ambas hechas).
 2. En paralelo: T-17 (Open-Meteo), T-25 (clima mensual), T-27 (evaluación del
    generador) y T-30 (criterio RLS de la fase a).
 3. Evaluar las ideas I-04 (recomendar municipios cuando el usuario no los conoce)
@@ -269,9 +292,11 @@ Guardado de viajes y PWA (2026-11-11, ver `HISTORIA.md`):
    futura.
 4. Criterios de F-b pendientes de medir: cobertura >= 80 % en domain/itinerario
    (falta el provider `@vitest/coverage-v8`) y generación < 500 ms en móvil.
-5. Usuario (cuando quiera): crear `SUPABASE_URL` y `SUPABASE_ANON_KEY` en GitHub
+5. Verificar T-15 en el navegador: el panel de presupuesto aparece tras generar,
+   el desglose se ve, y al poner un monto bajo ajusta o muestra el mínimo.
+6. Usuario (cuando quiera): crear `SUPABASE_URL` y `SUPABASE_ANON_KEY` en GitHub
    para la consulta diaria contra la pausa.
-6. Antes de la sustentación: reemplazar los iconos placeholder de la PWA por el
+7. Antes de la sustentación: reemplazar los iconos placeholder de la PWA por el
    diseño real (fase final); revisar costos/tarifas/tiempos del seed (R-04) y el
    acceso al Nevado del Ruiz (R-03).
 

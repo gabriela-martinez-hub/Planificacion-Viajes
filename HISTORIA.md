@@ -691,3 +691,65 @@
   recorte. Nueva idea I-05 (guardado sin cuenta, diferido). Revisión 22. La próxima
   tarea de la ruta crítica es T-15 (presupuesto, paso 8).
 - Origen: sesión de Kiro con el usuario
+
+### 2026-11-11 — T-15: presupuesto (desglose y ajuste a monto fijo)
+- Cierre anterior: 156337e (memoria: cierre de T-14)
+- Commits: (este cierre agrega el commit de código y el de memoria)
+- Qué se hizo:
+  - **T-15 terminada.** Dominio puro en `src/domain/presupuesto/`:
+    - `tipos.ts`: `ResultadoAjuste` (ok con itinerario ajustado, desglose, niveles
+      finales y actividades quitadas; o no-ok con `minimoCop` e itinerario mínimo),
+      `PresupuestoDesglose` (grupo y por persona) y `NIVELES_ASC`.
+    - `desglose.ts`: desglose por persona (division por rubro con `ceil`, sin
+      dividir por cero), plan.md 6.2.
+    - `ajustar.ts`: paso 8 de plan.md 6.1. Baja alojamiento y luego comida escalón
+      a escalón (regenerando con el nivel menor), y si aún no alcanza poda
+      actividades NO obligatorias en orden ascendente de `puntuación / max(costo,1)`
+      con desempate por id, parando apenas `total <= monto`. Si ni el económico sin
+      actividades alcanza, devuelve `{ ok:false, minimoCop }`. Las obligatorias
+      nunca se quitan. Determinista.
+    - `index.ts`: reexporta `desglosar` y `ajustarAPresupuesto`.
+  - UI `PanelPresupuesto.tsx` conectada al planificador: desglose (transporte,
+    alojamiento, comida, entradas+actividades, total y por persona), campo de monto
+    y botón "Ajustar a mi presupuesto"; muestra el resultado (ajustado con niveles
+    finales y actividades quitadas, o el aviso con el mínimo si no alcanza).
+    Reutiliza `formatearCOP` de `features/catalogo/formato.ts`.
+  - `armar-entrada.ts` admite `ordenMunicipios` (4º parámetro `extra`) para que el
+    ajuste regenere con la misma ruta que eligió el usuario.
+  - Pruebas `ajustar.test.ts` (9) con el seed real.
+- Decisiones:
+  - Bajar niveles **regenerando** el itinerario con `generarItinerario` en vez de
+    editar el existente: bajar un escalón cambia las tarifas de todos los días, así
+    que regenerar es lo correcto y se mantiene determinista (propuesta de Claude).
+  - Cuando alojamiento y comida quedan en niveles distintos, se regenera con cada
+    uno y se combinan los rubros (alojamiento de uno, comida del otro), porque el
+    generador usa un único `nivel` por corrida (propuesta de Claude).
+  - La poda de actividades sí opera sobre el itinerario ya armado, recalculando los
+    costos por tipo desde los ítems, para respetar el orden de sacrificio del plan.
+  - El reparto por persona usa `Math.ceil` para no subestimar el costo por viajero
+    (propuesta de Claude).
+- Hallazgos:
+  - El entorno del agente no arranca el servidor; la verificación visual del panel
+    la hará el usuario. El dominio quedó probado contra el seed real (tarifas
+    económico/medio/alto para alojamiento y comida; Salento con 2 atracciones
+    reales).
+  - `t(clave)` exige inferir la clave como literal para saber si lleva parámetros;
+    iterar `t(f.clave)` con `clave: string` o una unión rompía el tipado. Se
+    resolvió resolviendo el texto al construir el arreglo del desglose.
+  - El bundle principal subió a ~435 kB (127 kB gzip) por el panel y el dominio de
+    presupuesto.
+- Criterios de aceptación (F-c sigue abierta, falta T-16):
+  - "Cuando existe un itinerario factible, el ajustado nunca supera el monto fijo":
+    **verificado** (prueba del monto intermedio; el ajustado cumple `<= monto`).
+  - "Cuando no existe, se muestra el mínimo y no se guarda como ajustado":
+    **verificado** (devuelve `ok:false` con `minimoCop` y el itinerario mínimo).
+  - "Las atracciones obligatorias nunca se quitan": **verificado** (prueba con
+    `valle-de-cocora` obligatoria y monto 1).
+  - "Pruebas unitarias de los cálculos, incluidos 0 noches": **verificado** (prueba
+    de 1 día sin noches y desglose por persona).
+  - "La cuota se recalcula al registrar aportes y no es negativa ni divide por
+    cero": **pendiente**, es del modo soñado (T-16).
+- Cambios del tablero: T-15 pasa a hecha. Revisión 23. La próxima tarea de la ruta
+  crítica es T-16 (modo soñado: meta de ahorro y aportes), que depende de T-15
+  (hecha) y T-14 (hecha). En paralelo siguen disponibles T-17, T-25, T-27 y T-30.
+- Origen: sesión de Kiro con el usuario
