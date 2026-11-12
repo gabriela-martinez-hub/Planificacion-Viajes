@@ -5,6 +5,9 @@ control/.tablero.*.tmp
 # Progreso reanudable del generador de clima (T-25); se regenera solo
 supabase/seed/.clima-progreso.json
 
+# Directorio de trabajo de la CLI de Supabase (link, temporales); no se versiona
+supabase/.temp/
+
 # Dependencias
 node_modules
 
