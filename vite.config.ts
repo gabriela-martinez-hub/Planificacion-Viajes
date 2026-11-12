@@ -88,6 +88,8 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: './src/test/setup.ts',
     css: true,
+    // Las pruebas e2e (carpeta e2e/) las corre Playwright, no Vitest.
+    exclude: ['**/node_modules/**', '**/dist/**', 'e2e/**'],
     // Variables de entorno ficticias para las pruebas. src/lib/config.ts valida
     // y LANZA al importarse, así que cualquier prueba que importe (aun de forma
     // transitiva) src/services/supabase.ts fallaría en CI, donde no hay .env.

@@ -17,9 +17,15 @@ npm run dev        # servidor de desarrollo (http://localhost:5173)
 npm run build      # compila (tsc -b && vite build) a dist/
 npm run preview    # sirve el build de producción
 npm test           # pruebas unitarias (Vitest)
+npm run e2e        # prueba end-to-end del flujo principal (Playwright)
 npm run lint       # ESLint (0 warnings permitidos)
 npm run format     # formatea con Prettier
 ```
+
+La prueba end-to-end (`e2e/`) construye y sirve la app, intercepta toda la red
+(Supabase y Open-Meteo) y siembra una sesión de prueba, así que no toca
+servicios reales ni requiere credenciales. La primera vez instala el navegador
+con `npx playwright install chromium`.
 
 ## Stack
 

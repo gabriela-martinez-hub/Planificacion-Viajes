@@ -34,6 +34,13 @@ pnpm-debug.log*
 coverage
 *.tsbuildinfo
 
+# Playwright (pruebas e2e, T-22): reportes, resultados y navegadores
+test-results/
+playwright-report/
+blob-report/
+.playwright/
+/playwright/.cache/
+
 # Python (caché que generan los scripts del tablero; se regenera sola)
 __pycache__/
 *.pyc
