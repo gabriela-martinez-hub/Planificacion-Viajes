@@ -937,3 +937,112 @@
   PWA. Árbol de trabajo limpio antes de este cierre. `dev` quedará 6 commits por
   delante de `origin/dev` (los 5 de esta sesión más el de memoria), sin publicar.
 - Origen: sesión de Kiro con el usuario
+
+
+### 2026-11-12 — Fase (e) completa (T-19, T-20, T-21) y pulido T-28; infraestructura Supabase CLI
+- Cierre anterior: 5486fa4 (memoria: cierre de fases a, b y d)
+- Commits: 0dd89d3 (T-19), 01a3ed7 (T-20), 20c7576 (T-21), 28232b8 (T-28); este cierre agrega el commit de memoria
+- Qué se hizo:
+  - **Infraestructura para trabajar Supabase de forma autónoma.** El usuario
+    instaló la Supabase CLI (v2.122.1, binario .deb) y `psql` 16 (cliente), y
+    agregó `SUPABASE_DB_PASSWORD` a `.env`. A partir de ahí, en vez de `supabase
+    link` (que pide un access token), se trabaja con conexión directa a Postgres
+    vía `--db-url` (host `db.<ref>.supabase.co`, contraseña percent-encoded leída
+    del `.env`): `supabase db push --db-url ...` para migraciones y `psql ... -f`
+    para las pruebas SQL multi-sentencia. Se reconcilió el historial de la CLI con
+    `supabase migration repair --status applied` para T-07 y T-12 (ya estaban
+    aplicadas por el usuario en el SQL Editor pero la CLI no las tenía
+    registradas). `.gitignore`: se añadió `supabase/.temp/`.
+  - **T-19** (ruta crítica, cierra el backend de la fase e). Migración
+    `20261112130000_checkins_insignias.sql`, aplicada a la base: tablas `checkins`
+    (sin lat/lon del usuario, `id_cliente` único) e `insignias_usuario`
+    (`verificada` monótona); función `distancia_haversine_m`; RPC
+    `registrar_checkin` (`SECURITY DEFINER`): resuelve el lugar (atracción o casco
+    del municipio), calcula distancia en el servidor, decide `verificado`,
+    descarta coordenadas, idempotente por `id_cliente`; trigger
+    `recalcular_insignias_usuario` con la regla de las insignias especiales
+    (otorga con todos los componentes; verificada con >= ceil(0.8·n)). RLS: solo
+    SELECT de lo propio; ninguna escritura directa desde el cliente. Dominio puro
+    `src/domain/geo` (haversine + `verificarCheckin`, reflejo cliente de la regla
+    del servidor) con 11 pruebas. Prueba `supabase/tests/checkins_insignias_rls.sql`
+    verde contra la base.
+  - **T-20** (ruta crítica). Consentimiento de datos + check-in por
+    geolocalización o manual + botón desactivado sin conexión, montado en la ficha
+    de atracción. Modal de consentimiento (feature `privacidad`) antes del primer
+    check-in, guarda `perfiles.consentimiento_datos_en` (upsert); enlace a la
+    política de datos (copiada a `public/`). Check-in geo con
+    `getCurrentPosition({maximumAge:0})` -> RPC; registro manual con `p_manual =
+    true` (no verificado, sin coordenadas). Botón offline con el hook
+    `use-conexion` (`navigator.onLine`). Primer uso de `supabase.rpc()` en el
+    cliente; respuestas validadas con Zod (`src/domain/insignias/esquemas`).
+  - **T-21** (ruta crítica, cierra la fase e en producto). Pantalla `/perfil`:
+    mapa Leaflet lazy con los 53 municipios (visitados resaltados), progreso del
+    Eje / por departamento / por ruta con barras accesibles, insignias obtenidas
+    (verificadas vs manuales), y eliminar cuenta. Dominio puro
+    `src/domain/insignias/progreso` (refleja el trigger; 11 pruebas). Lecturas
+    nuevas del catálogo: `rutas_tematicas` y `ruta_items`. Migración
+    `20261112140000_eliminar_cuenta.sql` (RPC `eliminar_mi_cuenta` `SECURITY
+    DEFINER` borra `auth.users`; CASCADE arrastra el resto); prueba
+    `supabase/tests/eliminar_cuenta.sql` verde (cascada completa sin tocar a otros
+    ni al catálogo).
+  - **T-28** (paralelo, pulido). Accesibilidad: `eslint-plugin-jsx-a11y`
+    (recommended) en el lint con 0 avisos; foco visible (`:focus-visible`) y
+    `prefers-reduced-motion` en `index.css`; skip link, nav con nombre accesible y
+    `main` con id destino; modales con `use-modal-accesible` (Escape, foco al abrir
+    y al cerrar); contraste de texto informativo `slate-400` -> `slate-500`.
+    Rendimiento: confirmado el code-splitting de Leaflet y la carga diferida de los
+    mapas. Textos `es-CO` revisados.
+- Decisiones:
+  - Supabase por CLI con `--db-url` en vez de `supabase link`: evita el access
+    token y deja un flujo reproducible desde el `.env`. Se fija la CLI v2 estable
+    (no la v3/v4 recién salida, que cambia los defaults a "local salvo
+    --linked").
+  - Registro manual del check-in con un parámetro explícito `p_manual` en la RPC,
+    en lugar del primer enfoque (enviar una precisión enorme para forzar "no
+    verificado"). Más limpio y legible; la firma de la RPC pasó de 5 a 6
+    parámetros (se dropeó la firma vieja en la base).
+  - El check-in geo falla en Chromium/Linux por el NetworkLocationProvider de
+    Google ("Response was malformed"); es una limitación del navegador, no de la
+    app (verificado funcionando en Firefox). El registro manual cubre ese caso y
+    el GPS real funciona en móvil. Coherente con R-06 (limitación aceptada).
+  - La eliminación de cuenta real NO se ejecutó por ser destructiva; queda para
+    verificación del usuario con una cuenta de prueba desechable. Se probó con
+    ROLLBACK, sin tocar datos reales.
+  - Política de datos: se copió `docs/politica-tratamiento-datos.md` a `public/`
+    para poder enlazarla desde el consentimiento (Vite no sirve `docs/`).
+  - Dependencia nueva de desarrollo: `eslint-plugin-jsx-a11y@6.9.0` (pinned).
+- Hallazgos:
+  - El historial de migraciones de la CLI no incluía T-07 ni T-12 (aplicadas por
+    el usuario en el SQL Editor); se reconciliaron con `migration repair` antes de
+    empujar las nuevas.
+  - Dos bugs propios detectados y corregidos por las pruebas SQL antes de cerrar:
+    la RPC leía lat/lon de `municipios` (están en `nodos`), y un choque de nombre
+    entre el alias de tabla `m` y un record `m` en el test. El plugin jsx-a11y no
+    encontró problemas de accesibilidad preexistentes (el código ya cuidaba labels
+    y roles).
+  - Conexión a `db.<ref>.supabase.co` ocasionalmente da timeout; basta reintentar.
+  - Suite de pruebas: 138 (T-19) -> 140 (T-20) -> 151 (T-21) -> 152 (T-28). Todo
+    en verde; lint 0 (con a11y), format ok, build ok.
+- Criterios de aceptación — **Fase (e) cerrada (3/3 tareas; los 8 criterios
+  verificados):**
+  - "Un check-in fuera del radio no se verifica": **verificado** (prueba SQL
+    T-19, paso 3).
+  - "Un INSERT directo en checkins o insignias_usuario con la clave pública
+    falla": **verificado** (prueba SQL T-19, paso 1).
+  - "Reenviar el mismo check-in no crea duplicados": **verificado** (idempotencia
+    por id_cliente, paso 4).
+  - "Completar los municipios de un departamento otorga su insignia":
+    **verificado** (paso 5).
+  - "Insignia especial con >= 80 % verificados se marca verificada y con menos no
+    (79 % y 80 %)": **verificado** (paso 6: Quindío, 12 municipios, 10
+    requeridos).
+  - "Las insignias manuales se distinguen visualmente": **verificado**
+    (`Perfil.tsx`, verificada vs manual con estilos distintos).
+  - "Eliminar la cuenta borra viajes, check-ins e insignias": **verificado**
+    (prueba SQL T-21, cascada completa).
+  - "Pruebas unitarias de domain/geo con casos límite de radio y precisión":
+    **verificado** (`src/domain/geo/distancia.test.ts`, 11 pruebas).
+- Cambios del tablero: T-19, T-20, T-21 y T-28 pasan a hechas. Revisión 27, 28/30
+  tareas (93 %). Sin tareas, riesgos ni ideas nuevos. La próxima tarea de la ruta
+  crítica es T-22 (prueba end-to-end en Playwright).
+- Origen: sesión de Kiro con el usuario

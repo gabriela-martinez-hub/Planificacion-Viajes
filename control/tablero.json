@@ -1,7 +1,7 @@
 {
   "proyecto": "Planificador de viajes del Eje Cafetero",
-  "revision": 26,
-  "actualizado": "2026-11-12T11:49:55",
+  "revision": 27,
+  "actualizado": "2026-11-12T14:21:08",
   "responsables": [
     "usuario",
     "claude",
@@ -396,9 +396,10 @@
         "T-12",
         "T-08"
       ],
-      "estado": "pendiente",
-      "notas": "plan.md sección 6.4",
-      "creada": "2026-11-07"
+      "estado": "hecha",
+      "notas": "plan.md sección 6.4\n[2026-11-12 claude] Migracion 20261112130000_checkins_insignias (aplicada con supabase db push via --db-url): tablas checkins (sin lat/lon del usuario, id_cliente unico) e insignias_usuario (verificada monotona); funcion haversine; RPC registrar_checkin SECURITY DEFINER (idempotente por id_cliente, decide verificado en el servidor, descarta coordenadas; gana el parametro p_manual en T-20); trigger de insignias con la regla del 80%. RLS: solo SELECT de lo propio, sin escritura directa. Dominio src/domain/geo (haversine + verificarCheckin) con 11 pruebas. Prueba supabase/tests/checkins_insignias_rls.sql verde contra la base. Commit 0dd89d3.",
+      "creada": "2026-11-07",
+      "terminada": "2026-11-12"
     },
     {
       "id": "T-20",
@@ -412,9 +413,10 @@
         "T-19",
         "T-26"
       ],
-      "estado": "pendiente",
-      "notas": "",
-      "creada": "2026-11-07"
+      "estado": "hecha",
+      "notas": "[2026-11-12 claude] Consentimiento + check-in geo/manual + boton offline, en la ficha de atraccion. Modal de consentimiento (feature privacidad) antes del primer check-in, guarda perfiles.consentimiento_datos_en (upsert); enlace a la politica (copiada a public/). Check-in por geolocalizacion (getCurrentPosition maximumAge:0) -> RPC registrar_checkin; registro manual via p_manual=true (no verificado, sin coordenadas; reemplazo el truco de precision). Boton desactivado sin conexion (hook use-conexion con navigator.onLine). Primer uso de supabase.rpc() en el cliente; respuestas validadas con Zod (domain/insignias/esquemas). Util de geolocalizacion con errores tipados (incluye contexto_inseguro) y mensaje que invita al registro manual. Prueba SQL ampliada (manual no verificado). Flujo geo verificado en Firefox (en Chromium Linux el NetworkLocationProvider falla; el manual cubre ese caso). Commit 01a3ed7.",
+      "creada": "2026-11-07",
+      "terminada": "2026-11-12"
     },
     {
       "id": "T-21",
@@ -428,9 +430,10 @@
         "T-20",
         "T-10"
       ],
-      "estado": "pendiente",
-      "notas": "",
-      "creada": "2026-11-07"
+      "estado": "hecha",
+      "notas": "[2026-11-12 claude] Pantalla /perfil (requiere sesion): mapa Leaflet lazy con los 53 municipios (visitados resaltados), progreso del Eje/por departamento/por ruta con barras accesibles, insignias obtenidas distinguiendo verificadas de manuales, y eliminar cuenta. Dominio puro src/domain/insignias/progreso (refleja el trigger; 11 pruebas). Lecturas nuevas del catalogo: rutas_tematicas y ruta_items. i18n: tTexto() para clave_texto sin exigir params. Migracion 20261112140000_eliminar_cuenta (RPC eliminar_mi_cuenta SECURITY DEFINER borra auth.users; CASCADE arrastra perfiles, viajes y sus hijos, checkins e insignias) aplicada; prueba supabase/tests/eliminar_cuenta.sql verde (cascada completa sin tocar a otros ni al catalogo). La eliminacion real NO se ejecuto (destructiva): queda para verificacion del usuario con una cuenta de prueba. Cierra la fase (e). Commit 20c7576.",
+      "creada": "2026-11-07",
+      "terminada": "2026-11-12"
     },
     {
       "id": "T-22",
@@ -538,9 +541,10 @@
       "dependencias": [
         "T-21"
       ],
-      "estado": "pendiente",
-      "notas": "",
-      "creada": "2026-11-07"
+      "estado": "hecha",
+      "notas": "[2026-11-12 claude] Accesibilidad, rendimiento y textos. eslint-plugin-jsx-a11y (recommended) en el lint, 0 avisos. Foco visible (:focus-visible color de marca) y prefers-reduced-motion en index.css. Skip link, nav con nombre accesible (nav.principal) y main con id destino. Modales (consentimiento y eliminar cuenta) con hook use-modal-accesible (Escape, foco al abrir, restaurar al cerrar). Contraste: texto informativo slate-400 -> slate-500. Rendimiento: confirmado el code-splitting de Leaflet y la carga diferida de los mapas. Textos es-CO revisados. Prueba de landmarks en App.test. Dep nueva de desarrollo eslint-plugin-jsx-a11y@6.9.0. Commit 28232b8.",
+      "creada": "2026-11-07",
+      "terminada": "2026-11-12"
     },
     {
       "id": "T-29",
@@ -1134,6 +1138,62 @@
       "op": "nota",
       "id": "T-29",
       "detalle": "El usuario (2026-11-12) la da por comprobada: se ha trabajado correctamente con la skill orquestador-proyecto (RETOMAR/CIERRE) y las pautas de CLAUDE.md en estas sesiones, evidencia equivalente a la verificacion que pedia la tarea."
+    },
+    {
+      "fecha": "2026-11-12T14:21:08",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-19",
+      "detalle": "estado: 'pendiente' -> 'hecha'"
+    },
+    {
+      "fecha": "2026-11-12T14:21:08",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-19",
+      "detalle": "Migracion 20261112130000_checkins_insignias (aplicada con supabase db push via --db-url): tablas checkins (sin lat/lon del usuario, id_cliente unico) e insignias_usuario (verificada monotona); funcion haversine; RPC registrar_checkin SECURITY DEFINER (idempotente por id_cliente, decide verificado en el servidor, descarta coordenadas; gana el parametro p_manual en T-20); trigger de insignias con la regla del 80%. RLS: solo SELECT de lo propio, sin escritura directa. Dominio src/domain/geo (haversine + verificarCheckin) con 11 pruebas. Prueba supabase/tests/checkins_insignias_rls.sql verde contra la base. Commit 0dd89d3."
+    },
+    {
+      "fecha": "2026-11-12T14:21:08",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-20",
+      "detalle": "estado: 'pendiente' -> 'hecha'"
+    },
+    {
+      "fecha": "2026-11-12T14:21:08",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-20",
+      "detalle": "Consentimiento + check-in geo/manual + boton offline, en la ficha de atraccion. Modal de consentimiento (feature privacidad) antes del primer check-in, guarda perfiles.consentimiento_datos_en (upsert); enlace a la politica (copiada a public/). Check-in por geolocalizacion (getCurrentPosition maximumAge:0) -> RPC registrar_checkin; registro manual via p_manual=true (no verificado, sin coordenadas; reemplazo el truco de precision). Boton desactivado sin conexion (hook use-conexion con navigator.onLine). Primer uso de supabase.rpc() en el cliente; respuestas validadas con Zod (domain/insignias/esquemas). Util de geolocalizacion con errores tipados (incluye contexto_inseguro) y mensaje que invita al registro manual. Prueba SQL ampliada (manual no verificado). Flujo geo verificado en Firefox (en Chromium Linux el NetworkLocationProvider falla; el manual cubre ese caso). Commit 01a3ed7."
+    },
+    {
+      "fecha": "2026-11-12T14:21:08",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-21",
+      "detalle": "estado: 'pendiente' -> 'hecha'"
+    },
+    {
+      "fecha": "2026-11-12T14:21:08",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-21",
+      "detalle": "Pantalla /perfil (requiere sesion): mapa Leaflet lazy con los 53 municipios (visitados resaltados), progreso del Eje/por departamento/por ruta con barras accesibles, insignias obtenidas distinguiendo verificadas de manuales, y eliminar cuenta. Dominio puro src/domain/insignias/progreso (refleja el trigger; 11 pruebas). Lecturas nuevas del catalogo: rutas_tematicas y ruta_items. i18n: tTexto() para clave_texto sin exigir params. Migracion 20261112140000_eliminar_cuenta (RPC eliminar_mi_cuenta SECURITY DEFINER borra auth.users; CASCADE arrastra perfiles, viajes y sus hijos, checkins e insignias) aplicada; prueba supabase/tests/eliminar_cuenta.sql verde (cascada completa sin tocar a otros ni al catalogo). La eliminacion real NO se ejecuto (destructiva): queda para verificacion del usuario con una cuenta de prueba. Cierra la fase (e). Commit 20c7576."
+    },
+    {
+      "fecha": "2026-11-12T14:21:08",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-28",
+      "detalle": "estado: 'pendiente' -> 'hecha'"
+    },
+    {
+      "fecha": "2026-11-12T14:21:08",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-28",
+      "detalle": "Accesibilidad, rendimiento y textos. eslint-plugin-jsx-a11y (recommended) en el lint, 0 avisos. Foco visible (:focus-visible color de marca) y prefers-reduced-motion en index.css. Skip link, nav con nombre accesible (nav.principal) y main con id destino. Modales (consentimiento y eliminar cuenta) con hook use-modal-accesible (Escape, foco al abrir, restaurar al cerrar). Contraste: texto informativo slate-400 -> slate-500. Rendimiento: confirmado el code-splitting de Leaflet y la carga diferida de los mapas. Textos es-CO revisados. Prueba de landmarks en App.test. Dep nueva de desarrollo eslint-plugin-jsx-a11y@6.9.0. Commit 28232b8."
     }
   ]
 }

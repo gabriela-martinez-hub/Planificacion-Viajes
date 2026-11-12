@@ -181,6 +181,62 @@ Evaluación del generador (2026-11-12, T-27, ver `HISTORIA.md`):
   (12/14) y diferencia absoluta, no un promedio de % (inestable cuando el óptimo
   es pequeño). Dependencia `@vitest/coverage-v8` para medir cobertura.
 
+Infraestructura de Supabase por CLI (2026-11-12, ver `HISTORIA.md`):
+- El agente ahora aplica migraciones y pruebas SQL **por su cuenta**. El usuario
+  instaló la **Supabase CLI v2.122.1** (binario `.deb`) y **`psql` 16** (cliente),
+  y agregó `SUPABASE_DB_PASSWORD` a `.env`. Se evita `supabase link` (pide access
+  token) usando conexión directa por `--db-url` (host
+  `db.<ref>.supabase.co`, contraseña percent-encoded leída del `.env`):
+  `supabase db push --db-url ...` para migraciones y `psql ... -f archivo.sql`
+  para las pruebas SQL (multi-sentencia, con `ROLLBACK`). Se mantiene la CLI v2
+  estable (no la v3/v4, que cambia los defaults a "local salvo `--linked`").
+- El historial de migraciones de la CLI se reconcilió con `supabase migration
+  repair --status applied` para T-07 y T-12 (ya aplicadas por el usuario en el
+  SQL Editor). `.gitignore` incluye `supabase/.temp/`.
+
+Insignias, check-in y perfil (2026-11-12, fase e, ver `HISTORIA.md`):
+- **Backend (T-19):** migración `20261112130000_checkins_insignias.sql`. Tablas
+  `checkins` (sin lat/lon del usuario, `id_cliente` único) e `insignias_usuario`
+  (`verificada` monótona). Función `distancia_haversine_m`. RPC
+  `registrar_checkin` (`SECURITY DEFINER`, parámetros
+  `p_lugar_id, p_lat, p_lon, p_precision_m, p_id_cliente, p_manual`): resuelve el
+  lugar (atracción o casco del municipio), calcula distancia en el servidor,
+  decide `verificado = distancia + precision <= radio`, descarta coordenadas,
+  idempotente por `id_cliente`; con `p_manual = true` guarda no verificado sin
+  coordenadas. Trigger `recalcular_insignias_usuario` (otorga con todos los
+  componentes; verificada con ≥ ceil(0.8·n)). RLS: solo SELECT de lo propio;
+  ninguna escritura directa del cliente. Migración
+  `20261112140000_eliminar_cuenta.sql` con la RPC `eliminar_mi_cuenta`
+  (`SECURITY DEFINER`, borra `auth.users`; CASCADE arrastra perfiles, viajes y
+  sus hijos, checkins e insignias).
+- **Dominio puro:** `src/domain/geo/` (haversine + `verificarCheckin`, reflejo de
+  la regla del servidor) y `src/domain/insignias/` (`esquemas.ts` con Zod de
+  `checkins`/`insignias_usuario`; `progreso.ts` que refleja el trigger para
+  mostrar el avance). Ambos con pruebas.
+- **Cliente (T-20/T-21):** servicios `src/services/perfil.ts` (consentimiento,
+  eliminar cuenta) y `src/services/checkins.ts` (RPC `registrar_checkin` —
+  **primer uso de `supabase.rpc()`** — y lecturas, validadas con Zod). Hooks en
+  `src/features/privacidad/` (consentimiento, eliminar cuenta) y
+  `src/features/insignias/` (checkins, insignias). `src/lib/use-conexion.ts`
+  (`navigator.onLine`), `src/lib/geolocalizacion.ts` (`getCurrentPosition` con
+  errores tipados). Check-in montado en la ficha de atracción; perfil en
+  `/perfil` (mapa lazy de municipios visitados, progreso por depto/ruta,
+  insignias, eliminar cuenta). La política de datos se copia a `public/` para
+  enlazarla.
+- El check-in geo falla en **Chromium/Linux** (NetworkLocationProvider de Google:
+  "Response was malformed"); es limitación del navegador (funciona en Firefox y
+  en móvil con GPS). El registro manual cubre ese caso (coherente con R-06).
+- La eliminación de cuenta **real no se ha ejecutado** (destructiva); probada con
+  ROLLBACK. Queda para verificación del usuario con una cuenta de prueba.
+
+Accesibilidad y pulido (2026-11-12, T-28, ver `HISTORIA.md`):
+- `eslint-plugin-jsx-a11y@6.9.0` (recommended) en el lint (0 avisos). Foco visible
+  (`:focus-visible`) y `prefers-reduced-motion` en `src/index.css`. Skip link,
+  `<nav>` con nombre accesible (`nav.principal`) y `<main id="contenido">`.
+  Modales con `src/lib/use-modal-accesible.ts` (Escape, foco al abrir, restaurar
+  al cerrar). Contraste de texto informativo subido de `slate-400` a `slate-500`.
+  Rendimiento: Leaflet en chunk aparte y mapas diferidos (confirmado).
+
 ## Decisiones reemplazadas
 - Internacionalización con react-i18next: reemplazada por el archivo tipado
   `src/i18n/es-CO.ts` (2026-11-07, segunda ronda).
@@ -200,40 +256,39 @@ Evaluación del generador (2026-11-12, T-27, ver `HISTORIA.md`):
 - Uso sin cuenta con guardado local en IndexedDB (supuesto 1.2.3 original):
   reemplazado por "guardar requiere iniciar sesión". El guardado local sin cuenta
   se difiere a futuras entregas por alcance (2026-11-11, idea I-05).
+- "El agente no tiene CLI de Supabase, psql ni docker, así que las migraciones
+  las aplica el usuario": reemplazado (2026-11-12). El usuario instaló la Supabase
+  CLI y `psql`; ahora el agente aplica migraciones (`db push --db-url`) y corre
+  las pruebas SQL (`psql -f`) por su cuenta, leyendo la contraseña de la base del
+  `.env`.
+- "Entorno Windows/PowerShell" (notas de `tablero.py cambio` cortado y CRLF):
+  ya no aplica. La sesión corre en **Linux (Pop!_OS)** con zsh; `tablero.py
+  cambio` recibe el JSON completo y los finales de línea son LF.
 
 ## Estado actual
-- Tablero en **revisión 26: 24/30 tareas (80 %)**, 6 riesgos activos y 5 ideas.
-- **Fases cerradas: 0, (a), (b), (c) y (d).** Quedan abiertas la fase (e)
-  (insignias y perfil, 0/3) y la fase final (pulido, 0/3). Próxima tarea de la
-  ruta crítica: **T-19**.
-- **Fase (a) cerrada (6/6):** el último criterio ("un INSERT con la clave pública
-  sobre atracciones falla") lo verificó **T-30** (`src/services/rls-catalogo.int.test.ts`,
-  prueba de integración contra Supabase real, se salta en CI sin `.env`).
-- **Fase (b) cerrada (7/7):** **T-27** cerró los tres criterios que faltaban:
-  0 violaciones en 24 instancias, generación < 500 ms (máx 0.43 ms) y cobertura
-  ≥ 80 % en `domain/itinerario` (95.65 %). La evaluación detectó y se corrigió un
-  bug de la búsqueda local (no respetaba la jornada del día destino).
-- **Fase (d) cerrada (3/3 tareas, 6/6 criterios):** T-17 (servicio Open-Meteo),
-  T-25 (seed `clima_mensual`, 636 filas cargadas en Supabase) y T-18 (indicador de
-  clima por día + "Reorganizar por clima" con vista previa). El usuario verificó
-  el funcionamiento en el navegador.
-- **Fase (c) cerrada (2/2):** T-15 (presupuesto y ajuste a monto fijo) y T-16
-  (modo soñado). **Fase 0 cerrada (8/8):** T-29 verificada (se trabajó con las
-  skills RETOMAR/CIERRE y las pautas de CLAUDE.md en estas sesiones).
-- Verificación global al cerrar: tsc 0, lint 0, format limpio, **127/127 pruebas**,
-  build ok con PWA.
-- `dev` está **6 commits por delante de `origin/dev`** sin publicar: `4e90302`
-  (T-30), `aa7e28d` (T-27), `7879a9c` (T-17), `c1b148d` (T-25), `18b8954` (T-18)
-  y el commit de memoria de este cierre.
-- Entorno: hay `python`/`python3`; el agente no puede arrancar `npm run dev` ni
-  ver el navegador (las pruebas visuales las hace el usuario) y no hay CLI de
-  Supabase/psql/docker, así que las migraciones las aplica el usuario (la carga
-  del seed `npm run seed` la corrió el agente con autorización del usuario). En
-  PowerShell 5.1, `tablero.py cambio` recibe cortado un JSON con comillas: los
-  cambios se aplican con un runner Python que llama a `cambio()` leyendo el JSON
-  de un archivo (ya borrado tras usarlo).
-- El issue de CRLF en archivos preexistentes quedó resuelto de hecho (todo con
-  LF); un `.gitattributes` sigue siendo mejora opcional.
+- Tablero en **revisión 27: 28/30 tareas (93 %)**, 6 riesgos activos y 5 ideas.
+- **Fases cerradas: 0, (a), (b), (c), (d) y (e).** Solo queda abierta la **fase
+  final (pulido), 1/3**. Próxima tarea de la ruta crítica: **T-22** (prueba
+  end-to-end en Playwright).
+- **Fase (e) cerrada (3/3 tareas, 8/8 criterios)** con T-19, T-20 y T-21. Todos
+  los criterios de servidor verificados contra la base con pruebas SQL
+  (`checkins_insignias_rls.sql` y `eliminar_cuenta.sql`, ambas verdes con
+  ROLLBACK): check-in por radio/precisión, RLS sin escritura directa,
+  idempotencia, insignia de departamento, umbral 80 % (79 vs 80, Quindío 12→10),
+  insignias manuales distinguibles, borrado en cascada; más las pruebas de
+  `domain/geo`.
+- **Fase final: T-28 hecha (1/3).** Quedan T-22 (e2e Playwright, claude) y T-23
+  (despliegue, usuario).
+- Verificación global al cerrar: tsc 0, lint 0 (con jsx-a11y), format limpio,
+  **152/152 pruebas**, build ok con PWA.
+- `dev` está **9 commits por delante de `origin/dev`** sin publicar: los 5 del
+  cierre anterior más `0dd89d3` (T-19), `01a3ed7` (T-20), `20c7576` (T-21),
+  `28232b8` (T-28) y el commit de memoria de este cierre.
+- Entorno: **Linux (Pop!_OS 24.04), zsh.** Hay Node, `python3`, **Supabase CLI
+  v2.122.1 y `psql` 16**; el agente aplica migraciones y pruebas SQL contra la
+  base vía `--db-url` (contraseña en `.env`). El agente no arranca `npm run dev`
+  ni ve el navegador: las pruebas visuales y la eliminación de cuenta real las
+  hace el usuario.
 
 <!-- Histórico detallado por tarea en HISTORIA.md. -->
 
@@ -358,24 +413,24 @@ Evaluación del generador (2026-11-12, T-27, ver `HISTORIA.md`):
   pendiente: `.gitattributes` con `* text=auto eol=lf`.
 
 ## Próximos pasos
-1. **T-19 (siguiente en la ruta crítica):** migraciones de `checkins` e
-   `insignias_usuario`, RPC `registrar_checkin` (`SECURITY DEFINER`) y trigger de
-   insignias, con pruebas RLS (plan.md 5.2, 5.3, 6.4). Depende de T-12 y T-08
-   (hechas). Abre la fase (e).
-2. Luego T-20 (consentimiento + check-in por geo/manual, depende de T-19 y T-26)
-   y T-21 (perfil con mapa, progreso y eliminar cuenta).
-3. En paralelo queda T-28 (accesibilidad y rendimiento, depende de T-21).
-4. Cierre del proyecto: T-22 (e2e Playwright) y T-23 (despliegue, usuario).
-5. Usuario (cuando quiera): crear `SUPABASE_URL` y `SUPABASE_ANON_KEY` en GitHub
-   para la consulta diaria contra la pausa; publicar los 6 commits con `git push`.
-6. Antes de la sustentación: reemplazar los iconos placeholder de la PWA por el
-   diseño real (fase final); revisar costos/tarifas/tiempos del seed (R-04) y el
-   acceso al Nevado del Ruiz (R-03).
+1. **T-22 (siguiente en la ruta crítica):** prueba end-to-end en Playwright del
+   flujo principal (crear viaje → ajustar presupuesto → ver clima → check-in,
+   con `context.setGeolocation`). Depende de T-21, T-18, T-16 (hechas). Habrá que
+   instalar y configurar Playwright (no está en el proyecto).
+2. **T-23 (usuario):** despliegue con `Referrer-Policy` correcta y verificación
+   de que Supabase no está pausado antes de la sustentación. Depende de T-22.
+3. **Verificación pendiente del usuario en el navegador** (no bloquea el código):
+   check-in geo (en Firefox o móvil; en Chromium/Linux usar el registro manual) y
+   **eliminar cuenta con una cuenta de prueba desechable** (es destructiva).
+4. Usuario (cuando quiera): crear `SUPABASE_URL` y `SUPABASE_ANON_KEY` en GitHub
+   para la consulta diaria contra la pausa; publicar los commits con `git push`.
+5. Antes de la sustentación: reemplazar los iconos placeholder de la PWA por el
+   diseño real; revisar costos/tarifas/tiempos del seed (R-04) y el acceso al
+   Nevado del Ruiz (R-03).
 
 ## Pendientes de decisión del usuario
 - Decidir si las ideas I-04 (recomendar municipios) e I-05 (guardado local sin
   cuenta, diferido) se vuelven tareas en una entrega futura.
-- Si se cambia `python3` por `python` en la skill para Windows y se automatiza
-  el paso del JSON en PowerShell, o se sigue aplicando con un runner.
-- Si se agrega un `.gitattributes` para normalizar los finales de línea a LF.
+- Si se agrega un `.gitattributes` para normalizar los finales de línea a LF
+  (mejora opcional; hoy todo está en LF).
 - Sobre el diseño del producto no hay preguntas abiertas (`plan.md`, sección 10).
