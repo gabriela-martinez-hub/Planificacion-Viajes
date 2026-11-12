@@ -753,3 +753,63 @@
   crítica es T-16 (modo soñado: meta de ahorro y aportes), que depende de T-15
   (hecha) y T-14 (hecha). En paralelo siguen disponibles T-17, T-25, T-27 y T-30.
 - Origen: sesión de Kiro con el usuario
+
+### 2026-11-11 — T-16: modo viaje soñado (cierre de la fase c)
+- Cierre anterior: c39c233 (memoria: cierre de T-15)
+- Commits: (este cierre agrega el commit de código y el de memoria)
+- Qué se hizo:
+  - **T-16 terminada; cierra la fase (c).** Modo "viaje soñado": meta de ahorro,
+    aportes y barra de progreso (plan.md 6.2).
+  - Dominio puro `src/domain/presupuesto/ahorro.ts`: `calcularAhorro` calcula los
+    periodos (semanas o meses completos entre hoy y `fecha_inicio`) y la cuota
+    `max(0, ceil((meta − ahorrado) / max(1, periodos)))`. Estados `activa`,
+    `cumplida` (ahorrado ≥ meta) y `vencida` (`fecha_inicio ≤ hoy`). Sin división
+    por cero ni cuota negativa. No lee el reloj: recibe `hoy` como parámetro.
+    `totalAportado` suma los aportes.
+  - Helpers de fechas puros nuevos en `src/domain/itinerario/fechas.ts`:
+    `semanasEntre` y `mesesEntre` (meses de calendario, contando el mes solo si el
+    día del mes ya se alcanzó).
+  - Persistencia: `src/services/metas-ahorro.ts` (guardar/leer la meta con upsert
+    —una por viaje, PK = viaje_id— y listar/registrar aportes) sobre las tablas
+    `metas_ahorro` y `aportes_ahorro` de T-12 con RLS por propietario. Hooks
+    `use-metas-ahorro.ts` (TanStack Query).
+  - UI `PanelMetaAhorro.tsx` montada en el detalle de **Mis viajes** (necesita
+    `viaje_id`): formulario de meta con el objetivo prellenado al total del viaje y
+    la frecuencia, barra de progreso accesible (`role="progressbar"`), cuota
+    sugerida, registro de aportes con fecha, y estados cumplida/vencida. `MisViajes`
+    ahora pasa el resumen del viaje (con `fecha_inicio`) al detalle.
+  - Textos nuevos en `src/i18n/es-CO.ts` bajo `presupuesto.meta`.
+  - Pruebas `ahorro.test.ts` (10).
+- Decisiones:
+  - El modo soñado vive en el **detalle de un viaje guardado**, no en el
+    planificador: la meta y los aportes necesitan `viaje_id` para persistir y la
+    cuota se calcula sobre ellos (propuesta de Claude, coherente con plan.md 5.2).
+  - La cuota no se guarda (ya lo exige el modelo): se recalcula siempre en el
+    dominio a partir de la meta, los aportes y la fecha de hoy.
+  - "Meses completos" se cuentan por calendario (el mes solo cuenta si el día del
+    mes de `hasta` alcanzó el de `desde`), no por bloques de 30 días, para que la
+    cuota mensual sea intuitiva (propuesta de Claude).
+  - `fecha_inicio == hoy` se trata como vencida: ya no quedan periodos completos
+    por delante (plan.md 6.2: si `fecha_inicio ≤ hoy`, no hay cuota).
+- Hallazgos:
+  - El entorno del agente no arranca el servidor; el usuario dio el aval del
+    funcionamiento en el navegador.
+  - Las tablas `metas_ahorro` y `aportes_ahorro` ya existían (T-12) con sus RLS y
+    el CHECK `monto_cop > 0`, así que T-16 solo agregó el servicio, los hooks y la
+    UI.
+  - El bundle principal subió a ~443 kB (129 kB gzip) por el panel de meta.
+- Criterios de aceptación — **fase (c) cerrada (2/2 tareas)**, los 5 verificados:
+  - "Cuando existe itinerario factible, el ajustado nunca supera el monto fijo":
+    verificado en T-15.
+  - "Cuando no existe, se muestra el mínimo y no se guarda como ajustado":
+    verificado en T-15.
+  - "Las atracciones obligatorias nunca se quitan": verificado en T-15.
+  - "La cuota se recalcula al registrar aportes y no es negativa ni divide por
+    cero": **verificado** (T-16, pruebas de cuota que baja al aportar, nunca
+    negativa y sin dividir por cero).
+  - "Pruebas unitarias de los cálculos, incluidos 0 noches, meta vencida y meta
+    cumplida": **verificado** (0 noches en T-15; vencida y cumplida en T-16).
+- Cambios del tablero: T-16 pasa a hecha. Revisión 24. La próxima tarea de la ruta
+  crítica es T-17 (servicio Open-Meteo con Zod, caché de 3 h y respaldo a
+  promedios). En paralelo siguen T-25, T-27 y T-30.
+- Origen: sesión de Kiro con el usuario

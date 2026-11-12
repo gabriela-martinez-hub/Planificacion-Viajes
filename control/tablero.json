@@ -1,7 +1,7 @@
 {
   "proyecto": "Planificador de viajes del Eje Cafetero",
-  "revision": 23,
-  "actualizado": "2026-11-11T20:44:50",
+  "revision": 24,
+  "actualizado": "2026-11-11T20:59:05",
   "responsables": [
     "usuario",
     "claude",
@@ -344,9 +344,10 @@
         "T-15",
         "T-14"
       ],
-      "estado": "pendiente",
-      "notas": "",
-      "creada": "2026-11-07"
+      "estado": "hecha",
+      "notas": "[2026-11-11 claude] T-16 terminada; cierra la fase (c). Dominio puro src/domain/presupuesto/ahorro.ts: calcularAhorro implementa plan.md 6.2 modo sonado (periodos = semanas o meses completos entre hoy y fecha_inicio; cuota = max(0, ceil((meta - ahorrado) / max(1, periodos)))), con estados activa/cumplida (ahorrado >= meta)/vencida (fecha_inicio <= hoy), sin dividir por cero ni cuota negativa; no lee el reloj (recibe hoy). totalAportado suma aportes. Helpers de fechas nuevos en itinerario/fechas.ts: semanasEntre, mesesEntre. Persistencia: services/metas-ahorro.ts (guardar/leer meta con upsert una por viaje; listar/registrar aportes) sobre las tablas metas_ahorro y aportes_ahorro de T-12 con RLS; hooks use-metas-ahorro.ts (TanStack Query). UI PanelMetaAhorro.tsx montada en el detalle de Mis viajes (necesita viaje_id): formulario de meta con objetivo prellenado al total y frecuencia, barra de progreso accesible, cuota sugerida, registro de aportes y estados cumplida/vencida. Pruebas ahorro.test.ts (10): cuota mensual y semanal, la cuota baja al aportar, nunca negativa, sin dividir por cero con menos de un periodo, meta cumplida, vencida (pasada y hoy), progreso acotado. tsc 0, lint 0, format limpio, build ok, 84/84 pruebas. El usuario dio el aval del funcionamiento en el navegador.",
+      "creada": "2026-11-07",
+      "terminada": "2026-11-11"
     },
     {
       "id": "T-17",
@@ -1029,6 +1030,20 @@
       "op": "nota",
       "id": "T-15",
       "detalle": "T-15 terminada. Dominio puro en src/domain/presupuesto/: tipos.ts, desglose.ts (total y por persona, 6.2), ajustar.ts (paso 8: baja alojamiento y luego comida escalon a escalon, despues poda actividades no obligatorias por puntuacion/costo con desempate por id, parando apenas total <= monto; si ni el economico sin actividades alcanza devuelve ok:false con minimoCop; las obligatorias nunca se quitan), index.ts. Determinista: misma entrada y monto, mismo resultado. UI PanelPresupuesto.tsx conectada al planificador (desglose, campo de monto, boton Ajustar a mi presupuesto, mensajes ajustado/no alcanza), reutiliza formatearCOP. armar-entrada.ts admite ordenMunicipios para que el ajuste regenere con la misma ruta. Pruebas en ajustar.test.ts (9, con el seed real): ya cumple no ajusta, factible nunca supera el monto, baja nivel antes de podar, poda cuando el economico no basta, obligatorias no se quitan, no factible devuelve el minimo sin marcar ajustado, determinismo, desglose por persona, 0 noches sin dividir por cero. tsc 0, lint 0, format limpio, build ok (PWA incluida), 74/74 pruebas. El modo sonado (meta de ahorro y aportes) es T-16 y se apoya en estos calculos. Falta verificar el panel en el navegador."
+    },
+    {
+      "fecha": "2026-11-11T20:59:05",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-16",
+      "detalle": "estado: 'pendiente' -> 'hecha'"
+    },
+    {
+      "fecha": "2026-11-11T20:59:05",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-16",
+      "detalle": "T-16 terminada; cierra la fase (c). Dominio puro src/domain/presupuesto/ahorro.ts: calcularAhorro implementa plan.md 6.2 modo sonado (periodos = semanas o meses completos entre hoy y fecha_inicio; cuota = max(0, ceil((meta - ahorrado) / max(1, periodos)))), con estados activa/cumplida (ahorrado >= meta)/vencida (fecha_inicio <= hoy), sin dividir por cero ni cuota negativa; no lee el reloj (recibe hoy). totalAportado suma aportes. Helpers de fechas nuevos en itinerario/fechas.ts: semanasEntre, mesesEntre. Persistencia: services/metas-ahorro.ts (guardar/leer meta con upsert una por viaje; listar/registrar aportes) sobre las tablas metas_ahorro y aportes_ahorro de T-12 con RLS; hooks use-metas-ahorro.ts (TanStack Query). UI PanelMetaAhorro.tsx montada en el detalle de Mis viajes (necesita viaje_id): formulario de meta con objetivo prellenado al total y frecuencia, barra de progreso accesible, cuota sugerida, registro de aportes y estados cumplida/vencida. Pruebas ahorro.test.ts (10): cuota mensual y semanal, la cuota baja al aportar, nunca negativa, sin dividir por cero con menos de un periodo, meta cumplida, vencida (pasada y hoy), progreso acotado. tsc 0, lint 0, format limpio, build ok, 84/84 pruebas. El usuario dio el aval del funcionamiento en el navegador."
     }
   ]
 }

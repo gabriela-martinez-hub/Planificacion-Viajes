@@ -145,7 +145,11 @@ Presupuesto (2026-11-11, ver `HISTORIA.md`):
   si no basta, poda actividades no obligatorias por `puntuación/costo` (desempate
   por id). Las obligatorias nunca se quitan. Es determinista.
 - El desglose por persona divide cada rubro con `Math.ceil` para no subestimar.
-- El modo soñado (meta de ahorro y aportes, T-16) se apoyará en estos cálculos.
+- El modo soñado (T-16) vive en el detalle de un viaje guardado (necesita
+  `viaje_id`): la meta y los aportes se guardan en `metas_ahorro`/`aportes_ahorro`
+  y la cuota NO se guarda, se calcula siempre en `domain/presupuesto/ahorro.ts`
+  sobre la meta, los aportes y la fecha de hoy. `fecha_inicio == hoy` cuenta como
+  meta vencida. Los "meses" de la cuota son meses de calendario.
 
 ## Decisiones reemplazadas
 - Internacionalización con react-i18next: reemplazada por el archivo tipado
@@ -170,11 +174,23 @@ Presupuesto (2026-11-11, ver `HISTORIA.md`):
 ## Estado actual
 - **Fase 0 cerrada** (7/8 tareas; T-29 es una verificación opcional que el
   usuario pospuso). Los 5 criterios de aceptación están verificados.
-- Tablero en revisión 23: 17/30 tareas hechas, 6 riesgos activos y 5 ideas. La
+- Tablero en revisión 24: 18/30 tareas hechas, 6 riesgos activos y 5 ideas. La
   fase (a) va 5/5 tareas pero sigue formalmente abierta por el criterio RLS sin
-  evidencia (T-30). La **fase (b) está completa en tareas (5/5)**: T-11, T-12,
-  T-13 y T-14 hechas (quedan por medir cobertura y tiempo de generación). La
-  **fase (c) va 1/2**: T-15 hecha; falta T-16 (modo soñado).
+  evidencia (T-30). La **fase (b) está completa en tareas (5/5)** (quedan por
+  medir cobertura y tiempo de generación). La **fase (c) está cerrada (2/2
+  tareas)**: T-15 y T-16, con los 5 criterios verificados.
+- **T-16 hecha (2026-11-11): modo viaje soñado (cierra la fase c).**
+  - Dominio puro `src/domain/presupuesto/ahorro.ts`: `calcularAhorro` (periodos =
+    semanas/meses completos entre hoy y `fecha_inicio`; cuota = `max(0,
+    ceil((meta − ahorrado) / max(1, periodos)))`; estados activa/cumplida/vencida;
+    sin dividir por cero ni cuota negativa; no lee el reloj). Helpers de fechas
+    `semanasEntre` y `mesesEntre` en `itinerario/fechas.ts`.
+  - Persistencia: `src/services/metas-ahorro.ts` (meta con upsert, aportes) sobre
+    `metas_ahorro`/`aportes_ahorro` (T-12, con RLS); hooks `use-metas-ahorro.ts`.
+  - UI `PanelMetaAhorro.tsx` en el detalle de **Mis viajes** (necesita `viaje_id`):
+    meta, barra de progreso, cuota y aportes. Pruebas `ahorro.test.ts` (10).
+    Verificación: tsc 0, lint 0, format limpio, build ok, 84/84 pruebas. El usuario
+    dio el aval en el navegador.
 - **T-15 hecha (2026-11-11): presupuesto, desglose y ajuste a monto fijo.**
   - Dominio puro `src/domain/presupuesto/`: `tipos.ts`, `desglose.ts` (total y
     por persona, 6.2), `ajustar.ts` (paso 8 de 6.1: baja alojamiento y luego
@@ -283,20 +299,18 @@ Presupuesto (2026-11-11, ver `HISTORIA.md`):
   pendiente: `.gitattributes` con `* text=auto eol=lf`.
 
 ## Próximos pasos
-1. **T-16 (siguiente en la ruta crítica):** modo viaje soñado (meta de ahorro,
-   aportes y barra de progreso, 6.2). Depende de T-15 y T-14 (ambas hechas).
-2. En paralelo: T-17 (Open-Meteo), T-25 (clima mensual), T-27 (evaluación del
-   generador) y T-30 (criterio RLS de la fase a).
+1. **T-17 (siguiente en la ruta crítica):** servicio Open-Meteo con Zod, caché de
+   3 h y respaldo a promedios. Depende de T-01 (hecha).
+2. En paralelo: T-25 (clima mensual), T-27 (evaluación del generador) y T-30
+   (criterio RLS de la fase a).
 3. Evaluar las ideas I-04 (recomendar municipios cuando el usuario no los conoce)
    e I-05 (guardado local sin cuenta, diferido): decidir si entran en una entrega
    futura.
 4. Criterios de F-b pendientes de medir: cobertura >= 80 % en domain/itinerario
    (falta el provider `@vitest/coverage-v8`) y generación < 500 ms en móvil.
-5. Verificar T-15 en el navegador: el panel de presupuesto aparece tras generar,
-   el desglose se ve, y al poner un monto bajo ajusta o muestra el mínimo.
-6. Usuario (cuando quiera): crear `SUPABASE_URL` y `SUPABASE_ANON_KEY` en GitHub
+5. Usuario (cuando quiera): crear `SUPABASE_URL` y `SUPABASE_ANON_KEY` en GitHub
    para la consulta diaria contra la pausa.
-7. Antes de la sustentación: reemplazar los iconos placeholder de la PWA por el
+6. Antes de la sustentación: reemplazar los iconos placeholder de la PWA por el
    diseño real (fase final); revisar costos/tarifas/tiempos del seed (R-04) y el
    acceso al Nevado del Ruiz (R-03).
 
