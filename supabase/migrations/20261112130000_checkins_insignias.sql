@@ -77,18 +77,25 @@ $$;
 -- p_lugar_id puede ser una atracción o un municipio (su casco urbano). La RPC:
 --   1. Resuelve el lugar y su radio: atracción -> su municipio y su radio;
 --      municipio -> radio del municipio, sin atracción.
---   2. Calcula la distancia haversine en el servidor.
---   3. verificado = (distancia + precision <= radio). Precisión peor que el
---      radio nunca verifica (plan.md 6.4).
---   4. Guarda distancia_m y precision_m; descarta lat/lon. recibido_en = now().
---   5. Idempotente por id_cliente: un reenvío devuelve la fila existente.
+--   2. Si p_manual es true, es un registro manual: verificado = false, sin usar
+--      coordenadas (plan.md 6.4: el registro manual crea el check-in no
+--      verificado). Si no, calcula la distancia haversine y
+--      verificado = (distancia + precision <= radio); precisión peor que el
+--      radio nunca verifica.
+--   3. Guarda distancia_m y precision_m (null en el registro manual); descarta
+--      lat/lon. recibido_en = now().
+--   4. Idempotente por id_cliente: un reenvío devuelve la fila existente.
+--
+-- En un registro manual (p_manual = true) p_lat, p_lon y p_precision_m se
+-- ignoran y pueden ser null.
 
 create or replace function public.registrar_checkin(
   p_lugar_id text,
   p_lat double precision,
   p_lon double precision,
   p_precision_m integer,
-  p_id_cliente uuid
+  p_id_cliente uuid,
+  p_manual boolean default false
 ) returns public.checkins
 language plpgsql security definer
 set search_path = ''
@@ -102,6 +109,8 @@ declare
   v_radio integer;
   v_distancia double precision;
   v_verificado boolean;
+  v_distancia_guardar integer;
+  v_precision_guardar integer;
   v_existente public.checkins;
   v_fila public.checkins;
 begin
@@ -110,7 +119,9 @@ begin
       using errcode = '28000';
   end if;
 
-  if p_precision_m is null or p_precision_m < 0 then
+  -- En un check-in por GPS la precisión es obligatoria y no negativa. En el
+  -- registro manual se ignora.
+  if not p_manual and (p_precision_m is null or p_precision_m < 0) then
     raise exception 'La precisión del GPS no es válida' using errcode = '22023';
   end if;
 
@@ -143,16 +154,25 @@ begin
     v_atraccion_id := null;
   end if;
 
-  -- Distancia y regla de verificación (plan.md 6.4).
-  v_distancia := public.distancia_haversine_m(v_lat, v_lon, p_lat, p_lon);
-  v_verificado := (v_distancia + p_precision_m) <= v_radio;
+  if p_manual then
+    -- Registro manual: no verificado, sin medición GPS (plan.md 6.4).
+    v_verificado := false;
+    v_distancia_guardar := null;
+    v_precision_guardar := null;
+  else
+    -- Check-in por GPS: distancia y regla de verificación (plan.md 6.4).
+    v_distancia := public.distancia_haversine_m(v_lat, v_lon, p_lat, p_lon);
+    v_verificado := (v_distancia + p_precision_m) <= v_radio;
+    v_distancia_guardar := round(v_distancia)::integer;
+    v_precision_guardar := p_precision_m;
+  end if;
 
   insert into public.checkins (
     id_cliente, usuario_id, atraccion_id, municipio_id,
     verificado, distancia_m, precision_m
   ) values (
     p_id_cliente, v_uid, v_atraccion_id, v_municipio_id,
-    v_verificado, round(v_distancia)::integer, p_precision_m
+    v_verificado, v_distancia_guardar, v_precision_guardar
   )
   returning * into v_fila;
 
@@ -327,5 +347,5 @@ revoke all on public.checkins from anon;
 revoke all on public.insignias_usuario from anon;
 
 -- La RPC la puede llamar cualquier usuario autenticado; anon no.
-revoke all on function public.registrar_checkin(text, double precision, double precision, integer, uuid) from public;
-grant execute on function public.registrar_checkin(text, double precision, double precision, integer, uuid) to authenticated;
+revoke all on function public.registrar_checkin(text, double precision, double precision, integer, uuid, boolean) from public;
+grant execute on function public.registrar_checkin(text, double precision, double precision, integer, uuid, boolean) to authenticated;

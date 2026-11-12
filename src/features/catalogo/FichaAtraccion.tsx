@@ -3,6 +3,7 @@
 // acceso (guía, estado). Todos los textos vienen del i18n.
 import { t } from '@/i18n';
 import type { Atraccion } from '@/domain/catalogo/esquemas';
+import { BotonCheckin } from '@/features/insignias/BotonCheckin';
 import { formatearCOP, nombresDias, soloHoraMin } from './formato';
 
 interface Props {
@@ -115,6 +116,15 @@ export function FichaAtraccion({
           {a.nota_acceso ? `: ${a.nota_acceso}` : ''}
         </p>
       )}
+
+      <section
+        className="border-t border-slate-200 pt-3"
+        aria-label={t('checkin.registrar')}
+      >
+        <BotonCheckin
+          lugar={{ id: a.id, nombre: a.nombre, lat: a.lat, lon: a.lon }}
+        />
+      </section>
 
       <footer className="flex flex-col gap-1 border-t border-slate-200 pt-3 text-xs text-slate-500">
         {costoTotal > 0 && <p>{t('catalogo.notaTarifaAdulto')}</p>}

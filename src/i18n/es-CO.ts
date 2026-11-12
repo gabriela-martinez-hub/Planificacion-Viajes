@@ -217,13 +217,29 @@ export const textos = {
 
   checkin: {
     registrar: 'Hacer check-in',
+    conUbicacion: 'Hacer check-in con mi ubicación',
+    manualAccion: 'Registrar manualmente (no verificado)',
     sinConexion: 'El check-in necesita conexión a internet.',
     verificado: 'Check-in verificado',
     manual: 'Registro manual (no verificado)',
+    hechoVerificado: '¡Listo! Check-in verificado en {lugar}.',
+    hechoManual: 'Guardamos tu registro manual en {lugar} (no verificado).',
+    buscandoUbicacion: 'Obteniendo tu ubicación…',
+    registrando: 'Registrando…',
     fueraDeRadio:
       'Estás fuera del área del lugar. Puedes hacer un registro manual.',
     precisionBaja:
       'La ubicación no es lo bastante precisa. Inténtalo al aire libre.',
+    errorPermiso:
+      'No diste permiso de ubicación. Puedes activarlo o hacer un registro manual.',
+    errorNoSoportada: 'Tu navegador no permite obtener la ubicación.',
+    errorContextoInseguro:
+      'La ubicación solo funciona con https o en localhost. Abre la app en http://localhost:5173.',
+    errorNoDisponible:
+      'Tu navegador no pudo obtener la ubicación (suele pasar en computadores sin GPS). Usa "Registrar manualmente" o inténtalo desde el celular.',
+    errorTiempo:
+      'La ubicación tardó demasiado. Inténtalo de nuevo al aire libre.',
+    distanciaAlLugar: 'A unos {metros} m del lugar.',
   },
 
   privacidad: {
@@ -231,6 +247,7 @@ export const textos = {
     consentimiento:
       'Para hacer check-in usamos tu ubicación una sola vez para compararla con la del lugar. No guardamos tus coordenadas.',
     aceptar: 'Acepto',
+    rechazar: 'Ahora no',
     verPolitica: 'Ver la política de tratamiento de datos',
   },
 

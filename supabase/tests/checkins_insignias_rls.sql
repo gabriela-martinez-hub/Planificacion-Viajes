@@ -95,6 +95,12 @@ begin
   assert not v_fila.verificado,
     'FALLO: con precisión peor que el radio no debería verificar';
 
+  -- 3c) Registro manual (p_manual = true): no verificado, sin medición GPS.
+  v_fila := public.registrar_checkin(v_muni, null, null, null, gen_random_uuid(), true);
+  assert not v_fila.verificado, 'FALLO: un registro manual no debería estar verificado';
+  assert v_fila.distancia_m is null and v_fila.precision_m is null,
+    'FALLO: un registro manual no debería guardar distancia ni precisión';
+
   -- ----------------------------------------------------------------
   -- 4) Idempotencia: reenviar el mismo id_cliente no crea un segundo check-in.
   -- ----------------------------------------------------------------
@@ -172,8 +178,8 @@ begin
       -- Verificado (dentro del radio): uno menos de los necesarios -> 79 %.
       perform public.registrar_checkin(rec.id, rec.lat, rec.lon, 5, gen_random_uuid());
     else
-      -- Manual / no verificado (lejano): otorga pero no cuenta como verificado.
-      perform public.registrar_checkin(rec.id, rec.lat, rec.lon + 0.5, 5, gen_random_uuid());
+      -- Manual (p_manual = true): otorga pero no cuenta como verificado.
+      perform public.registrar_checkin(rec.id, null, null, null, gen_random_uuid(), true);
     end if;
   end loop;
 
