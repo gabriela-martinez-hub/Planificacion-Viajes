@@ -14,7 +14,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "seed": "tsx scripts/cargar-seed.ts",
-    "seed:dry-run": "tsx scripts/cargar-seed.ts --dry-run"
+    "seed:dry-run": "tsx scripts/cargar-seed.ts --dry-run",
+    "evaluar": "tsx scripts/evaluar-generador.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.45.4",
@@ -38,6 +39,7 @@
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "@vitejs/plugin-react": "^4.3.1",
+    "@vitest/coverage-v8": "^1.6.1",
     "autoprefixer": "^10.4.20",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",

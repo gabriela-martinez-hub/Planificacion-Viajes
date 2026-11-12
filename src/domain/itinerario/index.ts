@@ -29,6 +29,7 @@ export function generarItinerario(
   const mejorado = buscarLocal(resultado.itinerario, {
     atracciones: entrada.catalogo.atracciones,
     pesoLluvia: entrada.pesoLluvia,
+    limiteJornadaMin: entrada.limiteJornadaMin || 540,
   });
   return { ok: true, itinerario: mejorado };
 }

@@ -27,6 +27,8 @@ export interface OpcionesBusqueda {
   atracciones: Atraccion[];
   maxIteraciones?: number;
   pesoLluvia?: number;
+  /** Límite de jornada en minutos; un movimiento no puede excederlo (por defecto 540). */
+  limiteJornadaMin?: number;
 }
 
 /**
@@ -43,6 +45,7 @@ export function buscarLocal(
   );
   const pesoLluvia = opciones.pesoLluvia ?? PENALIZACION_LLUVIA;
   const maxIter = opciones.maxIteraciones ?? MAX_ITERACIONES;
+  const limiteJornada = opciones.limiteJornadaMin ?? 540;
 
   // Copia profunda de los días (los ítems se recrean, no se comparten).
   let dias = itinerario.dias.map(clonarDia);
@@ -67,7 +70,7 @@ export function buscarLocal(
           penalizacionDia(di, alAireLibre, pesoLluvia) +
           penalizacionDia(dj, alAireLibre, pesoLluvia);
 
-        const movido = intentarMover(di, dj, alAireLibre);
+        const movido = intentarMover(di, dj, alAireLibre, limiteJornada);
         if (!movido) continue;
 
         const despues =
@@ -129,13 +132,19 @@ interface Movimiento {
 
 /**
  * Mueve la primera actividad al aire libre no fijada de `origen` a `destino`.
- * Devuelve el movimiento aplicado o null si no había ninguna.
+ * Solo lo hace si el día destino queda dentro del límite de jornada tras recibir
+ * la actividad (el destino no es de solo traslado y tiene tiempo libre).
+ * Devuelve el movimiento aplicado o null si no había ninguna o no cabía.
  */
 function intentarMover(
   origen: DiaItinerario,
   destino: DiaItinerario,
   alAireLibre: Map<string, boolean>,
+  limiteJornada: number,
 ): Movimiento | null {
+  // No se mueven actividades a un día de solo traslado.
+  if (destino.soloTraslado) return null;
+
   const idx = origen.items.findIndex(
     (it) =>
       it.tipo === 'actividad' &&
@@ -144,12 +153,28 @@ function intentarMover(
       alAireLibre.get(it.atraccionId) === true,
   );
   if (idx === -1) return null;
-  const [item] = origen.items.splice(idx, 1);
+
+  // El día destino debe tener tiempo libre para la actividad que recibe.
+  const item = origen.items[idx];
+  const usadoDestino = minutosDe(destino);
+  if (usadoDestino + item.duracionMin > limiteJornada) return null;
+
+  origen.items.splice(idx, 1);
   // Insertar antes de los ítems de comida/alojamiento del destino, al final de
   // sus actividades, para mantener un orden legible.
   const posDestino = indiceTrasActividades(destino);
   destino.items.splice(posDestino, 0, item);
   return { indiceEnOrigen: idx, atraccionId: item.atraccionId! };
+}
+
+/** Minutos de actividades y traslados de un día (lo que cuenta para la jornada). */
+function minutosDe(d: DiaItinerario): number {
+  return d.items.reduce(
+    (s, it) =>
+      s +
+      (it.tipo === 'actividad' || it.tipo === 'traslado' ? it.duracionMin : 0),
+    0,
+  );
 }
 
 function deshacerMover(
