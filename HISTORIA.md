@@ -843,3 +843,97 @@
   sustentación: iconos reales de la PWA, revisar costos/tarifas del seed (R-04) y
   el acceso al Nevado del Ruiz (R-03).
 - Origen: sesión de Kiro con el usuario
+
+### 2026-11-12 — Fase (d) clima completa; cierre de fases (a), (b) y (d); T-30 y T-27
+- Cierre anterior: 542a982 (memoria: cierre de sesion 2026-11-11, fase c cerrada)
+- Commits: 4e90302 (T-30), aa7e28d (T-27), 7879a9c (T-17), c1b148d (T-25), 18b8954 (T-18); este cierre agrega el commit de memoria
+- Qué se hizo:
+  - **T-30 terminada:** prueba de integración RLS del catálogo
+    (`src/services/rls-catalogo.int.test.ts`). Usa la clave pública anon contra el
+    Supabase real y confirma que INSERT/UPDATE/DELETE sobre `atracciones` fallan
+    por RLS (tanto por error explícito como por 0 filas, verificado con un SELECT
+    de control), y que la lectura sí funciona. Se salta en CI (sin `.env`) y usa
+    un timeout holgado por la latencia de red. 4 tests verdes.
+  - **T-27 terminada:** evaluación del generador (entregable académico, plan.md
+    6.0) en `src/domain/itinerario/instancias/`: función objetivo y verificador de
+    restricciones (`objetivo.ts`), óptimo por fuerza bruta para instancias ≤ 8
+    (`fuerza-bruta.ts`), banco de 24 instancias (`casos.ts`), evaluador y resumen
+    (`evaluar.ts`), informe Markdown (`informe.ts` + `scripts/evaluar-generador.ts`,
+    `npm run evaluar` → `INFORME.md`). Compara voraz vs. voraz+búsqueda local vs.
+    fuerza bruta. Dependencia nueva `@vitest/coverage-v8`.
+  - **T-17 terminada:** servicio Open-Meteo (`src/services/clima.ts`) con Zod,
+    resultado tipado ok/no-ok, varios lugares en una llamada, respaldo a
+    `clima_mensual`; dominio puro `src/domain/clima/` (clasifica días lluviosos por
+    pronóstico o promedio, elige la fuente por horizonte 1-7/8-16/>16); hooks
+    `use-clima.ts` con caché de 3 h. Pruebas de dominio y de servicio (fetch
+    inyectado).
+  - **T-25 terminada:** `scripts/generar-clima-mensual.ts`, reanudable y
+    respetuoso de la cuota de Open-Meteo (archive API): una petición por
+    municipio, pausa configurable, progreso guardado, salta los ya hechos. Generó
+    `supabase/seed/datos/clima.ts` con 636 filas (53 × 12 meses) de 5 años de
+    historia. Cargado en Supabase con `npm run seed` (con autorización del
+    usuario); lectura verificada con la clave anon (636 filas, 12 meses por
+    municipio).
+  - **T-18 terminada:** integración del clima en el planificador y paso 9 del
+    generador. Dominio `reorganizarPorClima` (reutiliza `buscarLocal`: reproyecta
+    la lluvia desde `climaPorDia`, mueve actividades al aire libre de días
+    lluviosos a secos con la misma base, sin tocar fijados, respetando jornada, sin
+    cambiar costos, determinista, reporta si hubo cambios para la vista previa);
+    `armarClimaViaje` (combina el municipio base de cada día con su pronóstico o
+    promedio); `obtenerClimaMensualVarios` + `useClimaMensualVarios` + hook
+    compuesto `useClimaViaje`. UI: indicador de clima por día (probabilidad,
+    fuente, temperatura) en `VistaItinerario`; `PanelClima` con atribución
+    Open-Meteo, aviso sin-red y botón "Reorganizar por clima" con vista previa
+    (aplicar/descartar). El usuario verificó el funcionamiento en el navegador.
+- Decisiones:
+  - El fix de la búsqueda local (no exceder la jornada del día destino al mover
+    una actividad) se agrupó con T-27, porque lo detectó la evaluación al
+    construir las instancias. Es una corrección de T-11 surgida de T-27.
+  - La métrica de brecha de optimalidad se reporta como "instancias en el óptimo"
+    (12/14) y diferencia absoluta, no como promedio de porcentajes: el % se
+    dispara cuando el óptimo es pequeño frente al término de penalización por
+    lluvia y deja de ser informativo. Las dos instancias no óptimas se documentan
+    con su causa (elección voraz local; la búsqueda local no descarta actividades).
+  - El horizonte de pronóstico es dinámico (respecto a "hoy", que la UI pasa al
+    dominio): 1-7 pronóstico, 8-16 tendencia, >16 promedio histórico. Para fechas
+    lejanas se usa el promedio con aviso explícito; no se inventa pronóstico más
+    allá de 16 días (límite físico de Open-Meteo, coherente con datos verificables).
+  - La reorganización por clima conserva el costo total (solo reubica
+    actividades), así que no dispara el re-ajuste de presupuesto; aun así el
+    `climaPorDia` real se propaga al PanelPresupuesto para que un re-ajuste
+    respete la lluvia.
+  - La carga del seed a Supabase (`npm run seed`) la corrió el agente con
+    autorización explícita del usuario en esta sesión (antes la hacía el usuario).
+- Hallazgos:
+  - La evaluación de T-27 detectó un bug real en la búsqueda local (T-11): movía
+    actividades a un día sin verificar su límite de jornada, produciendo días
+    infactibles. Corregido.
+  - Cobertura de `domain/itinerario`: subió de 89.57 % a 95.65 % de líneas al
+    ejercitarse la búsqueda local con las instancias (criterio F-b ≥ 80 %).
+  - La API histórica (archive) de Open-Meteo limita ráfagas: la generación de
+    T-25 recibió 429 dos veces y fallos de red transitorios dos veces; el diseño
+    reanudable permitió completar los 53 municipios sin reprocesar, subiendo la
+    pausa entre peticiones.
+  - El entorno del agente no puede arrancar `npm run dev` ni ver el navegador: la
+    prueba visual del clima (indicador, vista previa, aviso sin red) la hizo el
+    usuario y la dio por correcta.
+- Criterios de aceptación:
+  - **Fase (a) cerrada (6/6).** Último criterio pendiente ("un INSERT con la clave
+    pública sobre atracciones falla") verificado por T-30.
+  - **Fase (b) cerrada (7/7).** T-27 cerró los tres que faltaban por evidencia:
+    0 violaciones de restricciones (24/24 instancias), generación < 500 ms (máx
+    0.43 ms) y cobertura ≥ 80 % en domain/itinerario (95.65 %).
+  - **Fase (d) cerrada (3/3 tareas, 6/6 criterios):** estimación con aviso sin red,
+    fechas > 16 días nunca como pronóstico, viaje que cruza dos meses usa el
+    promedio de cada mes, la reorganización no saca actividades de su base ni mueve
+    fijados, atribución de Open-Meteo visible, y pruebas de domain/clima. El
+    usuario confirmó el funcionamiento en el navegador.
+- Cambios del tablero: T-17, T-18, T-25, T-27 y T-30 pasan a hechas; T-29 pasa a
+  hecha (el usuario la da por comprobada: se trabajó con las skills RETOMAR/CIERRE
+  y las pautas de CLAUDE.md en estas sesiones), lo que cierra la fase 0 (8/8). Sin
+  tareas, riesgos ni ideas nuevos. La próxima tarea de la ruta crítica es T-19
+  (fase e: migraciones de check-ins e insignias, RPC y trigger).
+- Verificación global: tsc 0, lint 0, format limpio, 127/127 pruebas, build ok con
+  PWA. Árbol de trabajo limpio antes de este cierre. `dev` quedará 6 commits por
+  delante de `origin/dev` (los 5 de esta sesión más el de memoria), sin publicar.
+- Origen: sesión de Kiro con el usuario

@@ -1,7 +1,7 @@
 {
   "proyecto": "Planificador de viajes del Eje Cafetero",
-  "revision": 24,
-  "actualizado": "2026-11-11T20:59:05",
+  "revision": 26,
+  "actualizado": "2026-11-12T11:49:55",
   "responsables": [
     "usuario",
     "claude",
@@ -360,9 +360,10 @@
       "dependencias": [
         "T-01"
       ],
-      "estado": "pendiente",
-      "notas": "",
-      "creada": "2026-11-07"
+      "estado": "hecha",
+      "notas": "[2026-11-12 claude] Servicio Open-Meteo src/services/clima.ts con Zod y resultado tipado ok/no-ok, varios lugares en una llamada, respaldo a clima_mensual. Dominio puro src/domain/clima/ (clasifica dias lluviosos por pronostico o promedio, fuente por horizonte 1-7/8-16/>16; umbrales config). Hooks use-clima.ts con cache de 3 h. Pruebas de dominio y de servicio (fetch inyectado). Commit 7879a9c.",
+      "creada": "2026-11-07",
+      "terminada": "2026-11-12"
     },
     {
       "id": "T-18",
@@ -378,9 +379,10 @@
         "T-13",
         "T-25"
       ],
-      "estado": "pendiente",
-      "notas": "",
-      "creada": "2026-11-07"
+      "estado": "hecha",
+      "notas": "[2026-11-12 claude] Clima en el planificador + paso 9 del generador. Dominio reorganizarPorClima (reutiliza buscarLocal: reproyecta lluvia desde climaPorDia, mueve actividades al aire libre de dias lluviosos a secos con la misma base, sin tocar fijados, respeta jornada, conserva costos, determinista, reporta cambios para vista previa) y armarClimaViaje. obtenerClimaMensualVarios + useClimaMensualVarios + hook compuesto useClimaViaje. UI: indicador de clima por dia (probabilidad, fuente, temperatura) en VistaItinerario; PanelClima con atribucion Open-Meteo, aviso sin-red y boton Reorganizar por clima con vista previa (aplicar/descartar). Pruebas de dominio nuevas. Cierra la fase (d). El usuario verifico en el navegador. Commit 18b8954.",
+      "creada": "2026-11-07",
+      "terminada": "2026-11-12"
     },
     {
       "id": "T-19",
@@ -490,9 +492,10 @@
       "dependencias": [
         "T-06"
       ],
-      "estado": "pendiente",
-      "notas": "Respetar la cuota de Open-Meteo (10.000 llamadas al día)",
-      "creada": "2026-11-07"
+      "estado": "hecha",
+      "notas": "Respetar la cuota de Open-Meteo (10.000 llamadas al día)\n[2026-11-12 claude] scripts/generar-clima-mensual.ts reanudable y respetuoso de la cuota (archive API de Open-Meteo): una peticion por municipio, pausa configurable, progreso guardado, salta los ya hechos (supero 2 veces 429 y 2 fallos de red). Genera supabase/seed/datos/clima.ts con 636 filas (53x12) de 5 anios. Cargado en Supabase (npm run seed, con autorizacion del usuario) y verificado con la clave anon. npm run clima:generar. Commit c1b148d.",
+      "creada": "2026-11-07",
+      "terminada": "2026-11-12"
     },
     {
       "id": "T-26",
@@ -519,9 +522,10 @@
       "dependencias": [
         "T-11"
       ],
-      "estado": "pendiente",
-      "notas": "Entregable académico, plan.md sección 6.0",
-      "creada": "2026-11-07"
+      "estado": "hecha",
+      "notas": "Entregable académico, plan.md sección 6.0\n[2026-11-12 claude] Evaluacion del generador en src/domain/itinerario/instancias/: objetivo.ts (funcion objetivo y verificador de restricciones), fuerza-bruta.ts (optimo exacto <=8), casos.ts (24 instancias), evaluar.ts, informe.ts + scripts/evaluar-generador.ts (npm run evaluar -> INFORME.md). 0 violaciones en 24 instancias; 12/14 en el optimo; generacion max 0.43 ms (<500 ms); cobertura domain/itinerario 95.65% (dep nueva @vitest/coverage-v8). Detecto y corrigio un bug de la busqueda local (no respetaba la jornada del dia destino). Cierra los 3 criterios pendientes de la fase (b). Commit aa7e28d.",
+      "creada": "2026-11-07",
+      "terminada": "2026-11-12"
     },
     {
       "id": "T-28",
@@ -545,11 +549,12 @@
       "grupo": "paralelo",
       "responsable": "usuario",
       "prioridad": "P2",
-      "notas": "No se pudo verificar en la sesión del 2026-11-07 (se trabajó desde Kiro)\n[2026-11-09 claude] El usuario decidio dejarla para mas adelante (2026-11-09)",
-      "estado": "pendiente",
+      "notas": "No se pudo verificar en la sesión del 2026-11-07 (se trabajó desde Kiro)\n[2026-11-09 claude] El usuario decidio dejarla para mas adelante (2026-11-09)\n[2026-11-12 claude] El usuario (2026-11-12) la da por comprobada: se ha trabajado correctamente con la skill orquestador-proyecto (RETOMAR/CIERRE) y las pautas de CLAUDE.md en estas sesiones, evidencia equivalente a la verificacion que pedia la tarea.",
+      "estado": "hecha",
       "dependencias": [],
       "orden": 6,
-      "creada": "2026-11-07"
+      "creada": "2026-11-07",
+      "terminada": "2026-11-12"
     },
     {
       "id": "T-30",
@@ -561,10 +566,11 @@
       "dependencias": [
         "T-08"
       ],
-      "notas": "Ultimo criterio de aceptacion de la fase (a) sin verificar. Probar que anon/authenticated no pueden INSERT/UPDATE/DELETE en el catalogo (atracciones y demas tablas), desde el SQL Editor de Supabase con la anon key o con una prueba de integracion. La migracion T-07 ya revoca esos permisos; falta la evidencia.",
-      "estado": "pendiente",
+      "notas": "Ultimo criterio de aceptacion de la fase (a) sin verificar. Probar que anon/authenticated no pueden INSERT/UPDATE/DELETE en el catalogo (atracciones y demas tablas), desde el SQL Editor de Supabase con la anon key o con una prueba de integracion. La migracion T-07 ya revoca esos permisos; falta la evidencia.\n[2026-11-12 claude] Prueba de integracion RLS en src/services/rls-catalogo.int.test.ts: la clave anon no puede INSERT/UPDATE/DELETE en atracciones (RLS), la lectura si; se salta en CI sin .env. 4 tests verdes contra Supabase real. Cierra el ultimo criterio de la fase (a). Commit 4e90302.",
+      "estado": "hecha",
       "orden": 7,
-      "creada": "2026-11-10"
+      "creada": "2026-11-10",
+      "terminada": "2026-11-12"
     }
   ],
   "riesgos": [
@@ -1044,6 +1050,90 @@
       "op": "nota",
       "id": "T-16",
       "detalle": "T-16 terminada; cierra la fase (c). Dominio puro src/domain/presupuesto/ahorro.ts: calcularAhorro implementa plan.md 6.2 modo sonado (periodos = semanas o meses completos entre hoy y fecha_inicio; cuota = max(0, ceil((meta - ahorrado) / max(1, periodos)))), con estados activa/cumplida (ahorrado >= meta)/vencida (fecha_inicio <= hoy), sin dividir por cero ni cuota negativa; no lee el reloj (recibe hoy). totalAportado suma aportes. Helpers de fechas nuevos en itinerario/fechas.ts: semanasEntre, mesesEntre. Persistencia: services/metas-ahorro.ts (guardar/leer meta con upsert una por viaje; listar/registrar aportes) sobre las tablas metas_ahorro y aportes_ahorro de T-12 con RLS; hooks use-metas-ahorro.ts (TanStack Query). UI PanelMetaAhorro.tsx montada en el detalle de Mis viajes (necesita viaje_id): formulario de meta con objetivo prellenado al total y frecuencia, barra de progreso accesible, cuota sugerida, registro de aportes y estados cumplida/vencida. Pruebas ahorro.test.ts (10): cuota mensual y semanal, la cuota baja al aportar, nunca negativa, sin dividir por cero con menos de un periodo, meta cumplida, vencida (pasada y hoy), progreso acotado. tsc 0, lint 0, format limpio, build ok, 84/84 pruebas. El usuario dio el aval del funcionamiento en el navegador."
+    },
+    {
+      "fecha": "2026-11-12T11:47:36",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-30",
+      "detalle": "estado: 'pendiente' -> 'hecha'"
+    },
+    {
+      "fecha": "2026-11-12T11:47:36",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-30",
+      "detalle": "Prueba de integracion RLS en src/services/rls-catalogo.int.test.ts: la clave anon no puede INSERT/UPDATE/DELETE en atracciones (RLS), la lectura si; se salta en CI sin .env. 4 tests verdes contra Supabase real. Cierra el ultimo criterio de la fase (a). Commit 4e90302."
+    },
+    {
+      "fecha": "2026-11-12T11:47:36",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-27",
+      "detalle": "estado: 'pendiente' -> 'hecha'"
+    },
+    {
+      "fecha": "2026-11-12T11:47:36",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-27",
+      "detalle": "Evaluacion del generador en src/domain/itinerario/instancias/: objetivo.ts (funcion objetivo y verificador de restricciones), fuerza-bruta.ts (optimo exacto <=8), casos.ts (24 instancias), evaluar.ts, informe.ts + scripts/evaluar-generador.ts (npm run evaluar -> INFORME.md). 0 violaciones en 24 instancias; 12/14 en el optimo; generacion max 0.43 ms (<500 ms); cobertura domain/itinerario 95.65% (dep nueva @vitest/coverage-v8). Detecto y corrigio un bug de la busqueda local (no respetaba la jornada del dia destino). Cierra los 3 criterios pendientes de la fase (b). Commit aa7e28d."
+    },
+    {
+      "fecha": "2026-11-12T11:47:36",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-17",
+      "detalle": "estado: 'pendiente' -> 'hecha'"
+    },
+    {
+      "fecha": "2026-11-12T11:47:36",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-17",
+      "detalle": "Servicio Open-Meteo src/services/clima.ts con Zod y resultado tipado ok/no-ok, varios lugares en una llamada, respaldo a clima_mensual. Dominio puro src/domain/clima/ (clasifica dias lluviosos por pronostico o promedio, fuente por horizonte 1-7/8-16/>16; umbrales config). Hooks use-clima.ts con cache de 3 h. Pruebas de dominio y de servicio (fetch inyectado). Commit 7879a9c."
+    },
+    {
+      "fecha": "2026-11-12T11:47:36",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-25",
+      "detalle": "estado: 'pendiente' -> 'hecha'"
+    },
+    {
+      "fecha": "2026-11-12T11:47:36",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-25",
+      "detalle": "scripts/generar-clima-mensual.ts reanudable y respetuoso de la cuota (archive API de Open-Meteo): una peticion por municipio, pausa configurable, progreso guardado, salta los ya hechos (supero 2 veces 429 y 2 fallos de red). Genera supabase/seed/datos/clima.ts con 636 filas (53x12) de 5 anios. Cargado en Supabase (npm run seed, con autorizacion del usuario) y verificado con la clave anon. npm run clima:generar. Commit c1b148d."
+    },
+    {
+      "fecha": "2026-11-12T11:47:36",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-18",
+      "detalle": "estado: 'pendiente' -> 'hecha'"
+    },
+    {
+      "fecha": "2026-11-12T11:47:36",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-18",
+      "detalle": "Clima en el planificador + paso 9 del generador. Dominio reorganizarPorClima (reutiliza buscarLocal: reproyecta lluvia desde climaPorDia, mueve actividades al aire libre de dias lluviosos a secos con la misma base, sin tocar fijados, respeta jornada, conserva costos, determinista, reporta cambios para vista previa) y armarClimaViaje. obtenerClimaMensualVarios + useClimaMensualVarios + hook compuesto useClimaViaje. UI: indicador de clima por dia (probabilidad, fuente, temperatura) en VistaItinerario; PanelClima con atribucion Open-Meteo, aviso sin-red y boton Reorganizar por clima con vista previa (aplicar/descartar). Pruebas de dominio nuevas. Cierra la fase (d). El usuario verifico en el navegador. Commit 18b8954."
+    },
+    {
+      "fecha": "2026-11-12T11:49:55",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-29",
+      "detalle": "estado: 'pendiente' -> 'hecha'"
+    },
+    {
+      "fecha": "2026-11-12T11:49:55",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-29",
+      "detalle": "El usuario (2026-11-12) la da por comprobada: se ha trabajado correctamente con la skill orquestador-proyecto (RETOMAR/CIERRE) y las pautas de CLAUDE.md en estas sesiones, evidencia equivalente a la verificacion que pedia la tarea."
     }
   ]
 }

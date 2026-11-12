@@ -151,6 +151,36 @@ Presupuesto (2026-11-11, ver `HISTORIA.md`):
   sobre la meta, los aportes y la fecha de hoy. `fecha_inicio == hoy` cuenta como
   meta vencida. Los "meses" de la cuota son meses de calendario.
 
+Clima (2026-11-12, fase d, ver `HISTORIA.md`):
+- El clima entra como `ClimaDia[]` al generador. El dominio puro
+  `src/domain/clima/` clasifica cada día como lluvioso o seco (prob ≥ 60 % o
+  precip ≥ 5 mm; umbrales configurables) y elige la fuente por **horizonte
+  dinámico respecto a hoy**: días 1-7 pronóstico, 8-16 tendencia, >16 promedio
+  histórico. No se inventa pronóstico más allá de 16 días (límite de Open-Meteo);
+  para fechas lejanas se usa el promedio con aviso explícito.
+- Servicio `src/services/clima.ts` (Open-Meteo forecast + archive, Zod, resultado
+  tipado ok/no-ok, varios lugares en una llamada, respaldo a `clima_mensual`).
+  Hooks `src/features/clima/` con caché de 3 h (`usePronostico`,
+  `useClimaMensual(Varios)`, `useClimaViaje`). Atribución "Datos del clima:
+  Open-Meteo" visible.
+- `clima_mensual` se generó con `scripts/generar-clima-mensual.ts` (reanudable,
+  respeta la cuota; `npm run clima:generar`): 636 filas (53×12) de 5 años de la
+  API histórica, en `supabase/seed/datos/clima.ts`, cargadas en Supabase.
+- Reorganización por clima (paso 9): `reorganizarPorClima` reutiliza la búsqueda
+  local; mueve actividades al aire libre de días lluviosos a días secos con la
+  misma base, sin tocar fijados, respetando la jornada, conservando el costo
+  total, determinista, y devuelve un candidato para **vista previa** antes de
+  aplicar. En la UI: indicador de clima por día y `PanelClima` con el botón
+  "Reorganizar por clima" (aplicar/descartar) y aviso de respaldo sin red.
+
+Evaluación del generador (2026-11-12, T-27, ver `HISTORIA.md`):
+- El entregable académico vive en `src/domain/itinerario/instancias/`: función
+  objetivo y verificador de restricciones (`objetivo.ts`), óptimo por fuerza
+  bruta ≤ 8 (`fuerza-bruta.ts`), 24 instancias (`casos.ts`), evaluador e informe
+  (`npm run evaluar` → `INFORME.md`). Se reporta "instancias en el óptimo"
+  (12/14) y diferencia absoluta, no un promedio de % (inestable cuando el óptimo
+  es pequeño). Dependencia `@vitest/coverage-v8` para medir cobertura.
+
 ## Decisiones reemplazadas
 - Internacionalización con react-i18next: reemplazada por el archivo tipado
   `src/i18n/es-CO.ts` (2026-11-07, segunda ronda).
@@ -172,13 +202,42 @@ Presupuesto (2026-11-11, ver `HISTORIA.md`):
   se difiere a futuras entregas por alcance (2026-11-11, idea I-05).
 
 ## Estado actual
-- **Fase 0 cerrada** (7/8 tareas; T-29 es una verificación opcional que el
-  usuario pospuso). Los 5 criterios de aceptación están verificados.
-- Tablero en revisión 24: 18/30 tareas hechas, 6 riesgos activos y 5 ideas. La
-  fase (a) va 5/5 tareas pero sigue formalmente abierta por el criterio RLS sin
-  evidencia (T-30). La **fase (b) está completa en tareas (5/5)** (quedan por
-  medir cobertura y tiempo de generación). La **fase (c) está cerrada (2/2
-  tareas)**: T-15 y T-16, con los 5 criterios verificados.
+- Tablero en **revisión 26: 24/30 tareas (80 %)**, 6 riesgos activos y 5 ideas.
+- **Fases cerradas: 0, (a), (b), (c) y (d).** Quedan abiertas la fase (e)
+  (insignias y perfil, 0/3) y la fase final (pulido, 0/3). Próxima tarea de la
+  ruta crítica: **T-19**.
+- **Fase (a) cerrada (6/6):** el último criterio ("un INSERT con la clave pública
+  sobre atracciones falla") lo verificó **T-30** (`src/services/rls-catalogo.int.test.ts`,
+  prueba de integración contra Supabase real, se salta en CI sin `.env`).
+- **Fase (b) cerrada (7/7):** **T-27** cerró los tres criterios que faltaban:
+  0 violaciones en 24 instancias, generación < 500 ms (máx 0.43 ms) y cobertura
+  ≥ 80 % en `domain/itinerario` (95.65 %). La evaluación detectó y se corrigió un
+  bug de la búsqueda local (no respetaba la jornada del día destino).
+- **Fase (d) cerrada (3/3 tareas, 6/6 criterios):** T-17 (servicio Open-Meteo),
+  T-25 (seed `clima_mensual`, 636 filas cargadas en Supabase) y T-18 (indicador de
+  clima por día + "Reorganizar por clima" con vista previa). El usuario verificó
+  el funcionamiento en el navegador.
+- **Fase (c) cerrada (2/2):** T-15 (presupuesto y ajuste a monto fijo) y T-16
+  (modo soñado). **Fase 0 cerrada (8/8):** T-29 verificada (se trabajó con las
+  skills RETOMAR/CIERRE y las pautas de CLAUDE.md en estas sesiones).
+- Verificación global al cerrar: tsc 0, lint 0, format limpio, **127/127 pruebas**,
+  build ok con PWA.
+- `dev` está **6 commits por delante de `origin/dev`** sin publicar: `4e90302`
+  (T-30), `aa7e28d` (T-27), `7879a9c` (T-17), `c1b148d` (T-25), `18b8954` (T-18)
+  y el commit de memoria de este cierre.
+- Entorno: hay `python`/`python3`; el agente no puede arrancar `npm run dev` ni
+  ver el navegador (las pruebas visuales las hace el usuario) y no hay CLI de
+  Supabase/psql/docker, así que las migraciones las aplica el usuario (la carga
+  del seed `npm run seed` la corrió el agente con autorización del usuario). En
+  PowerShell 5.1, `tablero.py cambio` recibe cortado un JSON con comillas: los
+  cambios se aplican con un runner Python que llama a `cambio()` leyendo el JSON
+  de un archivo (ya borrado tras usarlo).
+- El issue de CRLF en archivos preexistentes quedó resuelto de hecho (todo con
+  LF); un `.gitattributes` sigue siendo mejora opcional.
+
+<!-- Histórico detallado por tarea en HISTORIA.md. -->
+
+## Historial de tareas (resumen)
 - **T-16 hecha (2026-11-11): modo viaje soñado (cierra la fase c).**
   - Dominio puro `src/domain/presupuesto/ahorro.ts`: `calcularAhorro` (periodos =
     semanas/meses completos entre hoy y `fecha_inicio`; cuota = `max(0,
@@ -299,17 +358,16 @@ Presupuesto (2026-11-11, ver `HISTORIA.md`):
   pendiente: `.gitattributes` con `* text=auto eol=lf`.
 
 ## Próximos pasos
-1. **T-17 (siguiente en la ruta crítica):** servicio Open-Meteo con Zod, caché de
-   3 h y respaldo a promedios. Depende de T-01 (hecha).
-2. En paralelo: T-25 (clima mensual), T-27 (evaluación del generador) y T-30
-   (criterio RLS de la fase a).
-3. Evaluar las ideas I-04 (recomendar municipios cuando el usuario no los conoce)
-   e I-05 (guardado local sin cuenta, diferido): decidir si entran en una entrega
-   futura.
-4. Criterios de F-b pendientes de medir: cobertura >= 80 % en domain/itinerario
-   (falta el provider `@vitest/coverage-v8`) y generación < 500 ms en móvil.
+1. **T-19 (siguiente en la ruta crítica):** migraciones de `checkins` e
+   `insignias_usuario`, RPC `registrar_checkin` (`SECURITY DEFINER`) y trigger de
+   insignias, con pruebas RLS (plan.md 5.2, 5.3, 6.4). Depende de T-12 y T-08
+   (hechas). Abre la fase (e).
+2. Luego T-20 (consentimiento + check-in por geo/manual, depende de T-19 y T-26)
+   y T-21 (perfil con mapa, progreso y eliminar cuenta).
+3. En paralelo queda T-28 (accesibilidad y rendimiento, depende de T-21).
+4. Cierre del proyecto: T-22 (e2e Playwright) y T-23 (despliegue, usuario).
 5. Usuario (cuando quiera): crear `SUPABASE_URL` y `SUPABASE_ANON_KEY` en GitHub
-   para la consulta diaria contra la pausa.
+   para la consulta diaria contra la pausa; publicar los 6 commits con `git push`.
 6. Antes de la sustentación: reemplazar los iconos placeholder de la PWA por el
    diseño real (fase final); revisar costos/tarifas/tiempos del seed (R-04) y el
    acceso al Nevado del Ruiz (R-03).
