@@ -813,3 +813,33 @@
   crítica es T-17 (servicio Open-Meteo con Zod, caché de 3 h y respaldo a
   promedios). En paralelo siguen T-25, T-27 y T-30.
 - Origen: sesión de Kiro con el usuario
+
+#### Cierre de sesión 2026-11-11
+- Sin decisiones externas que registrar (confirmado por el usuario).
+- Qué se hizo en la sesión (sobre el cierre de T-13, `14dd351`):
+  - **T-14 cerrada** con alcance ajustado: guardar/listar con cuenta (pieza A) y
+    PWA offline (pieza C). Se retiró el guardado sin cuenta en IndexedDB (pieza B),
+    diferido a futuras entregas por alcance (`plan.md` 1.3 y 2.2; idea I-05). Bug
+    del itinerario que se perdía al iniciar sesión resuelto con `viaje-pendiente.ts`
+    (sessionStorage). Commits `d18985b`, `156337e`.
+  - **T-15 cerrada:** presupuesto, desglose (6.2) y ajuste a monto fijo (paso 8).
+    Commits `cb81d55`, `c39c233`.
+  - **T-16 cerrada:** modo viaje soñado (meta de ahorro, aportes, cuota y barra de
+    progreso). **Cierra la fase (c).** Commits `5cd9fb5`, `8d7ff38`.
+- Estado al cerrar: tablero revisión 24, **18/30 tareas (60 %)**. Fase 0 cerrada;
+  fase (a) 5/5 tareas (abierta solo por T-30, criterio RLS); fase (b) 5/5 tareas
+  (faltan métricas de cobertura y tiempo); **fase (c) cerrada (2/2)**. Verificación
+  global: tsc 0, lint 0, format limpio, 84/84 pruebas, build ok con PWA. Árbol
+  limpio. `dev` está 4 commits por delante de `origin/dev` sin publicar (T-15 y
+  T-16; los de T-14 ya estaban en el remoto).
+- Próxima tarea: **T-17** (servicio Open-Meteo con Zod, caché de 3 h y respaldo a
+  promedios), ruta crítica, abre el bloque de clima. Sugerencia para la próxima
+  sesión: avanzar T-17 y T-25 (clima mensual) juntas, porque ambas tocan
+  Open-Meteo. En paralelo siguen T-27 (evaluación del generador) y T-30 (RLS).
+- Pendientes del usuario (sin bloquear): crear `SUPABASE_URL` y
+  `SUPABASE_ANON_KEY` en GitHub (consulta diaria anti-pausa); decidir si I-04
+  (recomendar municipios) e I-05 (guardado sin cuenta) entran en una entrega
+  futura; opcional: publicar los 4 commits con `git push`. Antes de la
+  sustentación: iconos reales de la PWA, revisar costos/tarifas del seed (R-04) y
+  el acceso al Nevado del Ruiz (R-03).
+- Origen: sesión de Kiro con el usuario
