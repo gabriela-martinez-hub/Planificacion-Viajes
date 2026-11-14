@@ -251,13 +251,16 @@ Pruebas e2e, CI y despliegue (2026-11-12, T-22 y T-23, ver `HISTORIA.md`):
   `test.env` (config.ts valida y lanza al importar; CI corre sin `.env`). La
   prueba de integración real (`rls-catalogo.int.test.ts`) descarta el host de
   pruebas y se sigue saltando en CI.
-- **Despliegue (T-23): Vercel.** `vercel.json` fija
+- **Despliegue (T-23): Vercel, EN PRODUCCIÓN.** `vercel.json` fija
   `Referrer-Policy: strict-origin-when-cross-origin` (requisito de OSM, 6.5), el
   SPA fallback (rewrite de rutas sin extensión a `index.html`) y `no-cache` para
-  `sw.js`. El despliegue real lo hace el **usuario** (requiere sus cuentas). Si la
-  integración Git no lista el repo (el usuario es solo collaborator de un repo
-  ajeno), la alternativa es la Vercel CLI. Migrar a Netlify no resuelve el bloqueo
-  (misma dependencia de la GitHub App del dueño).
+  `sw.js`. La app está desplegada en **`https://planificacionviajes-jade.vercel.app/`**
+  (2026-11-14). El usuario resultó ser **admin del repo** en GitHub, así que lo
+  importó en Vercel y desplegó por la integración Git estándar (no hizo falta la
+  Vercel CLI); el bloqueo de permisos de notas anteriores no era real. Verificado
+  en producción por el usuario: catálogo carga, `Referrer-Policy` correcta,
+  recarga en `/planificar` sin 404, mapa OSM carga, login con Google funciona,
+  Supabase Active.
 
 ## Decisiones reemplazadas
 - Internacionalización con react-i18next: reemplazada por el archivo tipado
@@ -288,40 +291,41 @@ Pruebas e2e, CI y despliegue (2026-11-12, T-22 y T-23, ver `HISTORIA.md`):
   cambio` recibe el JSON completo y los finales de línea son LF.
 
 ## Estado actual
-- Tablero en **revisión 29: 29/30 tareas (97 %)**, con R-03 y R-04 ya
-  **mitigados** (verificados por el usuario); riesgos activos: R-01, R-02, R-05,
-  R-06. 5 ideas.
-- **Fases cerradas: 0, (a), (b), (c), (d) y (e).** Queda abierta solo la **fase
-  final (pulido), 2/3**. Próxima (y única) tarea de la ruta crítica: **T-23**
-  (despliegue, responsable **usuario**).
-- **Fase final: T-28 y T-22 hechas (2/3).** Falta **T-23**: desplegar con
-  `Referrer-Policy` correcta y verificar que Supabase no esté pausado antes de la
-  sustentación.
+- **Proyecto completo.** Tablero en **revisión 30: 30/30 tareas (100 %)**. Todas
+  las fases cerradas: 0, (a), (b), (c), (d), (e) y la **fase final (pulido), 3/3**.
+  Sin tareas abiertas, sin bloqueadas, sin alertas.
+- R-03 y R-04 **mitigados** (verificados por el usuario). Riesgos que siguen
+  activos de cara a la sustentación: R-01 (pausa de Supabase, mitigado por el cron
+  diario y verificado como Active el 2026-11-14), R-02, R-05 (pantalla de
+  consentimiento de Google en modo Testing: hay que agregar a los evaluadores como
+  usuarios de prueba o publicar la pantalla) y R-06. 5 ideas, todas como trabajo
+  futuro.
+- **Fase final cerrada (T-28, T-22 y T-23):**
+  - **T-28 (accesibilidad y pulido) hecha** (2026-11-12).
   - **T-22 (e2e Playwright) hecha:** un único flujo en `e2e/flujo-principal.spec.ts`
     con toda la red interceptada (Supabase y Open-Meteo) y sesión sembrada en
     `localStorage`; pasa en local y en modo CI.
-  - **T-23 NO se pudo ejecutar:** la config de Vercel está lista y commiteada
-    (`vercel.json`), pero el despliegue real está **bloqueado por permisos**: el
-    repositorio es de otra cuenta/organización y el usuario es solo *collaborator*,
-    así que la GitHub App de Vercel (y de Netlify) no lista el repo hasta que el
-    dueño la autorice o le den rol admin. Alternativa sin GitHub: Vercel CLI
-    (`vercel` / `vercel --prod`). Pasos y criterios de cierre completos en la
-    **nota de T-23** del tablero.
+  - **T-23 (despliegue) hecha y verificada en producción** (2026-11-14). La app
+    está en **`https://planificacionviajes-jade.vercel.app/`**. El usuario (admin
+    del repo) la importó en Vercel y desplegó por la integración Git; verificó los
+    seis criterios: catálogo carga, `Referrer-Policy: strict-origin-when-cross-origin`,
+    recarga en `/planificar` sin 404, mapa OSM carga, login con Google funciona y
+    Supabase Active.
 - **Arreglo de CI aplicado:** `vite.config.ts` provee `VITE_SUPABASE_*` ficticias
   en `test.env` para que las pruebas que importan el cliente de Supabase no
   fallen en CI (que corre sin `.env`); la prueba de integración real descarta ese
   host de pruebas y se sigue saltando en CI.
-- Verificación global al cerrar: lint 0 (con jsx-a11y), format limpio,
-  **152/152 pruebas unitarias**, **e2e 1/1** (local y modo CI), build ok con PWA.
-  `vercel.json` validado como JSON.
-- Al terminar la sesión, `dev` tiene commits sin publicar: `ab65f1d` (fix CI),
-  `5345888` (R-03), `08bc429` (T-22), `3489c1b` (config de despliegue T-23) y el
-  commit de memoria de este cierre. (El usuario suele publicar entre sesiones.)
-- Entorno: **Linux (Pop!_OS 24.04), zsh.** Hay Node, `python3`, **Supabase CLI
-  v2.122.1 y `psql` 16**, y **Playwright 1.65 con chromium**; el agente aplica
-  migraciones y pruebas SQL vía `--db-url` (contraseña en `.env`) y corre la e2e.
-  El agente no arranca `npm run dev` ni ve el navegador: las pruebas visuales, la
-  eliminación de cuenta real y **el despliegue** los hace el usuario.
+- Verificación global en el último cierre de código: lint 0 (con jsx-a11y),
+  format limpio, **152/152 pruebas unitarias**, **e2e 1/1** (local y modo CI),
+  build ok con PWA.
+- Entorno de esta sesión: **Windows con PowerShell** (intérprete `python`/`py`,
+  Python 3.13.5; `python3` no está). El workspace vive en una ruta de OneDrive.
+  Git marca `plan.md` como modificado por una diferencia solo de fin de línea
+  (el diff sale vacío); no es un cambio real. `tablero.py cambio` no recibe el
+  JSON inline en PowerShell (elimina las comillas al invocar procesos nativos):
+  el cambio se aplicó llamando a la función `cambio()` del script desde Python con
+  el JSON en un archivo temporal (ya eliminado). Las pruebas visuales y el
+  despliegue los hace el usuario.
 
 <!-- Histórico detallado por tarea en HISTORIA.md. -->
 
@@ -446,22 +450,19 @@ Pruebas e2e, CI y despliegue (2026-11-12, T-22 y T-23, ver `HISTORIA.md`):
   pendiente: `.gitattributes` con `* text=auto eol=lf`.
 
 ## Próximos pasos
-1. **T-23 (siguiente y única en la ruta crítica; responsable: usuario) —
-   DESPLIEGUE EN VERCEL.** La config ya está lista (`vercel.json`: Referrer-Policy,
-   SPA fallback, no-cache de `sw.js`). **Bloqueo actual:** el repo es de otra
-   cuenta/organización y el usuario es solo *collaborator*, así que Vercel/Netlify
-   no listan el repo hasta que el dueño autorice su GitHub App o le den rol admin.
-   Caminos: (a) que el dueño autorice la app o cree el proyecto y agregue al
-   usuario como miembro; (b) **Vercel CLI** sin GitHub (`npm i -g vercel`,
-   `vercel`, `vercel --prod`). Pasos detallados y criterios de cierre en la **nota
-   de T-23** del tablero. **Al RETOMAR, indicar que T-23 es lo siguiente; cuando
-   el usuario pida proceder, listar de una los pasos y los criterios de cierre.**
-2. **Verificación del usuario en el navegador ya hecha** (2026-11-12): check-in
-   geo en Firefox y eliminar cuenta real. No queda pendiente.
-3. Usuario (cuando quiera): publicar los commits con `git push` (hay varios sin
-   publicar en `dev`).
-4. Antes de la sustentación: reemplazar los iconos placeholder de la PWA por el
-   diseño real.
+El MVP está **completo (30/30)** y **en producción**. No quedan tareas en el
+tablero. Pendientes de cara a la **sustentación**:
+1. **R-05 (responsable: usuario):** confirmar que los evaluadores pueden iniciar
+   sesión con Google. La pantalla de consentimiento está en modo Testing, así que
+   hay que **agregarlos como usuarios de prueba** en Google Cloud o **publicar la
+   pantalla**. Es lo único que puede impedir que un tercero use la app.
+2. **Antes de la sustentación:** reemplazar los iconos placeholder de la PWA por
+   el diseño real.
+3. **Publicar los commits** con `git push` si `dev` tiene algo sin publicar (el
+   despliegue de Vercel ya sigue a la rama conectada).
+4. **Trabajo futuro (ideas, no parte de esta entrega):** I-01 a I-05. Destacan
+   I-03 (tarifas por edad/categoría), I-04 (modo "no conozco los municipios") e
+   I-05 (guardado local sin cuenta).
 
 ## Pendientes de decisión del usuario
 - **Resuelto:** las ideas I-03, I-04 e I-05 quedan como **trabajo futuro**, fuera

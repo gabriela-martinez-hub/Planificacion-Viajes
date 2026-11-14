@@ -1,7 +1,7 @@
 {
   "proyecto": "Planificador de viajes del Eje Cafetero",
-  "revision": 29,
-  "actualizado": "2026-11-12T17:11:30",
+  "revision": 30,
+  "actualizado": "2026-11-14T08:52:23",
   "responsables": [
     "usuario",
     "claude",
@@ -464,9 +464,10 @@
       "dependencias": [
         "T-22"
       ],
-      "estado": "pendiente",
-      "notas": "[2026-11-12 claude] BLOQUEADA DE HECHO por permisos: el repo es de otra cuenta/organizacion y el usuario es solo collaborator; la GitHub App de Vercel (y de Netlify) no lista el repo hasta que el dueno la autorice o le den rol admin. Config lista y commiteada (vercel.json: Referrer-Policy strict-origin-when-cross-origin, SPA fallback, no-cache de sw.js; commit 3489c1b). Alternativa sin GitHub: Vercel CLI (vercel / vercel --prod) subiendo el build local. PASOS para desplegar (Vercel): 1) git push origin dev. 2) Importar el repo en Vercel (o usar la CLI); framework Vite, build npm run build, salida dist. 3) Variables VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY (clave anon). 4) En Supabase Auth URL Configuration: Site URL y Redirect URLs con la URL de Vercel (dejar localhost). 5) En Google Cloud: agregar la URL a origenes JS autorizados; el callback de Supabase no cambia (R-05: usuarios de prueba o publicar la pantalla). 6) Confirmar Supabase Active (no pausado) y el cron Actividad de Supabase en verde. CRITERIOS para dar por finalizada T-23: (a) URL publica carga y redirige a /explorar leyendo el catalogo; (b) curl -sI <url> | grep referrer-policy devuelve strict-origin-when-cross-origin; (c) recargar en /planificar NO da 404 (SPA fallback); (d) el mapa (teselas OSM) carga en produccion; (e) login con Google funciona en produccion; (f) Supabase Active. El usuario debe pasar la URL y la salida del curl como evidencia.",
-      "creada": "2026-11-07"
+      "estado": "hecha",
+      "notas": "[2026-11-12 claude] BLOQUEADA DE HECHO por permisos: el repo es de otra cuenta/organizacion y el usuario es solo collaborator; la GitHub App de Vercel (y de Netlify) no lista el repo hasta que el dueno la autorice o le den rol admin. Config lista y commiteada (vercel.json: Referrer-Policy strict-origin-when-cross-origin, SPA fallback, no-cache de sw.js; commit 3489c1b). Alternativa sin GitHub: Vercel CLI (vercel / vercel --prod) subiendo el build local. PASOS para desplegar (Vercel): 1) git push origin dev. 2) Importar el repo en Vercel (o usar la CLI); framework Vite, build npm run build, salida dist. 3) Variables VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY (clave anon). 4) En Supabase Auth URL Configuration: Site URL y Redirect URLs con la URL de Vercel (dejar localhost). 5) En Google Cloud: agregar la URL a origenes JS autorizados; el callback de Supabase no cambia (R-05: usuarios de prueba o publicar la pantalla). 6) Confirmar Supabase Active (no pausado) y el cron Actividad de Supabase en verde. CRITERIOS para dar por finalizada T-23: (a) URL publica carga y redirige a /explorar leyendo el catalogo; (b) curl -sI <url> | grep referrer-policy devuelve strict-origin-when-cross-origin; (c) recargar en /planificar NO da 404 (SPA fallback); (d) el mapa (teselas OSM) carga en produccion; (e) login con Google funciona en produccion; (f) Supabase Active. El usuario debe pasar la URL y la salida del curl como evidencia.\n[2026-11-14 claude] DESPLEGADA Y VERIFICADA EN PRODUCCION por el usuario el 2026-11-14. El usuario resulto ser admin del repo en GitHub, asi que el bloqueo de permisos de la nota anterior quedo superado: importo el repo en Vercel y desplego normal (sin Vercel CLI). URL publica: https://planificacionviajes-jade.vercel.app/ (ruta de prueba /planificar). Criterios de cierre de T-23, todos verificados por el usuario: (a) la URL carga el catalogo; (b) la cabecera Referrer-Policy devuelve strict-origin-when-cross-origin; (c) recargar en /planificar carga sin 404 (SPA fallback ok); (d) el mapa (teselas OSM) carga en produccion; (e) login con Google funciona en produccion; (f) Supabase Active (no pausado). Config commiteada en 3489c1b (vercel.json). Con esto cierra la fase final (pulido) 3/3 y el proyecto queda 30/30.",
+      "creada": "2026-11-07",
+      "terminada": "2026-11-14"
     },
     {
       "id": "T-24",
@@ -1244,6 +1245,20 @@
       "op": "nota",
       "id": "T-23",
       "detalle": "BLOQUEADA DE HECHO por permisos: el repo es de otra cuenta/organizacion y el usuario es solo collaborator; la GitHub App de Vercel (y de Netlify) no lista el repo hasta que el dueno la autorice o le den rol admin. Config lista y commiteada (vercel.json: Referrer-Policy strict-origin-when-cross-origin, SPA fallback, no-cache de sw.js; commit 3489c1b). Alternativa sin GitHub: Vercel CLI (vercel / vercel --prod) subiendo el build local. PASOS para desplegar (Vercel): 1) git push origin dev. 2) Importar el repo en Vercel (o usar la CLI); framework Vite, build npm run build, salida dist. 3) Variables VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY (clave anon). 4) En Supabase Auth URL Configuration: Site URL y Redirect URLs con la URL de Vercel (dejar localhost). 5) En Google Cloud: agregar la URL a origenes JS autorizados; el callback de Supabase no cambia (R-05: usuarios de prueba o publicar la pantalla). 6) Confirmar Supabase Active (no pausado) y el cron Actividad de Supabase en verde. CRITERIOS para dar por finalizada T-23: (a) URL publica carga y redirige a /explorar leyendo el catalogo; (b) curl -sI <url> | grep referrer-policy devuelve strict-origin-when-cross-origin; (c) recargar en /planificar NO da 404 (SPA fallback); (d) el mapa (teselas OSM) carga en produccion; (e) login con Google funciona en produccion; (f) Supabase Active. El usuario debe pasar la URL y la salida del curl como evidencia."
+    },
+    {
+      "fecha": "2026-11-14T08:52:23",
+      "por": "claude",
+      "op": "nota",
+      "id": "T-23",
+      "detalle": "DESPLEGADA Y VERIFICADA EN PRODUCCION por el usuario el 2026-11-14. El usuario resulto ser admin del repo en GitHub, asi que el bloqueo de permisos de la nota anterior quedo superado: importo el repo en Vercel y desplego normal (sin Vercel CLI). URL publica: https://planificacionviajes-jade.vercel.app/ (ruta de prueba /planificar). Criterios de cierre de T-23, todos verificados por el usuario: (a) la URL carga el catalogo; (b) la cabecera Referrer-Policy devuelve strict-origin-when-cross-origin; (c) recargar en /planificar carga sin 404 (SPA fallback ok); (d) el mapa (teselas OSM) carga en produccion; (e) login con Google funciona en produccion; (f) Supabase Active (no pausado). Config commiteada en 3489c1b (vercel.json). Con esto cierra la fase final (pulido) 3/3 y el proyecto queda 30/30."
+    },
+    {
+      "fecha": "2026-11-14T08:52:23",
+      "por": "claude",
+      "op": "campo",
+      "id": "T-23",
+      "detalle": "estado: 'pendiente' -> 'hecha'"
     }
   ]
 }

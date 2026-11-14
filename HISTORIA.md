@@ -1074,3 +1074,23 @@
   - "Despliegue con Referrer-Policy correcta y Supabase activo antes de la sustentación": **PENDIENTE** (T-23). La config (`vercel.json`) está lista y commiteada, pero el despliegue real no se pudo hacer por permisos de GitHub sobre el repo. Falta ejecutarlo y verificar en producción.
 - Cambios del tablero: T-22 pasa a hecha. R-03 y R-04 a `mitigado`. T-23 queda **pendiente** y es la próxima (y única) tarea de la ruta crítica; responsable: usuario. Nota en T-23 con el bloqueo de permisos y la vía CLI como alternativa. Revisión del tablero: 29/30 tareas.
 - Origen: sesión de Kiro con el usuario
+
+
+### 2026-11-14 — Fase final: despliegue en producción (T-23). Proyecto completo (30/30)
+
+- Cierre anterior: 1998b82 ("memoria: cierre de sesión 2026-11-12 (T-22 e2e, R-03/R-04 verificados, T-23 preparada)")
+- Commits: ninguno de código nuevo. El despliegue se hizo en Vercel sobre el commit `3489c1b` (config `vercel.json`, ya existente); solo entra el commit de memoria de este cierre.
+- Qué se hizo:
+  - **T-23 — despliegue en producción, hecho y verificado por el usuario.** El bloqueo de permisos registrado en el cierre anterior quedó superado: el usuario **es admin del repo en GitHub**, así que importó el repositorio en Vercel y desplegó de forma normal, sin necesidad de la Vercel CLI. La app está en producción en `https://planificacionviajes-jade.vercel.app/`.
+  - El usuario verificó en producción los seis criterios de cierre de T-23 (ver abajo).
+- Decisiones:
+  - El despliegue final es por la **integración Git de Vercel** (no por la CLI): al tener el usuario rol admin del repo, la GitHub App lista el repositorio y el flujo estándar funciona. La alternativa por CLI que se había dejado anotada no fue necesaria.
+- Hallazgos:
+  - El supuesto del cierre anterior ("el usuario es solo collaborator de un repo ajeno") era incorrecto: el usuario tiene rol admin, por lo que nunca hubo bloqueo real de permisos para Vercel.
+- Criterios de aceptación — **Fase final (pulido) CERRADA (3/3 tareas; los 3 criterios verificados). Con ella, el proyecto queda 30/30 (100 %):**
+  - "Accesibilidad revisada (contraste, foco, etiquetas)": **verificado** (T-28, cierre del 2026-11-12).
+  - "Prueba end-to-end en Playwright del flujo principal": **verificado** (T-22; `e2e/flujo-principal.spec.ts`, pasa en local y en modo CI).
+  - "Despliegue con Referrer-Policy correcta y Supabase activo antes de la sustentación": **verificado** (T-23). Evidencia del usuario en producción, URL `https://planificacionviajes-jade.vercel.app/`: (a) la URL carga el catálogo y la app; (b) `Referrer-Policy` responde `strict-origin-when-cross-origin`; (c) recargar en `/planificar` carga sin 404 (SPA fallback ok); (d) el mapa (teselas OSM) carga en producción; (e) el login con Google funciona en producción; (f) Supabase **Active** (no pausado).
+- Cambios del tablero: **T-23 pasa a hecha** con nota de la verificación en producción. Revisión 30, **30/30 tareas (100 %)**, fase final 3/3; sin tareas abiertas, sin bloqueadas, sin alertas. Sin tareas, riesgos ni ideas nuevos. Riesgos que siguen activos de cara a la sustentación: R-01 (pausa de Supabase; mitigado por el cron diario y verificado hoy como Active), R-02, R-05 (pantalla de consentimiento de Google en modo Testing: agregar evaluadores o publicar la pantalla), R-06.
+- Nota de entorno: esta sesión corrió en **Windows con PowerShell** (no en Linux/zsh, como decía `CONTEXTO.md` del cierre anterior). `tablero.py cambio` no recibe el JSON inline porque PowerShell elimina las comillas al invocar procesos nativos; se aplicó el cambio llamando a la función `cambio()` del script desde Python, leyendo el JSON de un archivo temporal (ya eliminado). El intérprete disponible es `python` / `py` (Python 3.13.5); `python3` no está.
+- Origen: sesión de Kiro con el usuario

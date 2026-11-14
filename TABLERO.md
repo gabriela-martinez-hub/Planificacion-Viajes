@@ -2,7 +2,7 @@
 
 > Vista generada desde `control/tablero.json` con `python3 .claude/skills/orquestador-proyecto/scripts/tablero.py render`. No se edita a mano.
 
-Revisión 29, actualizado 2026-11-12T17:11:30. Avance: 29/30 tareas (97 %).
+Revisión 30, actualizado 2026-11-14T08:52:23. Avance: 30/30 tareas (100 %).
 
 ## Avance por frente
 
@@ -14,11 +14,11 @@ Revisión 29, actualizado 2026-11-12T17:11:30. Avance: 29/30 tareas (97 %).
 | Fase (c): Presupuesto | 2 | 2 |
 | Fase (d): Clima | 3 | 3 |
 | Fase (e): Insignias y perfil | 3 | 3 |
-| Fase final: Pulido | 2 | 3 |
+| Fase final: Pulido | 3 | 3 |
 
 ## Próxima tarea
 
-**T-23** Despliegue con Referrer-Policy y verificación de que Supabase no está pausado antes de la sustentación (usuario)
+Ninguna disponible.
 
 ## Ruta crítica
 
@@ -46,7 +46,7 @@ Revisión 29, actualizado 2026-11-12T17:11:30. Avance: 29/30 tareas (97 %).
 | 20 | T-20 | ~~Consentimiento de datos, check-in por geolocalización o manual y botón desactivado sin conexión~~ | F-e | claude | P2 | hecha | T-19, T-26 |
 | 21 | T-21 | ~~Perfil: mapa de municipios desbloqueados, progreso por departamento y ruta, eliminar cuenta y datos~~ | F-e | claude | P3 | hecha | T-20, T-10 |
 | 22 | T-22 | ~~Prueba end-to-end en Playwright del flujo principal~~ | F-final | claude | P3 | hecha | T-21, T-18, T-16 |
-| 23 | T-23 | Despliegue con Referrer-Policy y verificación de que Supabase no está pausado antes de la sustentación | F-final | usuario | P3 | pendiente | T-22 |
+| 23 | T-23 | ~~Despliegue con Referrer-Policy y verificación de que Supabase no está pausado antes de la sustentación~~ | F-final | usuario | P3 | hecha | T-22 |
 
 ## En paralelo
 
@@ -89,6 +89,8 @@ Ninguna.
 
 | Fecha | Por | Operación | Id | Detalle |
 |---|---|---|---|---|
+| 2026-11-14T08:52:23 | claude | campo | T-23 | estado: 'pendiente' -> 'hecha' |
+| 2026-11-14T08:52:23 | claude | nota | T-23 | DESPLEGADA Y VERIFICADA EN PRODUCCION por el usuario el 2026-11-14. El usuario resulto ser admin del repo en GitHub, asi que el bloqueo de permisos de la nota anterior quedo superado: importo el repo en Vercel y desplego normal (sin Vercel CLI). URL publica: https://planificacionviajes-jade.vercel.app/ (ruta de prueba /planificar). Criterios de cierre de T-23, todos verificados por el usuario: (a) la URL carga el catalogo; (b) la cabecera Referrer-Policy devuelve strict-origin-when-cross-origin; (c) recargar en /planificar carga sin 404 (SPA fallback ok); (d) el mapa (teselas OSM) carga en produccion; (e) login con Google funciona en produccion; (f) Supabase Active (no pausado). Config commiteada en 3489c1b (vercel.json). Con esto cierra la fase final (pulido) 3/3 y el proyecto queda 30/30. |
 | 2026-11-12T17:11:30 | claude | nota | T-23 | BLOQUEADA DE HECHO por permisos: el repo es de otra cuenta/organizacion y el usuario es solo collaborator; la GitHub App de Vercel (y de Netlify) no lista el repo hasta que el dueno la autorice o le den rol admin. Config lista y commiteada (vercel.json: Referrer-Policy strict-origin-when-cross-origin, SPA fallback, no-cache de sw.js; commit 3489c1b). Alternativa sin GitHub: Vercel CLI (vercel / vercel --prod) subiendo el build local. PASOS para desplegar (Vercel): 1) git push origin dev. 2) Importar el repo en Vercel (o usar la CLI); framework Vite, build npm run build, salida dist. 3) Variables VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY (clave anon). 4) En Supabase Auth URL Configuration: Site URL y Redirect URLs con la URL de Vercel (dejar localhost). 5) En Google Cloud: agregar la URL a origenes JS autorizados; el callback de Supabase no cambia (R-05: usuarios de prueba o publicar la pantalla). 6) Confirmar Supabase Active (no pausado) y el cron Actividad de Supabase en verde. CRITERIOS para dar por finalizada T-23: (a) URL publica carga y redirige a /explorar leyendo el catalogo; (b) curl -sI <url> \| grep referrer-policy devuelve strict-origin-when-cross-origin; (c) recargar en /planificar NO da 404 (SPA fallback); (d) el mapa (teselas OSM) carga en produccion; (e) login con Google funciona en produccion; (f) Supabase Active. El usuario debe pasar la URL y la salida del curl como evidencia. |
 | 2026-11-12T17:11:30 | claude | nota | T-22 | Prueba e2e con Playwright 1.65 (chromium). Un unico flujo (e2e/flujo-principal.spec.ts): explorar, planificar y generar, ajustar presupuesto, clima y reorganizar, guardar viaje, check-in geo. Toda la red interceptada con page.route (Supabase REST/RPC y Open-Meteo) usando el seed real; sesion sembrada en localStorage (sb-pruebas-auth-token); context.setGeolocation. playwright.config.ts con webServer build+preview. Vitest excluye e2e; scripts e2e/e2e:ui; job e2e en ci.yml; gitignore y README actualizados. Pasa estable en local y en modo CI. Commit 08bc429. |
 | 2026-11-12T17:11:30 | claude | campo | T-22 | estado: 'pendiente' -> 'hecha' |
@@ -102,5 +104,3 @@ Ninguna.
 | 2026-11-12T14:21:08 | claude | campo | T-21 | estado: 'pendiente' -> 'hecha' |
 | 2026-11-12T14:21:08 | claude | nota | T-20 | Consentimiento + check-in geo/manual + boton offline, en la ficha de atraccion. Modal de consentimiento (feature privacidad) antes del primer check-in, guarda perfiles.consentimiento_datos_en (upsert); enlace a la politica (copiada a public/). Check-in por geolocalizacion (getCurrentPosition maximumAge:0) -> RPC registrar_checkin; registro manual via p_manual=true (no verificado, sin coordenadas; reemplazo el truco de precision). Boton desactivado sin conexion (hook use-conexion con navigator.onLine). Primer uso de supabase.rpc() en el cliente; respuestas validadas con Zod (domain/insignias/esquemas). Util de geolocalizacion con errores tipados (incluye contexto_inseguro) y mensaje que invita al registro manual. Prueba SQL ampliada (manual no verificado). Flujo geo verificado en Firefox (en Chromium Linux el NetworkLocationProvider falla; el manual cubre ese caso). Commit 01a3ed7. |
 | 2026-11-12T14:21:08 | claude | campo | T-20 | estado: 'pendiente' -> 'hecha' |
-| 2026-11-12T14:21:08 | claude | nota | T-19 | Migracion 20261112130000_checkins_insignias (aplicada con supabase db push via --db-url): tablas checkins (sin lat/lon del usuario, id_cliente unico) e insignias_usuario (verificada monotona); funcion haversine; RPC registrar_checkin SECURITY DEFINER (idempotente por id_cliente, decide verificado en el servidor, descarta coordenadas; gana el parametro p_manual en T-20); trigger de insignias con la regla del 80%. RLS: solo SELECT de lo propio, sin escritura directa. Dominio src/domain/geo (haversine + verificarCheckin) con 11 pruebas. Prueba supabase/tests/checkins_insignias_rls.sql verde contra la base. Commit 0dd89d3. |
-| 2026-11-12T14:21:08 | claude | campo | T-19 | estado: 'pendiente' -> 'hecha' |
