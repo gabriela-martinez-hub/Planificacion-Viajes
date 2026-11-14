@@ -25,19 +25,19 @@ export function FichaAtraccion({
       <button
         type="button"
         onClick={alVolver}
-        className="self-start text-sm text-emerald-700 hover:underline"
+        className="self-start text-sm text-selva-700 hover:underline"
       >
         ← {t('catalogo.volverLista')}
       </button>
 
       <header className="flex flex-col gap-1">
-        <h2 className="text-xl font-bold text-emerald-800">{a.nombre}</h2>
-        <p className="text-sm text-slate-500">
+        <h2 className="sello-titulo text-xl">{a.nombre}</h2>
+        <p className="text-sm text-tinta-500">
           {nombreMunicipio} · {a.categoria}
         </p>
       </header>
 
-      {a.descripcion && <p className="text-slate-700">{a.descripcion}</p>}
+      {a.descripcion && <p className="text-tinta-700">{a.descripcion}</p>}
 
       {a.estilos.length > 0 && (
         <ul
@@ -47,7 +47,7 @@ export function FichaAtraccion({
           {a.estilos.map((e) => (
             <li
               key={e}
-              className="rounded-full bg-emerald-50 px-3 py-1 text-xs text-emerald-800"
+              className="rounded-full bg-selva-50 px-3 py-1 text-xs text-selva-800"
             >
               {t(`catalogo.estilos.${e}`)}
             </li>
@@ -57,19 +57,19 @@ export function FichaAtraccion({
 
       <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div>
-          <dt className="text-xs uppercase text-slate-500">
+          <dt className="text-xs uppercase text-tinta-500">
             {t('catalogo.duracion')}
           </dt>
-          <dd className="text-slate-700">
+          <dd className="text-tinta-700">
             {t('catalogo.minutos', { valor: a.duracion_min })}
           </dd>
         </div>
 
         <div>
-          <dt className="text-xs uppercase text-slate-500">
+          <dt className="text-xs uppercase text-tinta-500">
             {t('catalogo.horario')}
           </dt>
-          <dd className="text-slate-700">
+          <dd className="text-tinta-700">
             {a.horario_apertura && a.horario_cierre
               ? t('catalogo.horas', {
                   apertura: soloHoraMin(a.horario_apertura),
@@ -81,44 +81,44 @@ export function FichaAtraccion({
 
         {a.altitud_m !== undefined && (
           <div>
-            <dt className="text-xs uppercase text-slate-500">
+            <dt className="text-xs uppercase text-tinta-500">
               {t('catalogo.altitud')}
             </dt>
-            <dd className="text-slate-700">
+            <dd className="text-tinta-700">
               {t('catalogo.metros', { valor: a.altitud_m })}
             </dd>
           </div>
         )}
 
         <div>
-          <dt className="text-xs uppercase text-slate-500">
+          <dt className="text-xs uppercase text-tinta-500">
             {t('catalogo.entrada')}
           </dt>
-          <dd className="text-slate-700">
+          <dd className="text-tinta-700">
             {costoTotal > 0 ? formatearCOP(costoTotal) : t('catalogo.gratis')}
           </dd>
         </div>
       </dl>
 
       {a.dias_cerrado.length > 0 && (
-        <p className="text-sm text-amber-700">
+        <p className="text-sm text-ambar-700">
           {t('catalogo.cerradoLos', { dias: nombresDias(a.dias_cerrado) })}
         </p>
       )}
 
       {a.requiere_guia && (
-        <p className="text-sm text-amber-700">{t('catalogo.requiereGuia')}</p>
+        <p className="text-sm text-ambar-700">{t('catalogo.requiereGuia')}</p>
       )}
 
       {a.estado_acceso !== 'abierta' && (
-        <p className="text-sm text-amber-700" role="note">
+        <p className="text-sm text-ambar-700" role="note">
           {t(`catalogo.estadoAcceso.${a.estado_acceso}`)}
           {a.nota_acceso ? `: ${a.nota_acceso}` : ''}
         </p>
       )}
 
       <section
-        className="border-t border-slate-200 pt-3"
+        className="border-t border-tinta-200 pt-3"
         aria-label={t('checkin.registrar')}
       >
         <BotonCheckin
@@ -126,7 +126,7 @@ export function FichaAtraccion({
         />
       </section>
 
-      <footer className="flex flex-col gap-1 border-t border-slate-200 pt-3 text-xs text-slate-500">
+      <footer className="flex flex-col gap-1 border-t border-tinta-200 pt-3 text-xs text-tinta-500">
         {costoTotal > 0 && <p>{t('catalogo.notaTarifaAdulto')}</p>}
         {a.costo_aproximado && costoTotal > 0 && (
           <p>

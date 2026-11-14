@@ -134,7 +134,7 @@ export function BotonCheckin({ lugar }: Props) {
           type="button"
           onClick={() => intentar('geo')}
           disabled={deshabilitado}
-          className="rounded-md bg-emerald-700 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-800 disabled:opacity-60"
+          className="rounded-md bg-selva-700 px-4 py-2 text-sm font-medium text-crema-claro hover:bg-selva-800 disabled:opacity-60"
         >
           {ocupado ? t('checkin.registrando') : t('checkin.conUbicacion')}
         </button>
@@ -142,14 +142,14 @@ export function BotonCheckin({ lugar }: Props) {
           type="button"
           onClick={() => intentar('manual')}
           disabled={deshabilitado}
-          className="rounded-md border border-slate-300 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 disabled:opacity-60"
+          className="rounded-md border border-tinta-300 px-4 py-2 text-sm text-tinta-700 hover:bg-crema-oscuro disabled:opacity-60"
         >
           {t('checkin.manualAccion')}
         </button>
       </div>
 
       {!enLinea && (
-        <p className="text-sm text-amber-700" role="status">
+        <p className="text-sm text-ambar-700" role="status">
           {t('checkin.sinConexion')}
         </p>
       )}
@@ -158,10 +158,10 @@ export function BotonCheckin({ lugar }: Props) {
         <p
           className={
             mensaje.tono === 'ok'
-              ? 'text-sm text-emerald-700'
+              ? 'text-sm text-selva-700'
               : mensaje.tono === 'aviso'
-                ? 'text-sm text-amber-700'
-                : 'text-sm text-red-600'
+                ? 'text-sm text-ambar-700'
+                : 'text-sm text-red-700'
           }
           role={mensaje.tono === 'error' ? 'alert' : 'status'}
         >

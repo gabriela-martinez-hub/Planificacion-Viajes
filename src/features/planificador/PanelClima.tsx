@@ -70,50 +70,50 @@ export function PanelClima({
   const hayLluvia = detalles.some((d) => d.lluvioso);
 
   return (
-    <div className="flex flex-col gap-3 rounded-lg border border-slate-200 p-4">
+    <div className="flex flex-col gap-3 tarjeta">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 className="font-semibold text-slate-800">
+        <h3 className="font-semibold text-tinta-900">
           {t('clima.pronostico')}
         </h3>
-        <span className="text-xs text-slate-500">{t('clima.atribucion')}</span>
+        <span className="text-xs text-tinta-500">{t('clima.atribucion')}</span>
       </div>
 
       {usandoPromedio && (
         <p
-          className="rounded-md bg-amber-50 p-2 text-sm text-amber-800"
+          className="rounded-md bg-ambar-50 p-2 text-sm text-ambar-800"
           role="status"
         >
           {t('clima.avisoSinRed')}
         </p>
       )}
 
-      <p className="text-xs text-slate-500">{t('clima.reorganizarAyuda')}</p>
+      <p className="text-xs text-tinta-500">{t('clima.reorganizarAyuda')}</p>
 
       <div className="flex items-center gap-2">
         <button
           type="button"
           onClick={alReorganizar}
           disabled={cargandoClima || !hayLluvia || candidato !== null}
-          className="rounded-md bg-sky-600 px-3 py-1.5 text-sm font-medium text-white enabled:hover:bg-sky-700 disabled:opacity-40"
+          className="rounded-md bg-sky-600 px-3 py-1.5 text-sm font-medium text-crema-claro enabled:hover:bg-sky-700 disabled:opacity-40"
         >
           {t('clima.reorganizar')}
         </button>
         {cargandoClima && (
-          <span className="text-xs text-slate-500" role="status">
+          <span className="text-xs text-tinta-500" role="status">
             {t('comun.cargando')}
           </span>
         )}
       </div>
 
       {sinCambios && (
-        <p className="text-sm text-slate-600" role="status">
+        <p className="text-sm text-tinta-600" role="status">
           {t('clima.sinCambios')}
         </p>
       )}
 
       {candidato && (
         <div className="flex flex-col gap-3 rounded-md border border-sky-200 bg-sky-50/40 p-3">
-          <h4 className="font-medium text-slate-800">
+          <h4 className="font-medium text-tinta-900">
             {t('clima.vistaPrevia')}
           </h4>
           <VistaItinerario
@@ -131,14 +131,14 @@ export function PanelClima({
             <button
               type="button"
               onClick={alAplicarCandidato}
-              className="rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700"
+              className="rounded-md bg-selva-600 px-3 py-1.5 text-sm font-medium text-crema-claro hover:bg-selva-700"
             >
               {t('clima.aplicar')}
             </button>
             <button
               type="button"
               onClick={() => setCandidato(null)}
-              className="rounded-md border border-slate-300 px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-100"
+              className="rounded-md border border-tinta-300 px-3 py-1.5 text-sm text-tinta-700 hover:bg-crema-oscuro"
             >
               {t('clima.descartar')}
             </button>

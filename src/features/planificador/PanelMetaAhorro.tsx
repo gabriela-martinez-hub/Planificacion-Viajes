@@ -36,7 +36,7 @@ export function PanelMetaAhorro({
 
   if (meta.isLoading || aportes.isLoading) {
     return (
-      <p className="text-slate-500" role="status">
+      <p className="text-tinta-500" role="status">
         {t('comun.cargando')}
       </p>
     );
@@ -68,33 +68,33 @@ export function PanelMetaAhorro({
   });
 
   return (
-    <section className="flex flex-col gap-3 rounded-lg border border-slate-200 p-4">
-      <h3 className="text-lg font-bold text-emerald-800">
+    <section className="flex flex-col gap-3 tarjeta">
+      <h3 className="text-lg font-bold text-selva-800">
         {t('presupuesto.meta.titulo')}
       </h3>
 
       <div className="flex flex-col gap-1 text-sm">
         <div className="flex justify-between">
-          <span className="text-slate-600">
+          <span className="text-tinta-600">
             {t('presupuesto.meta.objetivo')}
           </span>
-          <span className="font-medium text-slate-800">
+          <span className="font-medium text-tinta-900">
             {formatearCOP(meta.data.monto_objetivo_cop)}
           </span>
         </div>
         <div className="flex justify-between">
-          <span className="text-slate-600">
+          <span className="text-tinta-600">
             {t('presupuesto.meta.ahorrado')}
           </span>
-          <span className="text-emerald-800">
+          <span className="text-selva-800">
             {formatearCOP(resultado.ahorrado)}
           </span>
         </div>
         <div className="flex justify-between">
-          <span className="text-slate-600">
+          <span className="text-tinta-600">
             {t('presupuesto.meta.restante')}
           </span>
-          <span className="text-slate-800">
+          <span className="text-tinta-900">
             {formatearCOP(resultado.restante)}
           </span>
         </div>
@@ -103,17 +103,17 @@ export function PanelMetaAhorro({
       <BarraProgreso progreso={resultado.progreso} />
 
       {resultado.estado === 'cumplida' && (
-        <p className="text-sm font-medium text-emerald-700" role="status">
+        <p className="text-sm font-medium text-selva-700" role="status">
           {t('presupuesto.meta.cumplida')}
         </p>
       )}
       {resultado.estado === 'vencida' && (
-        <p className="text-sm text-amber-800" role="status">
+        <p className="text-sm text-ambar-800" role="status">
           {t('presupuesto.meta.vencida')}
         </p>
       )}
       {resultado.estado === 'activa' && (
-        <p className="text-sm text-slate-700">
+        <p className="text-sm text-tinta-700">
           {t('presupuesto.meta.cuota')}:{' '}
           <span className="font-medium">
             {t('presupuesto.meta.cuotaDetalle', {
@@ -144,14 +144,14 @@ function BarraProgreso({ progreso }: { progreso: number }) {
   const pct = Math.round(progreso * 100);
   return (
     <div
-      className="h-3 w-full overflow-hidden rounded-full bg-slate-200"
+      className="h-3 w-full overflow-hidden rounded-full bg-tinta-200"
       role="progressbar"
       aria-valuenow={pct}
       aria-valuemin={0}
       aria-valuemax={100}
     >
       <div
-        className="h-full rounded-full bg-emerald-600 transition-all"
+        className="h-full rounded-full bg-selva-600 transition-all"
         style={{ width: `${pct}%` }}
       />
     </div>
@@ -175,32 +175,32 @@ function FormularioMeta({
   const [frecuencia, setFrecuencia] = useState<FrecuenciaAhorro>('mensual');
 
   return (
-    <section className="flex flex-col gap-3 rounded-lg border border-slate-200 p-4">
-      <h3 className="text-lg font-bold text-emerald-800">
+    <section className="flex flex-col gap-3 tarjeta">
+      <h3 className="text-lg font-bold text-selva-800">
         {t('presupuesto.meta.titulo')}
       </h3>
-      <p className="text-sm text-slate-500">{t('presupuesto.meta.sinMeta')}</p>
+      <p className="text-sm text-tinta-500">{t('presupuesto.meta.sinMeta')}</p>
 
       <label className="flex flex-col gap-1 text-sm">
-        <span className="text-slate-600">{t('presupuesto.meta.objetivo')}</span>
+        <span className="text-tinta-600">{t('presupuesto.meta.objetivo')}</span>
         <input
           type="number"
           min={1}
           inputMode="numeric"
           value={objetivo}
           onChange={(e) => setObjetivo(e.target.value)}
-          className="rounded-md border border-slate-300 px-3 py-2"
+          className="campo"
         />
       </label>
 
       <label className="flex flex-col gap-1 text-sm">
-        <span className="text-slate-600">
+        <span className="text-tinta-600">
           {t('presupuesto.meta.frecuencia')}
         </span>
         <select
           value={frecuencia}
           onChange={(e) => setFrecuencia(e.target.value as FrecuenciaAhorro)}
-          className="rounded-md border border-slate-300 px-3 py-2"
+          className="campo"
         >
           <option value="mensual">{t('presupuesto.meta.mensual')}</option>
           <option value="semanal">{t('presupuesto.meta.semanal')}</option>
@@ -211,12 +211,12 @@ function FormularioMeta({
         type="button"
         disabled={guardando || Number(objetivo) <= 0}
         onClick={() => onGuardar(Math.floor(Number(objetivo)), frecuencia)}
-        className="self-start rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
+        className="self-start boton-primario text-sm disabled:opacity-50"
       >
         {t('presupuesto.meta.guardar')}
       </button>
       {error && (
-        <p className="text-sm text-red-600" role="alert">
+        <p className="text-sm text-red-700" role="alert">
           {t('presupuesto.meta.errorMeta')}
         </p>
       )}
@@ -245,8 +245,8 @@ function FormularioAporte({
   const valido = Number(monto) > 0 && fecha !== '';
 
   return (
-    <div className="flex flex-col gap-2 border-t border-slate-200 pt-3">
-      <span className="text-sm font-medium text-slate-700">
+    <div className="flex flex-col gap-2 border-t border-tinta-200 pt-3">
+      <span className="text-sm font-medium text-tinta-700">
         {t('presupuesto.meta.aporte')}
       </span>
       <div className="flex flex-col gap-2 sm:flex-row">
@@ -257,7 +257,7 @@ function FormularioAporte({
           placeholder="0"
           value={monto}
           onChange={(e) => setMonto(e.target.value)}
-          className="flex-1 rounded-md border border-slate-300 px-3 py-2 text-sm"
+          className="campo flex-1 text-sm"
           aria-label={t('presupuesto.meta.aporte')}
         />
         <input
@@ -265,7 +265,7 @@ function FormularioAporte({
           max={hoy}
           value={fecha}
           onChange={(e) => setFecha(e.target.value)}
-          className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+          className="campo text-sm"
         />
       </div>
       <button
@@ -275,17 +275,17 @@ function FormularioAporte({
           onAportar(fecha, Math.floor(Number(monto)));
           setMonto('');
         }}
-        className="self-start rounded-md border border-emerald-600 px-3 py-1 text-sm font-medium text-emerald-700 hover:bg-emerald-50 disabled:opacity-50"
+        className="self-start rounded-md border border-selva-600 px-3 py-1 text-sm font-medium text-selva-700 hover:bg-selva-50 disabled:opacity-50"
       >
         {t('presupuesto.meta.registrarAporte')}
       </button>
       {exito && (
-        <p className="text-sm text-emerald-700" role="status">
+        <p className="text-sm text-selva-700" role="status">
           {t('presupuesto.meta.aporteRegistrado')}
         </p>
       )}
       {error && (
-        <p className="text-sm text-red-600" role="alert">
+        <p className="text-sm text-red-700" role="alert">
           {t('presupuesto.meta.errorAporte')}
         </p>
       )}

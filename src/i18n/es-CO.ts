@@ -33,7 +33,12 @@ export const textos = {
     explorar: 'Explorar',
     planificar: 'Planificar',
     misViajes: 'Mis viajes',
-    perfil: 'Perfil',
+    perfil: 'Mi álbum',
+    marca: 'Bitácora del Eje',
+    abrirMenu: 'Abrir menú',
+    cerrarMenu: 'Cerrar menú',
+    progresoAlbum: '{visitados}/{total} estampas',
+    seccion: 'Secciones',
   },
 
   auth: {
@@ -254,7 +259,8 @@ export const textos = {
   },
 
   perfil: {
-    titulo: 'Mi perfil',
+    titulo: 'Mi álbum de viaje',
+    subtitulo: 'Colecciona estampas visitando los rincones del Eje Cafetero.',
     iniciaParaVerPerfil:
       'Inicia sesión con Google para ver tu perfil y tu progreso.',
     municipiosVisitados: 'Municipios visitados',
@@ -264,6 +270,8 @@ export const textos = {
     progresoDepartamentos: 'Progreso por departamento',
     progresoRutas: 'Progreso por ruta',
     insigniasTitulo: 'Tus insignias',
+    albumTitulo: 'Álbum de estampas',
+    albumVacio: 'Estampa por desbloquear',
     sinInsignias:
       'Aún no tienes insignias. Haz check-in en los lugares que visites.',
     progreso: '{visitados} de {total}',

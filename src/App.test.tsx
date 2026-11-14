@@ -45,12 +45,11 @@ function envolver(nodo: ReactNode) {
 }
 
 describe('App', () => {
-  it('muestra los textos de la pantalla inicial desde es-CO.ts', () => {
+  it('muestra la marca de la aplicación en la barra superior', () => {
     render(envolver(<App />));
     expect(
-      screen.getByRole('heading', { name: textos.app.titulo }),
-    ).toBeInTheDocument();
-    expect(screen.getByText(textos.app.descripcion)).toBeInTheDocument();
+      screen.getAllByText(textos.nav.marca).length,
+    ).toBeGreaterThanOrEqual(1);
   });
 
   it('ofrece iniciar sesión con Google cuando no hay sesión', async () => {
@@ -62,7 +61,7 @@ describe('App', () => {
 
   it('tiene landmarks accesibles: navegación principal, main y enlace para saltar', () => {
     render(envolver(<App />));
-    // Navegación principal con nombre accesible.
+    // Navegación principal (barra inferior) con nombre accesible.
     expect(
       screen.getByRole('navigation', { name: textos.nav.principal }),
     ).toBeInTheDocument();
