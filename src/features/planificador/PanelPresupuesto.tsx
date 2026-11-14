@@ -44,31 +44,31 @@ export function PanelPresupuesto({ itinerario, entrada, alAjustar }: Props) {
   };
 
   return (
-    <section className="flex flex-col gap-3 rounded-lg border border-slate-200 p-4">
-      <h3 className="text-lg font-bold text-emerald-800">
+    <section className="flex flex-col gap-3 tarjeta">
+      <h3 className="text-lg font-bold text-selva-800">
         {t('presupuesto.titulo')}
       </h3>
 
       <Desglose grupo={desglose.grupo} porPersona={desglose.porPersona} />
 
-      <p className="text-xs text-slate-500">{t('presupuesto.aproximado')}</p>
+      <p className="text-xs text-tinta-500">{t('presupuesto.aproximado')}</p>
 
-      <div className="flex flex-col gap-2 border-t border-slate-200 pt-3">
+      <div className="flex flex-col gap-2 border-t border-tinta-200 pt-3">
         <label className="flex flex-col gap-1 text-sm">
-          <span className="text-slate-600">{t('presupuesto.montoTotal')}</span>
+          <span className="text-tinta-600">{t('presupuesto.montoTotal')}</span>
           <input
             type="number"
             min={0}
             inputMode="numeric"
             value={monto}
             onChange={(e) => setMonto(e.target.value)}
-            className="rounded-md border border-slate-300 px-3 py-2"
+            className="campo"
           />
         </label>
         <button
           type="button"
           onClick={alCalcular}
-          className="self-start rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+          className="self-start boton-primario text-sm"
         >
           {t('presupuesto.calcular')}
         </button>
@@ -76,7 +76,7 @@ export function PanelPresupuesto({ itinerario, entrada, alAjustar }: Props) {
 
       {resultado && !resultado.ok && (
         <p
-          className="rounded-md bg-amber-50 p-3 text-sm text-amber-900"
+          className="rounded-md bg-ambar-50 p-3 text-sm text-ambar-900"
           role="alert"
         >
           {t('presupuesto.noAlcanza', {
@@ -87,7 +87,7 @@ export function PanelPresupuesto({ itinerario, entrada, alAjustar }: Props) {
 
       {resultado && resultado.ok && resultado.ajustado && (
         <div
-          className="rounded-md bg-emerald-50 p-3 text-sm text-emerald-900"
+          className="rounded-md bg-selva-50 p-3 text-sm text-selva-900"
           role="status"
         >
           <p className="font-medium">{t('presupuesto.ajustado')}</p>
@@ -137,15 +137,15 @@ function Desglose({ grupo, porPersona }: DesgloseProps) {
     <dl className="flex flex-col gap-1 text-sm">
       {filas.map((f) => (
         <div key={f.etiqueta} className="flex justify-between">
-          <dt className="text-slate-600">{f.etiqueta}</dt>
-          <dd className="text-slate-800">{formatearCOP(f.valor)}</dd>
+          <dt className="text-tinta-600">{f.etiqueta}</dt>
+          <dd className="text-tinta-900">{formatearCOP(f.valor)}</dd>
         </div>
       ))}
-      <div className="mt-1 flex justify-between border-t border-slate-200 pt-1 font-medium">
+      <div className="mt-1 flex justify-between border-t border-tinta-200 pt-1 font-medium">
         <dt>{t('presupuesto.total')}</dt>
-        <dd className="text-emerald-800">{formatearCOP(grupo.total)}</dd>
+        <dd className="text-selva-800">{formatearCOP(grupo.total)}</dd>
       </div>
-      <div className="flex justify-between text-slate-500">
+      <div className="flex justify-between text-tinta-500">
         <dt>{t('presupuesto.porPersona')}</dt>
         <dd>{formatearCOP(porPersona.total)}</dd>
       </div>

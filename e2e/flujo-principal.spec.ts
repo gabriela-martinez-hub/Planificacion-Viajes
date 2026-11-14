@@ -31,7 +31,7 @@ test.describe('Flujo principal del planificador', () => {
     await page.goto('/');
     await expect(
       page.getByRole('heading', {
-        name: 'Planificador de viajes del Eje Cafetero',
+        name: 'Explorar el Eje Cafetero',
       }),
     ).toBeVisible();
     // Con sesión sembrada, se ofrece cerrar sesión (no iniciar).

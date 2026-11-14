@@ -1,7 +1,9 @@
 // Vista "Mis viajes" (T-14, pieza A): lista los viajes guardados del usuario y
 // abre uno reconstruyendo la vista día por día. Requiere sesión.
 import { useMemo, useState } from 'react';
+import { Luggage, Trash2 } from 'lucide-react';
 import { t } from '@/i18n';
+import { PaginaAnimada } from '@/features/shell/PaginaAnimada';
 import { useAuth } from '@/features/auth/use-auth';
 import {
   useMunicipios,
@@ -21,7 +23,7 @@ export function MisViajes() {
 
   if (!usuario) {
     return (
-      <p className="text-slate-500">{t('planificador.iniciaParaVerViajes')}</p>
+      <p className="text-tinta-500">{t('planificador.iniciaParaVerViajes')}</p>
     );
   }
 
@@ -30,41 +32,49 @@ export function MisViajes() {
   }
 
   return (
-    <section className="flex flex-col gap-4">
-      <h2 className="text-xl font-bold text-emerald-800">
-        {t('nav.misViajes')}
-      </h2>
+    <PaginaAnimada>
+      <section className="flex flex-col gap-4">
+      <header className="flex flex-col gap-1">
+        <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-ambar-100 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-ambar-800">
+          <Luggage className="h-3.5 w-3.5" aria-hidden="true" />
+          {t('nav.misViajes')}
+        </span>
+        <h2 className="sello-titulo text-2xl">{t('nav.misViajes')}</h2>
+      </header>
 
       {viajes.isLoading && (
-        <p className="text-slate-500" role="status">
+        <p className="text-tinta-500" role="status">
           {t('comun.cargando')}
         </p>
       )}
       {viajes.error && (
-        <p className="text-red-600" role="alert">
+        <p className="text-red-700" role="alert">
           {t('comun.errorGenerico')}
         </p>
       )}
 
       {viajes.data && viajes.data.length === 0 && (
-        <p className="text-slate-500">{t('planificador.sinViajes')}</p>
+        <p className="text-tinta-500">{t('planificador.sinViajes')}</p>
       )}
 
       <ul className="flex flex-col gap-2">
         {(viajes.data ?? []).map((v) => (
           <li
             key={v.id}
-            className="flex items-center gap-2 rounded-lg border border-slate-200 p-3"
+            className="flex items-center gap-3 rounded-2xl border border-crema-oscuro bg-crema-claro p-3 shadow-papel transition-colors hover:border-selva-300"
           >
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-selva-100 text-selva-700">
+              <Luggage className="h-5 w-5" aria-hidden="true" />
+            </span>
             <button
               type="button"
               onClick={() => setAbierto(v)}
-              className="flex-1 text-left"
+              className="min-w-0 flex-1 text-left"
             >
-              <span className="block font-medium text-slate-800">
+              <span className="block truncate font-medium text-tinta-900">
                 {v.titulo}
               </span>
-              <span className="block text-xs text-slate-500">
+              <span className="block text-xs text-tinta-500">
                 {v.fecha_inicio} → {v.fecha_fin}
               </span>
             </button>
@@ -72,15 +82,16 @@ export function MisViajes() {
               type="button"
               onClick={() => eliminar.mutate(v.id)}
               disabled={eliminar.isPending}
-              className="rounded px-2 py-1 text-sm text-red-600 hover:bg-red-50 disabled:opacity-50"
+              className="inline-flex items-center rounded-full px-2 py-2 text-red-700 hover:bg-red-50 disabled:opacity-50"
               aria-label={t('comun.eliminar')}
             >
-              {t('comun.eliminar')}
+              <Trash2 className="h-4 w-4" aria-hidden="true" />
             </button>
           </li>
         ))}
       </ul>
-    </section>
+      </section>
+    </PaginaAnimada>
   );
 }
 
@@ -124,18 +135,18 @@ function DetalleViaje({ viaje, alVolver }: DetalleProps) {
       <button
         type="button"
         onClick={alVolver}
-        className="self-start text-sm text-emerald-700 hover:underline"
+        className="self-start text-sm text-selva-700 hover:underline"
       >
         ← {t('comun.volver')}
       </button>
 
       {(detalle.isLoading || municipios.isLoading || atracciones.isLoading) && (
-        <p className="text-slate-500" role="status">
+        <p className="text-tinta-500" role="status">
           {t('comun.cargando')}
         </p>
       )}
       {detalle.error && (
-        <p className="text-red-600" role="alert">
+        <p className="text-red-700" role="alert">
           {t('comun.errorGenerico')}
         </p>
       )}

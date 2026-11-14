@@ -28,7 +28,7 @@ export function MapaCatalogo({
   alAbrirAtraccion,
 }: Props) {
   return (
-    <div className="h-[60vh] w-full overflow-hidden rounded-lg border border-slate-200">
+    <div className="h-[60vh] w-full overflow-hidden rounded-lg border border-tinta-200">
       <MapContainer
         center={CENTRO}
         zoom={ZOOM_INICIAL}
@@ -49,12 +49,12 @@ export function MapaCatalogo({
                   <div className="flex flex-col gap-1">
                     <strong>{m.nombre}</strong>
                     {m.es_pueblo_patrimonio && (
-                      <span className="text-xs text-amber-700">
+                      <span className="text-xs text-ambar-700">
                         {t('catalogo.puebloPatrimonio')}
                       </span>
                     )}
                     {atracciones.length === 0 ? (
-                      <span className="text-xs text-slate-500">
+                      <span className="text-xs text-tinta-500">
                         {t('catalogo.sinAtracciones')}
                       </span>
                     ) : (
@@ -64,7 +64,7 @@ export function MapaCatalogo({
                             <button
                               type="button"
                               onClick={() => alAbrirAtraccion(a)}
-                              className="text-left text-emerald-700 underline"
+                              className="text-left text-selva-700 underline"
                             >
                               {a.nombre}
                             </button>

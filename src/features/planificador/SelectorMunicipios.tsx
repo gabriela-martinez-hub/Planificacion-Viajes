@@ -47,23 +47,23 @@ export function SelectorMunicipios({
         value={busqueda}
         onChange={(e) => setBusqueda(e.target.value)}
         placeholder={t('catalogo.buscarMunicipio')}
-        className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+        className="campo text-sm"
         aria-label={t('planificador.municipios')}
       />
       {seleccionados.length > 0 && (
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-tinta-500">
           {t('planificador.municipiosElegidos', { n: seleccionados.length })}
         </p>
       )}
-      <ul className="max-h-48 overflow-y-auto rounded-md border border-slate-200">
+      <ul className="max-h-48 overflow-y-auto rounded-md border border-tinta-200">
         {visibles.length === 0 ? (
-          <li className="px-3 py-2 text-sm text-slate-500">
+          <li className="px-3 py-2 text-sm text-tinta-500">
             {t('catalogo.municipioNoEncontrado')}
           </li>
         ) : (
           visibles.map((m) => (
             <li key={m.id}>
-              <label className="flex cursor-pointer items-center gap-2 px-3 py-2 text-sm hover:bg-emerald-50">
+              <label className="flex cursor-pointer items-center gap-2 px-3 py-2 text-sm hover:bg-selva-50">
                 <input
                   type="checkbox"
                   checked={seleccionados.includes(m.id)}
@@ -72,7 +72,7 @@ export function SelectorMunicipios({
                 />
                 <span>{m.nombre}</span>
                 {m.es_pueblo_patrimonio && (
-                  <span className="ml-auto rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-800">
+                  <span className="ml-auto rounded-full bg-ambar-100 px-2 py-0.5 text-xs text-ambar-800">
                     {t('catalogo.puebloPatrimonio')}
                   </span>
                 )}

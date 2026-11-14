@@ -20,8 +20,8 @@ export default defineConfig({
         description:
           'Planifica viajes por Caldas, Quindío y Risaralda según fechas, presupuesto y clima.',
         lang: 'es-CO',
-        theme_color: '#059669',
-        background_color: '#ffffff',
+        theme_color: '#3b522c',
+        background_color: '#f6efe2',
         display: 'standalone',
         start_url: '/',
         scope: '/',
@@ -42,6 +42,22 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,svg,png,ico,webmanifest}'],
         navigateFallback: '/index.html',
         runtimeCaching: [
+          {
+            // Fuentes de Google (CSS y archivos woff2): se cachean tras la
+            // primera carga para que la tipografía de marca siga disponible
+            // sin conexión. El CSS cambia poco; los woff2 son inmutables.
+            urlPattern:
+              /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts',
+              expiration: {
+                maxEntries: 30,
+                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 año
+              },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
           {
             // Teselas de OpenStreetMap: caché primero (plan.md 6.5). Solo se
             // guardan las que el usuario ya vio; no hay precarga.
@@ -81,6 +97,18 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
+    },
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        // Separa las dependencias grandes en chunks propios para que el chunk
+        // principal no dispare el aviso de tamaño y mejore el cacheo.
+        manualChunks: {
+          react: ['react', 'react-dom', 'react-router-dom'],
+          motion: ['framer-motion'],
+        },
+      },
     },
   },
   test: {

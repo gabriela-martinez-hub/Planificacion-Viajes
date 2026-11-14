@@ -2,11 +2,45 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Accesibilidad (T-28): foco visible y consistente para navegación por teclado.
-   Usa :focus-visible para no mostrar el anillo al hacer clic con el ratón. */
+/* Sistema visual de marca: estética retro-botánica (verde selva, ámbar y
+   papel crema). Las clases de componente (.tarjeta, .boton-*, .campo, etc.)
+   concentran el estilo para que las pantallas no repitan utilidades sueltas. */
+
 @layer base {
+  html {
+    /* Textura de papel sutil: degradado crema muy suave, sin imágenes. */
+    background-color: theme('colors.crema.DEFAULT');
+  }
+
+  body {
+    background-color: theme('colors.crema.DEFAULT');
+    /* Textura de papel sutil con degradados radiales (sin imágenes externas). */
+    background-image: radial-gradient(
+        circle at 15% 20%,
+        rgba(74, 103, 52, 0.05),
+        transparent 45%
+      ),
+      radial-gradient(
+        circle at 85% 10%,
+        rgba(227, 159, 44, 0.06),
+        transparent 40%
+      );
+    background-attachment: fixed;
+    color: theme('colors.tinta.800');
+    font-family: theme('fontFamily.sans');
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: theme('fontFamily.display');
+    letter-spacing: -0.01em;
+  }
+
+  /* Accesibilidad (T-28): foco visible y consistente para navegación por
+     teclado. Usa :focus-visible para no mostrar el anillo al hacer clic. */
   :focus-visible {
-    outline: 2px solid #047857; /* emerald-700, color de marca */
+    outline: 2px solid theme('colors.selva.600');
     outline-offset: 2px;
     border-radius: 2px;
   }
@@ -21,5 +55,102 @@
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+  }
+}
+
+@layer components {
+  /* Tarjeta de papel: superficie crema clara con borde cálido y esquina
+     redondeada, el contenedor base de casi toda la interfaz. */
+  .tarjeta {
+    @apply rounded-2xl border border-crema-oscuro bg-crema-claro p-4 shadow-papel;
+  }
+
+  /* Encabezado tipo "sello/etiqueta" vintage: título display centrado con una
+     línea ámbar debajo. */
+  .sello {
+    @apply inline-flex flex-col items-center gap-1 text-center;
+  }
+  .sello-titulo {
+    @apply font-display text-2xl font-semibold text-selva-800;
+  }
+
+  /* Botones. */
+  .boton-primario {
+    @apply rounded-full bg-selva-700 px-5 py-2 font-semibold text-crema-claro
+      transition-colors hover:bg-selva-800 disabled:opacity-60;
+  }
+  .boton-acento {
+    @apply rounded-full bg-ambar-400 px-5 py-2 font-semibold text-tinta-900
+      transition-colors hover:bg-ambar-500 disabled:opacity-60;
+  }
+  .boton-secundario {
+    @apply rounded-full border border-tinta-300 bg-crema-claro px-5 py-2
+      font-medium text-tinta-700 transition-colors hover:bg-crema-oscuro
+      disabled:opacity-60;
+  }
+  .boton-peligro {
+    @apply rounded-full bg-red-700 px-5 py-2 font-semibold text-white
+      transition-colors hover:bg-red-800 disabled:opacity-60;
+  }
+
+  /* Campos de formulario cálidos y consistentes. */
+  .campo {
+    @apply rounded-xl border border-tinta-300 bg-crema-claro px-3 py-2
+      text-tinta-900 placeholder:text-tinta-400;
+  }
+  .etiqueta-campo {
+    @apply text-tinta-600;
+  }
+
+  /* Píldora/insignia circular tipo "sticker" coleccionable. */
+  .pildora {
+    @apply rounded-full px-3 py-1 text-xs font-medium;
+  }
+
+  /* Grupo de pestañas/segmentos. */
+  .segmentos {
+    @apply flex gap-1 rounded-full bg-crema-oscuro p-1;
+  }
+  .segmento {
+    @apply rounded-full px-4 py-2 text-sm font-medium text-tinta-600
+      transition-colors hover:text-tinta-800;
+  }
+  .segmento-activo {
+    @apply bg-crema-claro text-selva-800 shadow-sm;
+  }
+
+  /* ---- Shell de navegación (navbar + sidebar + bottom-nav) ---- */
+
+  /* Enlace de la barra lateral (escritorio). */
+  .nav-lateral {
+    @apply relative flex items-center gap-3 overflow-hidden rounded-2xl px-3
+      py-2.5 text-sm font-semibold text-tinta-600 transition-colors
+      hover:bg-crema-oscuro hover:text-selva-800;
+  }
+  .nav-lateral-activo {
+    @apply text-crema-claro hover:text-crema-claro;
+  }
+
+  /* Enlace de la barra inferior (móvil). */
+  .nav-inferior {
+    @apply flex flex-1 flex-col items-center gap-1 rounded-xl py-1.5 text-[11px]
+      font-semibold text-tinta-500 transition-colors;
+  }
+  .nav-inferior-activo {
+    @apply text-selva-700;
+  }
+
+  /* ---- Álbum de estampas ---- */
+
+  /* Estampa coleccionable circular tipo sticker. */
+  .estampa {
+    @apply relative flex aspect-square flex-col items-center justify-center gap-1
+      rounded-full border-2 p-2 text-center transition-transform;
+  }
+  .estampa-desbloqueada {
+    @apply border-ambar-400 bg-selva-700 text-crema-claro shadow-papel;
+  }
+  .estampa-bloqueada {
+    @apply border-dashed border-tinta-300 bg-crema-oscuro text-tinta-400;
   }
 }

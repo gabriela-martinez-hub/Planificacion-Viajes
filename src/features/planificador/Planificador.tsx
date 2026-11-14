@@ -3,7 +3,9 @@
 // memoria; guardar es T-14, el presupuesto con ajuste es T-15 y el clima real
 // T-17/T-18.
 import { useEffect, useMemo, useState } from 'react';
+import { Map as MapIcon, Sparkles, Save } from 'lucide-react';
 import { t } from '@/i18n';
+import { PaginaAnimada } from '@/features/shell/PaginaAnimada';
 import { ESTILOS } from '@/domain/catalogo/esquemas';
 import type { Estilo } from '@/domain/itinerario';
 import { generarItinerario } from '@/domain/itinerario';
@@ -240,25 +242,28 @@ export function Planificador() {
 
   if (cargando) {
     return (
-      <p className="text-slate-500" role="status">
+      <p className="text-tinta-500" role="status">
         {t('comun.cargando')}
       </p>
     );
   }
   if (error) {
     return (
-      <p className="text-red-600" role="alert">
+      <p className="text-red-700" role="alert">
         {t('comun.errorGenerico')}
       </p>
     );
   }
 
   return (
-    <section className="flex flex-col gap-6">
-      <header>
-        <h2 className="text-xl font-bold text-emerald-800">
-          {t('planificador.titulo')}
-        </h2>
+    <PaginaAnimada>
+      <section className="flex flex-col gap-6">
+      <header className="flex flex-col gap-1">
+        <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-ambar-100 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-ambar-800">
+          <MapIcon className="h-3.5 w-3.5" aria-hidden="true" />
+          {t('nav.planificar')}
+        </span>
+        <h2 className="sello-titulo text-2xl">{t('planificador.titulo')}</h2>
       </header>
 
       <form
@@ -273,7 +278,7 @@ export function Planificador() {
             type="text"
             value={titulo}
             onChange={(e) => setTitulo(e.target.value)}
-            className="rounded-md border border-slate-300 px-3 py-2"
+            className="campo"
           />
         </Campo>
 
@@ -281,7 +286,7 @@ export function Planificador() {
           <select
             value={origenNodoId}
             onChange={(e) => setOrigen(e.target.value)}
-            className="rounded-md border border-slate-300 px-3 py-2"
+            className="campo"
           >
             <option value="">{t('planificador.elige')}</option>
             {opcionesOrigen.map((o) => (
@@ -299,7 +304,7 @@ export function Planificador() {
               value={fechaInicio}
               min={hoy}
               onChange={(e) => setFechaInicio(e.target.value)}
-              className="rounded-md border border-slate-300 px-3 py-2"
+              className="campo"
             />
           </Campo>
           <Campo etiqueta={t('planificador.fechaFin')} className="flex-1">
@@ -308,7 +313,7 @@ export function Planificador() {
               value={fechaFin}
               min={fechaInicio || hoy}
               onChange={(e) => setFechaFin(e.target.value)}
-              className="rounded-md border border-slate-300 px-3 py-2"
+              className="campo"
             />
           </Campo>
         </div>
@@ -320,14 +325,14 @@ export function Planificador() {
               min={1}
               value={viajeros}
               onChange={(e) => setViajeros(Number(e.target.value))}
-              className="rounded-md border border-slate-300 px-3 py-2"
+              className="campo"
             />
           </Campo>
           <Campo etiqueta={t('planificador.nivelViaje')} className="flex-1">
             <select
               value={nivel}
               onChange={(e) => setNivel(e.target.value as Nivel)}
-              className="rounded-md border border-slate-300 px-3 py-2"
+              className="campo"
             >
               {NIVELES.map((n) => (
                 <option key={n} value={n}>
@@ -339,7 +344,7 @@ export function Planificador() {
         </div>
 
         <fieldset className="flex flex-col gap-2">
-          <legend className="text-sm text-slate-600">
+          <legend className="text-sm text-tinta-600">
             {t('planificador.estilos')}
           </legend>
           <div className="flex flex-wrap gap-2">
@@ -349,8 +354,8 @@ export function Planificador() {
               aria-pressed={todosEstilos}
               className={`cursor-pointer rounded-full border px-3 py-1 text-sm ${
                 todosEstilos
-                  ? 'border-emerald-500 bg-emerald-600 text-white'
-                  : 'border-slate-300 text-slate-600'
+                  ? 'border-selva-500 bg-selva-600 text-crema-claro'
+                  : 'border-tinta-300 text-tinta-600'
               }`}
             >
               {t('planificador.estilosTodos')}
@@ -360,8 +365,8 @@ export function Planificador() {
                 key={e}
                 className={`cursor-pointer rounded-full border px-3 py-1 text-sm ${
                   estilos.includes(e)
-                    ? 'border-emerald-500 bg-emerald-50 text-emerald-800'
-                    : 'border-slate-300 text-slate-600'
+                    ? 'border-selva-500 bg-selva-50 text-selva-800'
+                    : 'border-tinta-300 text-tinta-600'
                 }`}
               >
                 <input
@@ -384,7 +389,7 @@ export function Planificador() {
           />
         </Campo>
 
-        <label className="flex items-center gap-2 text-sm text-slate-700">
+        <label className="flex items-center gap-2 text-sm text-tinta-700">
           <input
             type="checkbox"
             checked={incluyeRegreso}
@@ -407,8 +412,9 @@ export function Planificador() {
 
         <button
           type="submit"
-          className="rounded-md bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-700"
+          className="inline-flex items-center justify-center gap-2 boton-primario"
         >
+          <Sparkles className="h-4 w-4" aria-hidden="true" />
           {t('planificador.generar')}
         </button>
       </form>
@@ -419,7 +425,7 @@ export function Planificador() {
             {usuario ? (
               <>
                 {restaurado && !guardar.isSuccess && (
-                  <p className="text-sm text-emerald-700" role="status">
+                  <p className="text-sm text-selva-700" role="status">
                     {t('planificador.viajeRestaurado')}
                   </p>
                 )}
@@ -427,19 +433,20 @@ export function Planificador() {
                   type="button"
                   onClick={alGuardar}
                   disabled={guardar.isPending}
-                  className="rounded-md bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
+                  className="inline-flex items-center justify-center gap-2 boton-primario disabled:opacity-50"
                 >
+                  <Save className="h-4 w-4" aria-hidden="true" />
                   {guardar.isPending
                     ? t('comun.cargando')
                     : t('planificador.guardarViaje')}
                 </button>
                 {guardar.isSuccess && (
-                  <p className="text-sm text-emerald-700" role="status">
+                  <p className="text-sm text-selva-700" role="status">
                     {t('planificador.viajeGuardado')}
                   </p>
                 )}
                 {guardar.isError && (
-                  <p className="text-sm text-red-600" role="alert">
+                  <p className="text-sm text-red-700" role="alert">
                     {t('planificador.errorGuardar')}
                     {guardar.error instanceof Error
                       ? ` (${guardar.error.message})`
@@ -448,12 +455,12 @@ export function Planificador() {
                 )}
               </>
             ) : (
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-tinta-500">
                 {t('planificador.iniciaParaGuardar')}{' '}
                 <button
                   type="button"
                   onClick={alIniciarParaGuardar}
-                  className="text-emerald-700 underline hover:text-emerald-800"
+                  className="text-selva-700 underline hover:text-selva-800"
                 >
                   {t('auth.iniciarSesion')}
                 </button>
@@ -506,7 +513,8 @@ export function Planificador() {
           />
         </>
       )}
-    </section>
+      </section>
+    </PaginaAnimada>
   );
 }
 
@@ -519,7 +527,7 @@ interface CampoProps {
 function Campo({ etiqueta, className, children }: CampoProps) {
   return (
     <label className={`flex flex-col gap-1 text-sm ${className ?? ''}`}>
-      <span className="text-slate-600">{etiqueta}</span>
+      <span className="text-tinta-600">{etiqueta}</span>
       {children}
     </label>
   );

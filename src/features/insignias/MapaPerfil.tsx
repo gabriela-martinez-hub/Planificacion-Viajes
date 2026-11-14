@@ -22,8 +22,8 @@ function marcadorCirculo(color: string, borde: string): L.DivIcon {
   });
 }
 
-const ICONO_VISITADO = marcadorCirculo('#059669', '#ffffff'); // emerald-600
-const ICONO_PENDIENTE = marcadorCirculo('#cbd5e1', '#ffffff'); // slate-300
+const ICONO_VISITADO = marcadorCirculo('#4a6734', '#ffffff'); // selva-600
+const ICONO_PENDIENTE = marcadorCirculo('#c3ac8d', '#ffffff'); // tinta-300
 
 interface Props {
   municipios: Municipio[];
@@ -33,7 +33,7 @@ interface Props {
 
 export function MapaPerfil({ municipios, visitados }: Props) {
   return (
-    <div className="h-[55vh] w-full overflow-hidden rounded-lg border border-slate-200">
+    <div className="h-[55vh] w-full overflow-hidden rounded-lg border border-tinta-200">
       <MapContainer
         center={CENTRO}
         zoom={ZOOM_INICIAL}
@@ -60,8 +60,8 @@ export function MapaPerfil({ municipios, visitados }: Props) {
                     <span
                       className={
                         esVisitado
-                          ? 'text-xs text-emerald-700'
-                          : 'text-xs text-slate-500'
+                          ? 'text-xs text-selva-700'
+                          : 'text-xs text-tinta-500'
                       }
                     >
                       {esVisitado
